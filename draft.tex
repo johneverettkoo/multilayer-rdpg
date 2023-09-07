@@ -1,0 +1,193 @@
+% Options for packages loaded elsewhere
+\PassOptionsToPackage{unicode}{hyperref}
+\PassOptionsToPackage{hyphens}{url}
+\PassOptionsToPackage{dvipsnames,svgnames,x11names}{xcolor}
+%
+\documentclass[
+  11pt,
+]{article}
+\usepackage{amsmath,amssymb}
+\usepackage{iftex}
+\ifPDFTeX
+  \usepackage[T1]{fontenc}
+  \usepackage[utf8]{inputenc}
+  \usepackage{textcomp} % provide euro and other symbols
+\else % if luatex or xetex
+  \usepackage{unicode-math} % this also loads fontspec
+  \defaultfontfeatures{Scale=MatchLowercase}
+  \defaultfontfeatures[\rmfamily]{Ligatures=TeX,Scale=1}
+\fi
+\usepackage{lmodern}
+\ifPDFTeX\else
+  % xetex/luatex font selection
+\fi
+% Use upquote if available, for straight quotes in verbatim environments
+\IfFileExists{upquote.sty}{\usepackage{upquote}}{}
+\IfFileExists{microtype.sty}{% use microtype if available
+  \usepackage[]{microtype}
+  \UseMicrotypeSet[protrusion]{basicmath} % disable protrusion for tt fonts
+}{}
+\makeatletter
+\@ifundefined{KOMAClassName}{% if non-KOMA class
+  \IfFileExists{parskip.sty}{%
+    \usepackage{parskip}
+  }{% else
+    \setlength{\parindent}{0pt}
+    \setlength{\parskip}{6pt plus 2pt minus 1pt}}
+}{% if KOMA class
+  \KOMAoptions{parskip=half}}
+\makeatother
+\usepackage{xcolor}
+\usepackage[margin=1in]{geometry}
+\usepackage{graphicx}
+\makeatletter
+\def\maxwidth{\ifdim\Gin@nat@width>\linewidth\linewidth\else\Gin@nat@width\fi}
+\def\maxheight{\ifdim\Gin@nat@height>\textheight\textheight\else\Gin@nat@height\fi}
+\makeatother
+% Scale images if necessary, so that they will not overflow the page
+% margins by default, and it is still possible to overwrite the defaults
+% using explicit options in \includegraphics[width, height, ...]{}
+\setkeys{Gin}{width=\maxwidth,height=\maxheight,keepaspectratio}
+% Set default figure placement to htbp
+\makeatletter
+\def\fps@figure{htbp}
+\makeatother
+\setlength{\emergencystretch}{3em} % prevent overfull lines
+\providecommand{\tightlist}{%
+  \setlength{\itemsep}{0pt}\setlength{\parskip}{0pt}}
+\setcounter{secnumdepth}{5}
+\usepackage{setspace}
+\usepackage{float}
+\usepackage{mathtools}
+\usepackage{natbib}
+\usepackage[linesnumbered,ruled,vlined]{algorithm2e}
+\setcitestyle{numbers,square,comma}
+\usepackage{verbatim}
+\usepackage{amsthm}
+\usepackage{comment}
+\ifLuaTeX
+  \usepackage{selnolig}  % disable illegal ligatures
+\fi
+\usepackage[]{natbib}
+\bibliographystyle{plainnat}
+\IfFileExists{bookmark.sty}{\usepackage{bookmark}}{\usepackage{hyperref}}
+\IfFileExists{xurl.sty}{\usepackage{xurl}}{} % add URL line breaks if available
+\urlstyle{same}
+\hypersetup{
+  colorlinks=true,
+  linkcolor={Maroon},
+  filecolor={Maroon},
+  citecolor={Blue},
+  urlcolor={blue},
+  pdfcreator={LaTeX via pandoc}}
+
+\author{}
+\date{\vspace{-2.5em}}
+
+\begin{document}
+
+\newcommand{\diag}{\mathrm{diag}}
+\newcommand{\tr}{\mathrm{Tr}}
+\newcommand{\blockdiag}{\mathrm{blockdiag}}
+\newcommand{\indep}{\stackrel{\mathrm{ind}}{\sim}}
+\newcommand{\iid}{\stackrel{\mathrm{iid}}{\sim}}
+\newcommand{\Bernoulli}{\mathrm{Bernoulli}}
+\newcommand{\Betadist}{\mathrm{Beta}}
+\newcommand{\BG}{\mathrm{BernoulliGraph}}
+\newcommand{\Uniform}{\mathrm{Uniform}}
+\newcommand{\PABM}{\mathrm{PABM}}
+\newcommand{\RDPG}{\mathrm{RDPG}}
+\newcommand{\GRDPG}{\mathrm{GRDPG}}
+\newcommand{\Multinomial}{\mathrm{Multinomial}}
+\newcommand{\dd}{\mathrm{d}}
+\newcommand{\as}{\stackrel{\mathrm{a.s.}}{\to}}
+\newcommand{\ER}{\text{Erd\"{o}s-R\'{e}nyi}}
+\newcommand{\SBM}{\mathrm{SBM}}
+\newcommand{\DCBM}{\mathrm{DCBM}}
+\newcommand{\rank}{\mathrm{rank}}
+\newcommand{\MBM}{\mathrm{MBM}}
+
+\hypertarget{introduction}{%
+\section{Introduction}\label{introduction}}
+
+\hypertarget{methods}{%
+\section{Methods}\label{methods}}
+
+\hypertarget{simulation-study}{%
+\section{Simulation Study}\label{simulation-study}}
+
+\hypertarget{classification}{%
+\subsection{Classification}\label{classification}}
+
+In this simulation experiment, the latent vectors were sampled along a
+Bezier curve defined by
+\(g(t) = \begin{bmatrix} t^2 & 2 t (1-t) \end{bmatrix}^\top\). The
+timepoints \(t_i\) were sampled as iid Beta random variables with two
+sets of parameters, \((\alpha_1, \beta_1)\) and \((\alpha_2, \beta_2)\).
+The setup is as follows:
+
+\begin{enumerate}
+\def\labelenumi{\arabic{enumi}.}
+\tightlist
+\item
+  Draw response variables \(y_1, ..., y_n \iid \Multinomial(1/2, 1/2)\).
+\item
+  For each \(i = 1, ..., n\), draw
+  \(t_i \mid y_i \indep \Betadist(\alpha_{y_i}, \beta_{y_i})\), such
+  that
+
+  \begin{itemize}
+  \tightlist
+  \item
+    \(\alpha_1 = 1\)
+  \item
+    \(\beta_1 = 2\)
+  \item
+    \(\alpha_2 = 2\)
+  \item
+    \(\beta_2 = 1\)
+  \end{itemize}
+\item
+  Construct each latent vector as \(x_i = g(t_i)\) and compile them in
+  data matrix
+  \(X = \begin{bmatrix} x_1 & \cdots & x_n \end{bmatrix}^\top\).
+\item
+  Sample graph and its adjacency matrix as \(A \sim \RDPG(X)\).
+\end{enumerate}
+
+For each graph, we constructed the ASE, which was used to estimate the
+parameters \((\hat{\alpha}, \hat{\beta})\) for the graph, using the
+maximum likelihood method. The estimated parameters were then used as
+predictors \(y_1, ..., y_n\), setting aside half for training and half
+for testing. We investigated graphs of size \(|V| = 32, 64, 128, 256\).
+The number of graphs for each experiment was set to \(n = 64\). For each
+(number of graphs, size of graph) pair, we performed 32 replicates.
+Figure \ref{fig:class-sim-ase} shows the ASE of one graph.\\
+Figure \ref{fig:classification-sim} shows the boxplots of the
+classification error rates.
+
+\begin{center}\includegraphics{draft_files/figure-latex/class-sim-ase-1} \end{center}
+
+\begin{center}\includegraphics{draft_files/figure-latex/classification-sim-1} \end{center}
+
+\hypertarget{regression}{%
+\subsection{Regression}\label{regression}}
+
+\hypertarget{applications}{%
+\section{Applications}\label{applications}}
+
+HCP data
+
+\begin{center}\includegraphics{draft_files/figure-latex/hcp-eda-1} \end{center}
+
+\begin{center}\includegraphics{draft_files/figure-latex/hcp-gender-1} \end{center}
+
+\begin{center}\includegraphics{draft_files/figure-latex/hcp-age-1} \end{center}
+
+\hypertarget{discussion}{%
+\section{Discussion}\label{discussion}}
+
+\renewcommand\refname{Bibliography}
+  \bibliography{bibliography.bib}
+
+\end{document}

@@ -1,0 +1,83 @@
+import::from(magrittr, `%>%`)
+import::from(foreach, `%do%`, `%dopar%`)
+source('~/dev/pabm-grdpg/functions.R')
+source('~/dev/manifold-block-models/functions.R')
+library(ggplot2)
+
+doMC::registerDoMC(parallel::detectCores())
+
+nrep <- 32
+
+K <- 2
+beta0 <- 1
+beta1 <- 2
+beta2 <- -1
+
+N <- 2 ^ 6
+n.vec <- 2 ^ c(9, 8, 7, 6)
+
+sim.dir <- '~/dev/multilayer-rdpg/simulations'
+
+out.df <- foreach::foreach(n = n.vec, .combine = dplyr::bind_rows) %do% {
+  print(paste('n =', n))
+  foreach::foreach(rep = seq(nrep), .combine = dplyr::bind_rows) %do% {
+    print(paste('rep', rep, 'out of', nrep))
+    rep.filename <- paste0('beta-reg-n-', n, '-rep-', rep, '.csv')
+    if (rep.filename %in% dir(sim.dir)) {
+      one.rep.df <- readr::read_csv(file.path(sim.dir, rep.filename),
+                                    progress = FALSE,
+                                    show_col_types = FALSE)
+    } else {
+      datamat.df <- foreach::foreach(i = seq(N), .combine = dplyr::bind_rows, .errorhandling = 'remove') %dopar% {
+        a <- runif(1, 0, 2)
+        b <- runif(1, 0, 2)
+        y <- beta0 + beta1 * a + beta2 * b
+        t. <- rbeta(n, a, b)
+        x1 <- t. ^ 2
+        x2 <- 2 * t. * (1 - t.)
+        X <- cbind(x1, x2)
+        P <- X %*% t(X)
+        A <- draw.graph(P)
+        Xhat <- embedding(A, 2, 0)
+        curve.est <- estimate.bezier.curve.2(Xhat, 
+                                             degree = 2, 
+                                             intercept = FALSE, 
+                                             initialization = 'isomap', 
+                                             min.t = 0, max.t = 1)
+        t.hat <- curve.est$t
+        param.est <- EnvStats::ebeta(t.hat)
+        dplyr::tibble(y = y, 
+                      a = a, 
+                      b = b,
+                      a.hat = param.est$parameters[1], 
+                      b.hat = param.est$parameters[2])
+      }
+      
+      train.ind <- sample(seq(N), N / 2)
+      train.df <- datamat.df[train.ind, ]
+      test.df <- datamat.df[-train.ind, ]
+      y.test <- test.df$y
+      lm.out <- lm(y ~ a.hat + b.hat, data = train.df)
+      y.hat <- predict(lm.out, test.df)
+      mse <- mean((y.test - y.hat) ^ 2)
+      a.mse <- mean((datamat.df$a - datamat.df$a.hat) ^ 2)
+      b.mse <- mean((datamat.df$b - datamat.df$b.hat) ^ 2)
+      one.rep.df <- dplyr::tibble(n = n, 
+                                  mse = mse,
+                                  a.mse = a.mse,
+                                  b.mse = b.mse)
+      readr::write_csv(one.rep.df, 
+                       file.path(sim.dir, rep.filename))
+    }
+    return(one.rep.df)
+  }
+}
+
+ggplot(out.df) + 
+  geom_boxplot(aes(x = n, y = mse, group = n)) + 
+  scale_x_log10(breaks = sort(n.vec)) +
+  scale_y_log10() +
+  labs(x = 'number of vertices', y = 'MSE')
+
+readr::write_csv(out.df, '~/dev/multilayer-rdpg/simulations/beta-regression-sim.csv')
+
