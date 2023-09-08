@@ -1,5 +1,5 @@
 import::from(magrittr, `%>%`)
-import::from(foreach, `%do%`, `%dopar%`)
+import::from(foreach, foreach, `%do%`, `%dopar%`)
 source('~/dev/pabm-grdpg/functions.R')
 source('~/dev/manifold-block-models/functions.R')
 library(ggplot2)
@@ -14,13 +14,22 @@ beta1 <- 2
 beta2 <- -1
 
 N <- 2 ^ 6
-n.vec <- 2 ^ c(9, 8, 7, 6)
+n.vec <- 2 ^ c(10, 9, 8, 7, 6)
 
 sim.dir <- '~/dev/multilayer-rdpg/simulations'
 
-out.df <- foreach::foreach(n = n.vec, .combine = dplyr::bind_rows) %do% {
+parallelize.outer <- TRUE
+if (parallelize.outer) {
+  `%DO%` <- `%dopar%`
+  parallelize.curvefit <- FALSE
+} else {
+  `%DO%` <- `%do%`
+  parallelize.curvefit <- TRUE
+}
+
+out.df <- foreach(n = n.vec, .combine = dplyr::bind_rows) %do% {
   print(paste('n =', n))
-  foreach::foreach(rep = seq(nrep), .combine = dplyr::bind_rows) %do% {
+  foreach(rep = seq(nrep), .combine = dplyr::bind_rows) %do% {
     print(paste('rep', rep, 'out of', nrep))
     rep.filename <- paste0('beta-reg-n-', n, '-rep-', rep, '.csv')
     if (rep.filename %in% dir(sim.dir)) {
@@ -28,7 +37,14 @@ out.df <- foreach::foreach(n = n.vec, .combine = dplyr::bind_rows) %do% {
                                     progress = FALSE,
                                     show_col_types = FALSE)
     } else {
-      datamat.df <- foreach::foreach(i = seq(N), .combine = dplyr::bind_rows, .errorhandling = 'remove') %dopar% {
+      datamat.df <- foreach(i = seq(N), .combine = dplyr::bind_rows, .errorhandling = 'remove') %DO% {
+        print(paste(i, '/', N))
+        iter.filename <- paste0('beta-reg-n-', n, '-rep-', rep, '-iter-', i, '.csv')
+        if (iter.filename %in% dir(sim.dir)) {
+          one.iter.df <- readr::read_csv(file.path(sim.dir, iter.filename),
+                                         progress = FALSE,
+                                         show_col_types = FALSE)
+        } else {
         a <- runif(1, 0, 2)
         b <- runif(1, 0, 2)
         y <- beta0 + beta1 * a + beta2 * b
@@ -43,14 +59,19 @@ out.df <- foreach::foreach(n = n.vec, .combine = dplyr::bind_rows) %do% {
                                              degree = 2, 
                                              intercept = FALSE, 
                                              initialization = 'isomap', 
-                                             min.t = 0, max.t = 1)
+                                             min.t = 0, max.t = 1,
+                                             parallel = parallelize.curvefit)
         t.hat <- curve.est$t
         param.est <- EnvStats::ebeta(t.hat)
-        dplyr::tibble(y = y, 
-                      a = a, 
-                      b = b,
-                      a.hat = param.est$parameters[1], 
-                      b.hat = param.est$parameters[2])
+        one.iter.df <- dplyr::tibble(y = y, 
+                                     a = a, 
+                                     b = b,
+                                     a.hat = param.est$parameters[1], 
+                                     b.hat = param.est$parameters[2])
+        readr::write_csv(one.iter.df,
+                         file.path(sim.dir, iter.filename))
+        }
+        return(one.iter.df)
       }
       
       train.ind <- sample(seq(N), N / 2)
@@ -80,4 +101,3 @@ ggplot(out.df) +
   labs(x = 'number of vertices', y = 'MSE')
 
 readr::write_csv(out.df, '~/dev/multilayer-rdpg/simulations/beta-regression-sim.csv')
-
