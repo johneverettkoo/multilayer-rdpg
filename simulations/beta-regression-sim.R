@@ -59,9 +59,12 @@ out.df <- foreach(n = n.vec, .combine = dplyr::bind_rows) %do% {
                                              degree = 2, 
                                              intercept = FALSE, 
                                              initialization = 'isomap', 
-                                             min.t = 0, max.t = 1,
+                                             # min.t = 0, max.t = 1,
+                                             normalize = TRUE,
                                              parallel = parallelize.curvefit)
+        plot(Xhat); points(curve.est$X, col = 2)
         t.hat <- curve.est$t
+        plot(t.hat, t.)
         param.est <- EnvStats::ebeta(t.hat)
         one.iter.df <- dplyr::tibble(y = y, 
                                      a = a, 

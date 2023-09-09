@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.141592653-2.6-1.40.25 (TeX Live 2023) (preloaded format=pdflatex 2023.5.16)  25 AUG 2023 14:10
+This is pdfTeX, Version 3.141592653-2.6-1.40.25 (TeX Live 2023) (preloaded format=pdflatex 2023.5.16)  8 SEP 2023 15:24
 entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
@@ -569,39 +569,39 @@ e
 
 Package hyperref Info: Link coloring ON on input line 87.
 LaTeX Font Info:    Trying to load font information for OT1+lmr on input line 1
-24.
+25.
 (/usr/local/texlive/2023/texmf-dist/tex/latex/lm/ot1lmr.fd
 File: ot1lmr.fd 2015/05/01 v1.6.1 Font defs for Latin Modern
 )
 LaTeX Font Info:    Trying to load font information for OML+lmm on input line 1
-24.
+25.
 (/usr/local/texlive/2023/texmf-dist/tex/latex/lm/omllmm.fd
 File: omllmm.fd 2015/05/01 v1.6.1 Font defs for Latin Modern
 )
 LaTeX Font Info:    Trying to load font information for OMS+lmsy on input line 
-124.
+125.
 (/usr/local/texlive/2023/texmf-dist/tex/latex/lm/omslmsy.fd
 File: omslmsy.fd 2015/05/01 v1.6.1 Font defs for Latin Modern
 )
 LaTeX Font Info:    Trying to load font information for OMX+lmex on input line 
-124.
+125.
 (/usr/local/texlive/2023/texmf-dist/tex/latex/lm/omxlmex.fd
 File: omxlmex.fd 2015/05/01 v1.6.1 Font defs for Latin Modern
 )
 LaTeX Font Info:    External font `lmex10' loaded for size
-(Font)              <10.95> on input line 124.
+(Font)              <10.95> on input line 125.
 LaTeX Font Info:    External font `lmex10' loaded for size
-(Font)              <8> on input line 124.
+(Font)              <8> on input line 125.
 LaTeX Font Info:    External font `lmex10' loaded for size
-(Font)              <6> on input line 124.
-LaTeX Font Info:    Trying to load font information for U+msa on input line 124
+(Font)              <6> on input line 125.
+LaTeX Font Info:    Trying to load font information for U+msa on input line 125
 .
 (/usr/local/texlive/2023/texmf-dist/tex/latex/amsfonts/umsa.fd
 File: umsa.fd 2013/01/14 v3.01 AMS symbols A
 ) (/usr/local/texlive/2023/texmf-dist/tex/latex/microtype/mt-msa.cfg
 File: mt-msa.cfg 2006/02/04 v1.1 microtype config. file: AMS symbols (a) (RS)
 )
-LaTeX Font Info:    Trying to load font information for U+msb on input line 124
+LaTeX Font Info:    Trying to load font information for U+msb on input line 125
 .
 (/usr/local/texlive/2023/texmf-dist/tex/latex/amsfonts/umsb.fd
 File: umsb.fd 2013/01/14 v3.01 AMS symbols B
@@ -609,23 +609,23 @@ File: umsb.fd 2013/01/14 v3.01 AMS symbols B
 File: mt-msb.cfg 2005/06/01 v1.0 microtype config. file: AMS symbols (b) (RS)
 )
 LaTeX Font Info:    Trying to load font information for TS1+lmr on input line 1
-42.
+43.
 (/usr/local/texlive/2023/texmf-dist/tex/latex/lm/ts1lmr.fd
 File: ts1lmr.fd 2015/05/01 v1.6.1 Font defs for Latin Modern
 )
 
 LaTeX Warning: Reference `fig:class-sim-ase' on page 1 undefined on input line 
-165.
+166.
 
 
 LaTeX Warning: Reference `fig:classification-sim' on page 1 undefined on input 
-line 166.
+line 167.
 
 <draft_files/figure-latex/class-sim-ase-1.pdf, id=4, 155.58125pt x 204.765pt>
 File: draft_files/figure-latex/class-sim-ase-1.pdf Graphic file (type pdf)
 <use draft_files/figure-latex/class-sim-ase-1.pdf>
 Package pdftex.def Info: draft_files/figure-latex/class-sim-ase-1.pdf  used on 
-input line 169.
+input line 170.
 (pdftex.def)             Requested size: 155.58322pt x 204.7676pt.
 <draft_files/figure-latex/classification-sim-1.pdf, id=5, 350.30875pt x 204.765
 pt>
@@ -633,7 +633,7 @@ File: draft_files/figure-latex/classification-sim-1.pdf Graphic file (type pdf)
 
 <use draft_files/figure-latex/classification-sim-1.pdf>
 Package pdftex.def Info: draft_files/figure-latex/classification-sim-1.pdf  use
-d on input line 171.
+d on input line 172.
 (pdftex.def)             Requested size: 350.32927pt x 204.77698pt.
 [1
 
@@ -644,41 +644,57 @@ st/fonts/enc/dvips/lm/lm-rm.enc}{/usr/local/texlive/2023/texmf-dist/fonts/enc/d
 vips/lm/lm-mathex.enc}{/usr/local/texlive/2023/texmf-dist/fonts/enc/dvips/lm/lm
 -mathsy.enc}{/usr/local/texlive/2023/texmf-dist/fonts/enc/dvips/lm/lm-ts1.enc} 
 <./draft_files/figure-latex/class-sim-ase-1.pdf>]
-<draft_files/figure-latex/hcp-eda-1.pdf, id=42, 160.6pt x 204.765pt>
-File: draft_files/figure-latex/hcp-eda-1.pdf Graphic file (type pdf)
-<use draft_files/figure-latex/hcp-eda-1.pdf>
-Package pdftex.def Info: draft_files/figure-latex/hcp-eda-1.pdf  used on input 
-line 181.
-(pdftex.def)             Requested size: 160.60449pt x 204.77072pt.
-<draft_files/figure-latex/hcp-gender-1.pdf, id=43, 351.3125pt x 204.765pt>
+<draft_files/figure-latex/angle-reg-example-1.pdf, id=42, 187.70125pt x 204.765
+pt>
+File: draft_files/figure-latex/angle-reg-example-1.pdf Graphic file (type pdf)
+<use draft_files/figure-latex/angle-reg-example-1.pdf>
+Package pdftex.def Info: draft_files/figure-latex/angle-reg-example-1.pdf  used
+ on input line 210.
+(pdftex.def)             Requested size: 187.71223pt x 204.77698pt.
+<draft_files/figure-latex/angle-reg-results-1.pdf, id=43, 351.3125pt x 204.765p
+t>
+File: draft_files/figure-latex/angle-reg-results-1.pdf Graphic file (type pdf)
+<use draft_files/figure-latex/angle-reg-results-1.pdf>
+Package pdftex.def Info: draft_files/figure-latex/angle-reg-results-1.pdf  used
+ on input line 212.
+(pdftex.def)             Requested size: 351.33307pt x 204.77698pt.
+[2 <./draft_files/figure-latex/classification-sim-1.pdf> <./draft_files/figure-
+latex/angle-reg-example-1.pdf>]
+<draft_files/figure-latex/hcp-ase-1.pdf, id=72, 650.43pt x 710.655pt>
+File: draft_files/figure-latex/hcp-ase-1.pdf Graphic file (type pdf)
+<use draft_files/figure-latex/hcp-ase-1.pdf>
+Package pdftex.def Info: draft_files/figure-latex/hcp-ase-1.pdf  used on input 
+line 234.
+(pdftex.def)             Requested size: 469.76817pt x 513.26523pt.
+[3 <./draft_files/figure-latex/angle-reg-results-1.pdf>]
+<draft_files/figure-latex/hcp-gender-1.pdf, id=88, 351.3125pt x 204.765pt>
 File: draft_files/figure-latex/hcp-gender-1.pdf Graphic file (type pdf)
 <use draft_files/figure-latex/hcp-gender-1.pdf>
 Package pdftex.def Info: draft_files/figure-latex/hcp-gender-1.pdf  used on inp
-ut line 183.
+ut line 243.
 (pdftex.def)             Requested size: 351.33307pt x 204.77698pt.
-[2 <./draft_files/figure-latex/classification-sim-1.pdf> <./draft_files/figure-
-latex/hcp-eda-1.pdf>]
-<draft_files/figure-latex/hcp-age-1.pdf, id=66, 351.3125pt x 204.765pt>
+[4 <./draft_files/figure-latex/hcp-ase-1.pdf>]
+<draft_files/figure-latex/hcp-age-1.pdf, id=100, 351.3125pt x 204.765pt>
 File: draft_files/figure-latex/hcp-age-1.pdf Graphic file (type pdf)
 <use draft_files/figure-latex/hcp-age-1.pdf>
 Package pdftex.def Info: draft_files/figure-latex/hcp-age-1.pdf  used on input 
-line 185.
+line 245.
 (pdftex.def)             Requested size: 351.33307pt x 204.77698pt.
 No file draft.bbl.
-[3 <./draft_files/figure-latex/hcp-gender-1.pdf> <./draft_files/figure-latex/hc
+[5 <./draft_files/figure-latex/hcp-gender-1.pdf> <./draft_files/figure-latex/hc
 p-age-1.pdf>] (./draft.aux)
 
 LaTeX Warning: There were undefined references.
 
  ) 
 Here is how much of TeX's memory you used:
- 16260 strings out of 476025
- 262533 string characters out of 5790017
+ 16301 strings out of 476025
+ 263665 string characters out of 5790017
  1862388 words of memory out of 5000000
- 36378 multiletter control sequences out of 15000+600000
- 545915 words of font info for 80 fonts, out of 8000000 for 9000
+ 36399 multiletter control sequences out of 15000+600000
+ 546247 words of font info for 84 fonts, out of 8000000 for 9000
  1141 hyphenation exceptions out of 8191
- 77i,8n,81p,1002b,525s stack positions out of 10000i,1000n,20000p,200000b,200000s
+ 77i,14n,81p,1002b,525s stack positions out of 10000i,1000n,20000p,200000b,200000s
 </usr/local/texlive/2023/texmf-dist/fonts/type1/public/lm/lmbx10.pfb></usr/lo
 cal/texlive/2023/texmf-dist/fonts/type1/public/lm/lmbx12.pfb></usr/local/texliv
 e/2023/texmf-dist/fonts/type1/public/lm/lmex10.pfb></usr/local/texlive/2023/tex
@@ -687,11 +703,12 @@ nts/type1/public/lm/lmmi6.pfb></usr/local/texlive/2023/texmf-dist/fonts/type1/p
 ublic/lm/lmmi8.pfb></usr/local/texlive/2023/texmf-dist/fonts/type1/public/lm/lm
 r10.pfb></usr/local/texlive/2023/texmf-dist/fonts/type1/public/lm/lmr8.pfb></us
 r/local/texlive/2023/texmf-dist/fonts/type1/public/lm/lmsy10.pfb></usr/local/te
-xlive/2023/texmf-dist/fonts/type1/public/lm/lmsy8.pfb>
-Output written on draft.pdf (3 pages, 373513 bytes).
+xlive/2023/texmf-dist/fonts/type1/public/lm/lmsy8.pfb></usr/local/texlive/2023/
+texmf-dist/fonts/type1/public/amsfonts/symbols/msbm10.pfb>
+Output written on draft.pdf (5 pages, 718027 bytes).
 PDF statistics:
- 168 PDF objects out of 1000 (max. 8388607)
- 124 compressed objects within 2 object streams
- 22 named destinations out of 1000 (max. 500000)
- 20562 words of extra memory for PDF output out of 20736 (max. 10000000)
+ 208 PDF objects out of 1000 (max. 8388607)
+ 154 compressed objects within 2 object streams
+ 32 named destinations out of 1000 (max. 500000)
+ 20572 words of extra memory for PDF output out of 20736 (max. 10000000)
 

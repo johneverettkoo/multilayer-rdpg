@@ -106,6 +106,7 @@
 \newcommand{\DCBM}{\mathrm{DCBM}}
 \newcommand{\rank}{\mathrm{rank}}
 \newcommand{\MBM}{\mathrm{MBM}}
+\newcommand{\Poisson}{\mathrm{Poisson}}
 
 \hypertarget{introduction}{%
 \section{Introduction}\label{introduction}}
@@ -173,12 +174,71 @@ classification error rates.
 \hypertarget{regression}{%
 \subsection{Regression}\label{regression}}
 
+\begin{enumerate}
+\def\labelenumi{\arabic{enumi}.}
+\tightlist
+\item
+  Draw angles
+  \(\theta_1, ..., \theta_N \iid \Uniform(\pi / 6, \pi / 3)\).
+\item
+  For each \(k = 1, ..., N\),
+
+  \begin{enumerate}
+  \def\labelenumii{\roman{enumii}.}
+  \tightlist
+  \item
+    Draw \(t_1, ..., t_n \iid \Uniform(0, 1)\);
+  \item
+    Draw \(z_1, ..., z_n \iid \Multinomial(1/2, 1/2)\);
+  \item
+    For each \(i = 1, ..., n\), set
+    \(x_i = \begin{cases} \begin{bmatrix} t_i & 0 \end{bmatrix}^\top & z_i = 1 \\ \begin{bmatrix} t_i \cos \theta_k & t_i \sin \theta_k \end{bmatrix}^\top & z_i = 2 \end{cases}\);
+  \item
+    Collect
+    \(X = \begin{bmatrix} x_1 & \cdots & x_n \end{bmatrix}^\top\) and
+    draw \(A \sim \RDPG(X)\);
+  \item
+    Set the response \(y_k = \beta_0 + \beta_1 \theta_k\).
+  \end{enumerate}
+\end{enumerate}
+
+In this simulation, we set \(\beta_0 = \beta_1 = 1\). The number of
+graphs was set to \(N = 64\), and the number of vertices per graph was
+set to \(n = 128, 256, 512, 1024\). For each \(n\), we simulated 32
+replicates.
+
+\begin{center}\includegraphics{draft_files/figure-latex/angle-reg-example-1} \end{center}
+
+\begin{center}\includegraphics{draft_files/figure-latex/angle-reg-results-1} \end{center}
+
 \hypertarget{applications}{%
 \section{Applications}\label{applications}}
 
-HCP data
+In the first example, we analyzed fiber count data between brain regions
+from the Human Connectome Project (HCP). When analyzing these data as
+graphs, we denote the regions as vertices and the fiber counts between
+pairs of regions as weighted edges. A plausible statistical model for
+these data is to assume that the edge weights between pairs of vertices
+is Poisson distributed, i.e., the adjacency matrix is sampled as
+\(A_{ij} \indep \Poisson(\Theta_{ij})\), where
+\(\Theta \in \mathbb{R}_+^{n \times n}\) is a symmetric matrix of
+Poisson parameters.
 
-\begin{center}\includegraphics{draft_files/figure-latex/hcp-eda-1} \end{center}
+In this dataset, there are \(N = 136\) graphs (corresponding to
+individual subjects), each with \(n = 68\) vertices (corresponding to
+brain regions). Analyzing these graphs as RDPGs reveals that the DCBM is
+a good candidate for these data (fig \ref{fig:hcp-ase}).
+
+\begin{figure}[H]
+
+{\centering \includegraphics{draft_files/figure-latex/hcp-ase-1} 
+
+}
+
+\caption{ASE of one graph from the HCP dataset. The lines are fitted via $K$-curves clustering using degree = 1. The outputted clusters correspond exactly to the left (red) and right (blue) hemispheres.}\label{fig:hcp-ase}
+\end{figure}
+
+For each graph, the
 
 \begin{center}\includegraphics{draft_files/figure-latex/hcp-gender-1} \end{center}
 

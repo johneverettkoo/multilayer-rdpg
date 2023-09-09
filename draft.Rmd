@@ -64,6 +64,7 @@ source('~/dev/manifold-block-models/functions.R')
 \newcommand{\DCBM}{\mathrm{DCBM}}
 \newcommand{\rank}{\mathrm{rank}}
 \newcommand{\MBM}{\mathrm{MBM}}
+\newcommand{\Poisson}{\mathrm{Poisson}}
 ```
 
 # Introduction
@@ -141,48 +142,112 @@ sim.df %>%
 
 ## Regression
 
+1. Draw angles $\theta_1, ..., \theta_N \iid \Uniform(\pi / 6, \pi / 3)$.
+2. For each $k = 1, ..., N$, 
+    i. Draw $t_1, ..., t_n \iid \Uniform(0, 1)$;
+    ii. Draw $z_1, ..., z_n \iid \Multinomial(1/2, 1/2)$;
+    iii. For each $i = 1, ..., n$, set $x_i = \begin{cases} \begin{bmatrix} t_i & 0 \end{bmatrix}^\top & z_i = 1 \\ \begin{bmatrix} t_i \cos \theta_k & t_i \sin \theta_k \end{bmatrix}^\top & z_i = 2 \end{cases}$;
+    iv. Collect $X = \begin{bmatrix} x_1 & \cdots & x_n \end{bmatrix}^\top$ and draw $A \sim \RDPG(X)$;
+    v. Set the response $y_k = \beta_0 + \beta_1 \theta_k$.
+
+In this simulation, we set $\beta_0 = \beta_1 = 1$. 
+The number of graphs was set to $N = 64$, and the number of vertices per graph was set to $n = 128, 256, 512, 1024$. 
+For each $n$, we simulated 32 replicates. 
+
+```{r angle-reg-example, cache = TRUE}
+n <- 512
+a.vec <- c(1, 1)
+b.vec <- c(1, 1)
+theta.min <- pi / 6
+theta.max <- pi / 3
+beta1 <- 1
+beta0 <- 1
+
+z <- sample(seq(2), n, replace = TRUE)
+t. <- rbeta(n, a.vec[z], b.vec[z])
+theta <- runif(1, theta.min, theta.max)
+y <- beta0 + beta1 * theta
+x1 <- ifelse(z == 1, t., cos(theta) * t.)
+x2 <- ifelse(z == 1, 0, sin(theta) * t.)
+X <- cbind(x1, x2)
+P <- X %*% t(X)
+A <- draw.graph(P)
+Xhat <- embedding(A, 2, 0)
+clustering <- manifold.clustering(Xhat, 
+                                  degree = 1,
+                                  initialization = z,
+                                  intercept = FALSE)
+plot.estimated.curves(Xhat, clustering) + 
+  scale_colour_brewer(palette = 'Set1')
+```
+
+```{r angle-reg-results, cache = TRUE}
+out.df <- readr::read_csv('~/dev/multilayer-rdpg/simulations/angle-regression-sim.csv')
+n.vec <- c(128, 256, 512, 1024)
+N <- 64
+
+ggplot(out.df) + 
+  geom_boxplot(aes(x = n, y = mse * N, group = n)) + 
+  scale_x_log10(breaks = sort(n.vec)) +
+  scale_y_log10() +
+  labs(x = 'number of vertices', y = 'SSE') + 
+  theme_bw()
+```
+
 # Applications
 
-HCP data
+```{r load-hcp}
+load('~/Downloads/HCP/HCP-Y/DTI_fMRI/Data.RData')
+ids <- dimnames(dti.countV2)[[3]]
+```
 
-```{r hcp-eda, cache = TRUE}
-data.dir <- '~/Downloads/repeated_10_scale_125/'
-graph.list <- lapply(dir(data.dir), function(x) {
-  graph <- igraph::read.graph(file.path(data.dir, x), format = 'graphml')
-  A <- graph %>% 
-    igraph::as_adjacency_matrix() %>% 
-    as.matrix()
-  z <- graph %>% 
-    igraph::get.vertex.attribute() %>% 
-    {.$dn_hemisphere} %>% 
-    as.factor()
-  return(list(A = A, z = z, id = substr(x, 1, 6)))
-})
+In the first example, we analyzed fiber count data between brain regions from the Human Connectome Project (HCP). 
+When analyzing these data as graphs, we denote the regions as vertices and the fiber counts between pairs of regions as weighted edges. 
+A plausible statistical model for these data is to assume that the edge weights between pairs of vertices is Poisson distributed, i.e., the adjacency matrix is sampled as $A_{ij} \indep \Poisson(\Theta_{ij})$, where $\Theta \in \mathbb{R}_+^{n \times n}$ is a symmetric matrix of Poisson parameters. 
 
-i <- 1
-graph <- graph.list[[i]]
-A <- graph$A
-z <- graph$z
+In this dataset, there are $N = 136$ graphs (corresponding to individual subjects), each with $n = 68$ vertices (corresponding to brain regions). 
+Analyzing these graphs as RDPGs reveals that the DCBM is a good candidate for these data (fig \ref{fig:hcp-ase}). 
+
+```{r hcp-ase, cache = TRUE, fig.cap = 'ASE of one graph from the HCP dataset. The lines are fitted via $K$-curves clustering using degree = 1. The outputted clusters correspond exactly to the left (red) and right (blue) hemispheres.', fig.width = 10, fig.height = 10}
+id <- ids[1]
+A <- dti.countV2[, , id] %>% 
+  unique() %>% 
+  t() %>% 
+  unique()
+z <- colnames(A) %>% 
+  stringi::stri_sub(-1, -1) %>% 
+  as.factor()
+
 Xhat <- embedding(A, 2, 0, scale = TRUE)
 clustering <- manifold.clustering(Xhat, 
                                   degree = 1,
                                   initialization = as.numeric(z),
-                                  intercept = FALSE)
-plot.estimated.curves(Xhat, clustering)
+                                  normalize = TRUE,
+                                  intercept = FALSE,
+                                  parallel = FALSE)
+plot.estimated.curves(Xhat, clustering) + 
+  scale_colour_brewer(palette = 'Set1') + 
+  ggrepel::geom_label_repel(aes(x = Xhat[, 1],
+                                y = Xhat[, 2],
+                                label = colnames(A)))
 ```
+
+For each graph, the 
 
 ```{r hcp-gender, cache = TRUE}
 hcp.df <- readr::read_csv('~/Documents/postdoc-first-project/hcp-eda.csv')
 hcp.df %>% 
   na.omit() %>% 
-  GGally::ggpairs(columns = 1:4, aes(colour = gender))
+  GGally::ggpairs(columns = 2:8, aes(colour = gender)) + 
+  scale_colour_brewer(palette = 'Set1')
 ```
 ```{r hcp-age, cache = TRUE}
 hcp.df <- readr::read_csv('~/Documents/postdoc-first-project/hcp-eda.csv')
 hcp.df %>% 
   na.omit() %>% 
   dplyr::filter(age != '36+') %>% 
-  GGally::ggpairs(columns = 1:4, aes(colour = age))
+  GGally::ggpairs(columns = 2:8, aes(colour = age)) + 
+  scale_colour_brewer(palette = 'Set1')
 ```
 
 # Discussion
