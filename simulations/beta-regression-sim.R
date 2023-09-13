@@ -103,4 +103,18 @@ ggplot(out.df) +
   scale_y_log10() +
   labs(x = 'number of vertices', y = 'MSE')
 
+ggplot(out.df) + 
+  geom_boxplot(aes(x = n, y = mse, group = n),
+               outlier.shape = NA) + 
+  scale_x_log10(breaks = sort(n.vec)) +
+  scale_y_log10(limits = quantile(out.df$mse, c(.1, .9))) +
+  labs(x = 'number of vertices', y = 'MSE')
+
+ggplot(out.df) + 
+  geom_boxplot(aes(x = n, y = mse, group = n),
+               outlier.shape = NA) + 
+  scale_x_log10(breaks = sort(n.vec)) +
+  scale_y_continuous(limits = quantile(out.df$mse, c(.1, .9))) +
+  labs(x = 'number of vertices', y = 'MSE')
+
 readr::write_csv(out.df, '~/dev/multilayer-rdpg/simulations/beta-regression-sim.csv')
