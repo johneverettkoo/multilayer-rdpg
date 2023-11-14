@@ -1,61 +1,47 @@
 % Options for packages loaded elsewhere
 \PassOptionsToPackage{unicode}{hyperref}
 \PassOptionsToPackage{hyphens}{url}
-\PassOptionsToPackage{dvipsnames,svgnames,x11names}{xcolor}
-%
-\documentclass[
-  11pt,
-]{article}
-\usepackage{amsmath,amssymb}
-\usepackage{iftex}
-\ifPDFTeX
-  \usepackage[T1]{fontenc}
-  \usepackage[utf8]{inputenc}
-  \usepackage{textcomp} % provide euro and other symbols
-\else % if luatex or xetex
-  \usepackage{unicode-math} % this also loads fontspec
-  \defaultfontfeatures{Scale=MatchLowercase}
-  \defaultfontfeatures[\rmfamily]{Ligatures=TeX,Scale=1}
-\fi
-\usepackage{lmodern}
-\ifPDFTeX\else
-  % xetex/luatex font selection
-\fi
-% Use upquote if available, for straight quotes in verbatim environments
-\IfFileExists{upquote.sty}{\usepackage{upquote}}{}
-\IfFileExists{microtype.sty}{% use microtype if available
-  \usepackage[]{microtype}
-  \UseMicrotypeSet[protrusion]{basicmath} % disable protrusion for tt fonts
-}{}
-\makeatletter
-\@ifundefined{KOMAClassName}{% if non-KOMA class
-  \IfFileExists{parskip.sty}{%
-    \usepackage{parskip}
-  }{% else
-    \setlength{\parindent}{0pt}
-    \setlength{\parskip}{6pt plus 2pt minus 1pt}}
-}{% if KOMA class
-  \KOMAoptions{parskip=half}}
-\makeatother
-\usepackage{xcolor}
-\usepackage[margin=1in]{geometry}
-\usepackage{graphicx}
-\makeatletter
-\def\maxwidth{\ifdim\Gin@nat@width>\linewidth\linewidth\else\Gin@nat@width\fi}
-\def\maxheight{\ifdim\Gin@nat@height>\textheight\textheight\else\Gin@nat@height\fi}
-\makeatother
-% Scale images if necessary, so that they will not overflow the page
-% margins by default, and it is still possible to overwrite the defaults
-% using explicit options in \includegraphics[width, height, ...]{}
-\setkeys{Gin}{width=\maxwidth,height=\maxheight,keepaspectratio}
-% Set default figure placement to htbp
-\makeatletter
-\def\fps@figure{htbp}
-\makeatother
-\setlength{\emergencystretch}{3em} % prevent overfull lines
+% !TeX program = pdfLaTeX
+\documentclass[12pt]{article}
+\usepackage{amsmath}
+\usepackage{graphicx,psfrag,epsf}
+\usepackage{enumerate}
+\usepackage[]{natbib}
+\usepackage{textcomp}
+
+
+%\pdfminorversion=4
+% NOTE: To produce blinded version, replace "0" with "1" below.
+\newcommand{\blind}{0}
+
+% DON'T change margins - should be 1 inch all around.
+\addtolength{\oddsidemargin}{-.5in}%
+\addtolength{\evensidemargin}{-1in}%
+\addtolength{\textwidth}{1in}%
+\addtolength{\textheight}{1.7in}%
+\addtolength{\topmargin}{-1in}%
+
+%% load any required packages here
+
+
+
+% tightlist command for lists without linebreak
 \providecommand{\tightlist}{%
   \setlength{\itemsep}{0pt}\setlength{\parskip}{0pt}}
-\setcounter{secnumdepth}{5}
+
+% From pandoc table feature
+\usepackage{longtable,booktabs,array}
+\usepackage{calc} % for calculating minipage widths
+% Correct order of tables after \paragraph or \subparagraph
+\usepackage{etoolbox}
+\makeatletter
+\patchcmd\longtable{\par}{\if@noskipsec\mbox{}\fi\par}{}{}
+\makeatother
+% Allow footnotes in longtable head/foot
+\IfFileExists{footnotehyper.sty}{\usepackage{footnotehyper}}{\usepackage{footnote}}
+\makesavenoteenv{longtable}
+
+
 \usepackage{setspace}
 \usepackage{float}
 \usepackage{mathtools}
@@ -65,26 +51,82 @@
 \usepackage{verbatim}
 \usepackage{amsthm}
 \usepackage{comment}
-\ifLuaTeX
-  \usepackage{selnolig}  % disable illegal ligatures
-\fi
-\usepackage[]{natbib}
-\bibliographystyle{plainnat}
+\usepackage{amsfonts}
+\usepackage{pdfpages}
+\usepackage{xcolor}
+\usepackage{sectsty}
+
 \IfFileExists{bookmark.sty}{\usepackage{bookmark}}{\usepackage{hyperref}}
 \IfFileExists{xurl.sty}{\usepackage{xurl}}{} % add URL line breaks if available
-\urlstyle{same}
 \hypersetup{
-  colorlinks=true,
-  linkcolor={Maroon},
-  filecolor={Maroon},
-  citecolor={Blue},
-  urlcolor={blue},
+  pdftitle={Classification and Regression on Random Dot Product Graphs},
+  pdfkeywords={latent structure models, random dot product
+graph, neuroimaging, brain connectivity networks},
+  hidelinks,
   pdfcreator={LaTeX via pandoc}}
 
-\author{}
-\date{\vspace{-2.5em}}
+
 
 \begin{document}
+
+
+\def\spacingset#1{\renewcommand{\baselinestretch}%
+{#1}\small\normalsize} \spacingset{1}
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\if0\blind
+{
+  \title{\bf Classification and Regression on Random Dot Product Graphs}
+
+  \author{
+         \\
+    Department of YYY, University of XXX\\
+      }
+  \maketitle
+} \fi
+
+\if1\blind
+{
+  \bigskip
+  \bigskip
+  \bigskip
+  \begin{center}
+    {\LARGE\bf Classification and Regression on Random Dot Product
+Graphs}
+  \end{center}
+  \medskip
+} \fi
+
+\bigskip
+\begin{abstract}
+The random dot product graph (RDPG) has become a powerful modeling tool
+in uncovering latent structures within graphs. In particular, it has
+been shown that the RDPG describes a wide range of popular random graph
+models with rigid latent structures. More recently, joint modeling of
+mutliple random graphs that share common properties or structures across
+graphs have been introduced, such as the multilayer RDPG, multiple RPDG,
+multilayer stochastic block model, etc. In this work, we use these joint
+random graph models in the context of statistical learning, such as
+classification and regression, by introducing the multiple latent
+structure model, in which the graphs share a common latent structure
+with different parameters that correspond to different response
+variables. Then we propose various estimation techniques involving
+manifold learning to estimate these parameters and in turn predict the
+responses, with theorems guaranteeing convergence of the predictions.
+Simulations and applications on functional MRI data verify the
+performance of these methods.
+\end{abstract}
+
+\noindent%
+{\it Keywords:} latent structure models, random dot product
+graph, neuroimaging, brain connectivity networks
+
+\vfill
+
+\newpage
+\spacingset{1.9} % DON'T change the spacing!
 
 \newcommand{\diag}{\mathrm{diag}}
 \newcommand{\tr}{\mathrm{Tr}}
@@ -99,6 +141,7 @@
 \newcommand{\RDPG}{\mathrm{RDPG}}
 \newcommand{\GRDPG}{\mathrm{GRDPG}}
 \newcommand{\Multinomial}{\mathrm{Multinomial}}
+\newcommand{\Categorical}{\mathrm{Categorical}}
 \newcommand{\dd}{\mathrm{d}}
 \newcommand{\as}{\stackrel{\mathrm{a.s.}}{\to}}
 \newcommand{\ER}{\text{Erd\"{o}s-R\'{e}nyi}}
@@ -106,13 +149,278 @@
 \newcommand{\DCBM}{\mathrm{DCBM}}
 \newcommand{\rank}{\mathrm{rank}}
 \newcommand{\MBM}{\mathrm{MBM}}
+\newcommand{\LSM}{\mathrm{LSM}}
+\newcommand{\MLSM}{\mathrm{MLSM}}
 \newcommand{\Poisson}{\mathrm{Poisson}}
+\newtheorem{theorem}{Theorem}
+\newtheorem{lemma}{Lemma}
+\newtheorem{corollary}{Corollary}
+\newtheorem{proposition}{Proposition}
+\theoremstyle{remark}
+\newtheorem{remark}{Remark}
+\theoremstyle{definition}
+\newtheorem{definition}{Definition}
+\newtheorem{example}{Example}
 
 \hypertarget{introduction}{%
 \section{Introduction}\label{introduction}}
 
+Graph and network data are now as ubiquitous as traditional feature data
+in the fields of sociology (e.g., social networks), neuroimaging (e.g.,
+brain connectivity networks), and deep learning (e.g., graph neural
+networks). As a result, new statistical and machine learning methods
+have recently been developed to analyze network data. One approach is to
+treat the network as a random graph that comes from some probability
+model. In particular, if we sum up the network in an adjacency matrix
+\(A \in \mathbb{R}^{n \times n}\), then one probability model might be
+to draw each element \(A_{ij}\), which represents the existence of an
+edge or the edge weight from vertex \(i\) to \(j\), independently from
+some distribution, perhaps with a unique parameter for the pair
+\((i,j)\), e.g., \(A_{ij} \indep F_{\theta_{ij}}\). The classical
+example of this is the \(\ER\) model \citep{Gilbert:1959}, in which
+every edge is drawn from the same distribution, typically a Bernoulli
+distribution, using the same parameter, i.e.,
+\(A_{ij} \iid \Bernoulli (p)\). The inhomogeneous Bernoulli graph
+extends this by allowing each edge, represented by \(A_{ij}\), to have
+its own parameter, \(P_{ij}\), e.g., in the Bernoulli case,
+\(A_{ij} \indep \Bernoulli(P_{ij})\). Typically, the parameters are
+collected into an edge probability matrix (in the case of unweighted
+graphs) or edge parameter matrix (in the case of weighted graphs),
+denoted as \(P \in \mathbb{R}^{n \times n}\). The network analysis
+problem in this setting is to estimate \(P\) given \(A\).
+
+If we let the parameter matrix \(P\) be unconstrained, the inference
+problem is overparameterized. On the other hand, the classical \(\ER\)
+model is often too restrictive to describe real, observed networks. Much
+work has been done to develop models that are constrained enough for
+robust statistical inference while being generalizable to describe a
+wide range of networks. One such family of random graph models is the
+random dot product graph (RDPG), first proposed by
+\citet{10.1007/978-3-540-77004-6_11}, which is a type of latent space
+graph in which each vertex of the graph has a corresponding latent
+vector in a low-dimensional Euclidean space \(\mathbb{R}^d\), and the
+edge parameter between each pair of vertices is determined by the dot
+product of the corresponding vectors. In this model, the constraint is
+the low rank of the parameter matrix \(P\), assuming that the latent
+dimension \(d\) is less than the number of vertices \(n\). Further
+constraints can be imposed on the RDPG in the form of distributional
+assumptions on the latent vectors or restricting the latent vectors to
+lie on subspaces or manifolds in the latent space
+\citep{athreya2020estimation}.
+
+It has been shown \citep{rubindelanchy2017statistical, Koo_2022} that
+the RDPG (as well as the generalized random dot product graph
+\citep{rubindelanchy2017statistical}) can describe a wide range of
+popular random graph models, such as the \(\ER\) model, the stochastic
+block model (SBM) \citep{doi:10.1080/0022250X.1971.9989788}, degree
+corrected block model (DCBM) \citep{Karrer_2011}, and popularity
+adjusted block model (PABM) \citep{307cbeb9b1be48299388437423d94bf1},
+and describing these models as RDPGs (or its generalized version) is
+useful for parameter estimation. The RDPG captures a wide range of
+phenomena that can be described as networks, and in fact any network
+that can be thought of as being sampled from a parameter matrix \(P\)
+can be described as a (generalized) RDPG, especially if \(P\) is low
+rank. The RPDG representation of these networks
+
 \hypertarget{methods}{%
 \section{Methods}\label{methods}}
+
+\hypertarget{definitions-and-models}{%
+\subsection{Definitions and Models}\label{definitions-and-models}}
+
+We begin by defining the RDPG and the LSM.
+
+\begin{definition}[Random dot product graph (RDPG) \citep{10.1007/978-3-540-77004-6_11}]
+\label{def:rdpg}
+Let $\mathcal{X}$ be a subset of $\mathbb{R}^d$ for some latent space dimension $d \geq 1$ such that for any $x_1, x_2 \in \mathcal{X}$, $x_1^\top x_2 \in [0, 1]$. 
+Let $F_\theta$ be a distribution with support $\mathcal{X}$ and parameters $\theta$, and sample $x_1, ..., x_n \iid F_\theta$. 
+A graph $G$ with adjacency matrix $A$ is a random dot product graph with latent vectors $X = \bigl[x_1 \; \cdots \; x_n\bigr]^\top$ drawn from distribution $F_\theta$ if $A \sim X X^\top$. 
+
+We use the notation $A \sim \RDPG(F_\theta)$ to denote a random adjacency matrix $A$ drawn from latent vectors distributed as $F_\theta$. 
+\end{definition}
+
+\begin{remark}
+\label{remark:nonunique}
+The latent vectors of an RDPG are not unique. 
+Suppose that $P = X X^\top$ is the edge parameter matrix of an RDPG with latent positions $X$. 
+Then any orthogonal transformation $W$ on $X$ results in the same edge parameter matrix. 
+More precisely, let $\tilde{X} = X W$. 
+Then it is clear that $\tilde{X} \tilde{X}^\top = X W W^\top X^\top = X X^\top = P$ results in the same edge parameter matrix. 
+Thus, there are infinitely many latent vector configurations that can result in the same $P$, but for any two latent vector configurations, there exists an orthogonal mapping that connects the two. 
+\end{remark}
+
+\begin{definition}[Latent structure model (LSM) \citep{athreya2020estimation}]
+\label{def:lsm}
+Let $\mathcal{C} \subset \mathcal{X} \subset \mathbb{R}^d$ be a smooth, nonintersecting one-dimensional manifold on the domain of a RDPG as defined in definition \ref{def:rdpg}, parameterized by function $p(t) : [0, 1] \to \mathcal{C}$. 
+Then if $t_1, ..., t_n \iid F_\theta$ for some distribution $F_\theta$ with support $[0, 1]$ and parameter $\theta$, each $x_i = p(t_i)$, and $ A \sim X X^\top$ for $X = \bigl[x_1 \; \cdots \; x_n\bigr]^\top$, $A$ is the adjacency matrix of a latent structure model on curve $\mathcal{C}$ with parameterization $p$ and underlying distribution $F_\theta$. 
+
+We use the notation $A \sim \LSM(\mathcal{C}, F_\theta)$ or $A \sim \LSM(p, F_\theta)$ to denote an adjacency matrix $A$ drawn as an LSM on curve $\mathcal{C}$ or its parameterization $p$ with underlying distribution $F_\theta$. 
+\end{definition}
+
+\begin{remark}
+Although \citet{athreya2020estimation} defined the LSM by a single one-dimensional manifold $\mathcal{C}$ in the latent space, in this paper, we will allow for the existence of multiple one-dimensional manifolds, $\mathcal{C}_1, ..., \mathcal{C}_K$, (i.e., mixture of manifolds distribution). 
+This type of latent space mixture distribution is observed in networks with community structure (\citep{10.5555/3122009.3242083}). 
+For estimation, if the membership of each latent vector to the manifolds is known, then each manifold can be learned separately using the vectors that belong to that manifold. 
+If the memberships are not known, then we use an iterative algorithm to both cluster the latent vectors to a known number of manifolds and learn the manifolds using the cluster assignments. 
+
+In the case of a mixture of $K$ curves, we use the notation $A \sim \LSM(\{\mathcal{C}_k\}_K, F_\theta, \alpha)$ or $A \sim \LSM(\{p_k\}_K, F_\theta, \alpha)$, where $\alpha = (\alpha_1, ..., \alpha_K)$, $\sum_{k=1}^K \alpha_k = 1$ is the mixture parameter. 
+For simplicity, we only consider the case where the underlying distribution is the same for each curve. 
+\end{remark}
+
+A plausible inference task in the RDPG is to estimate the original
+latent vectors. The adjacency spectral embedding
+\citep{doi:10.1080/01621459.2012.699795} is a consistent estimator of
+the latent vectors, up to some unknown orthogonal transformation.
+
+\begin{remark}[Sparsity parameter]
+\end{remark}
+
+\begin{definition}[Adjacency spectral embedding (ASE) \citep{doi:10.1080/01621459.2012.699795}]
+\label{def:ase}
+\end{definition}
+
+\begin{theorem}[Consistency of the ASE \citep{lyzinski2014}]
+\label{theorem:ase-consistency}
+\end{theorem}
+
+Theorem \ref{theorem:ase-consistency} implies that the embedding vectors
+of the ASE converge to the original latent vectors, up to some
+unidentifiable orthogonal transformation, and the maximum deviation from
+the original latent vectors after the orthogonal transformation is
+bounded by a value that decays to \(0\). This implies that in the LSM,
+the ASE can lead to consistent estimation of \(F_\theta\), the
+underlying distribution, and in fact, \citet{athreya2020estimation}
+showed exactly this.
+
+\begin{definition}[Multiple latent structure model (MLSM)]
+\label{def:mlsm}
+Let $\mathcal{C}^{(1)}, ..., \mathcal{C}^{(L)} \subset \mathbb{R}^d$ be a sequence of curves defining the latent positions of a sequence of $L$ LSMs as in definition \ref{def:lsm}. 
+Each $\mathcal{C}^{(\ell)}$ is parameterized by function $p^{(\ell)}(t) : [0, 1] \to \mathcal{C}^{(\ell)}$. 
+Let $p^{(1)}, ..., p^{(L)}$ be a sequence of functions with domain $[0, 1]$ that parameterize the curves $\mathcal{C}^{(1)}, ..., \mathcal{C}^{(L)}$, let $F$ be a parametric distribution with support $[0, 1]$, and let $\theta_1, ..., \theta_L$ be a sequence of parameters for distribution $F$. 
+For each $p^{(\ell)}$, sample $t_1^{(\ell)}, ..., t_{n_\ell}^{(\ell)} \iid F_{\theta^{(\ell)}}$ for some distribution $F$ parameterized by $\theta_\ell$, and let $x_i^{(\ell)} = p_\ell(t_i^{(\ell)})$ for each $i = 1, ..., n_\ell$, again as in definition \ref{def:lsm}. 
+Sample a sequence of $L$ adjacency matrices, each as $A^{(\ell)} \indep \LSM(p_\ell, F_{\theta_\ell})$. 
+Then the sequence $\{A^{(\ell)}\}_L$ is are the adjacency matrices of a multiple latent structure model with curves $\{C^{(\ell)}\}_L$ parameterized by $\{p^{(\ell)}\}$ and underlying distribution $F$ with parameters $\{\theta_\ell\}_L$. 
+
+We use the notation $A^{(1)}, ..., A^{(L)} \sim \MLSM(\{p^{(\ell)}\}, F, \{\theta_\ell\}_L)$ to denote a sequence of adjacency matrices drawn from an MLSM with parameterizations $\{p^{(\ell)}\}$ and parameters $\{\theta_\ell\}$ on underlying distrubtion $F$. 
+\end{definition}
+
+\begin{remark}
+\label{remark:mlsm-mixture}
+Again as in the case of a single LSM, we also allow for each $A^{(\ell)}$ to be sampled from a latent structure composed of $K$ curves with mixture parameter $\alpha^{(\ell)}$. 
+In this case, we use the notation $A^{(1)}, ..., A^{(L)} \sim \MLSM(\{\mathcal{C}_k^{(\ell)}\}_{K, L}, F, \{\theta_\ell\}_L, \{\alpha^{(\ell)}\}_L)$ or $A^{(1)}, ..., A^{(L)} \sim \MLSM(\{p_k^{(\ell)}\}_{K, L}, F, \{\theta_\ell\}_L, \{\alpha^{(\ell)}\}_L)$.
+\end{remark}
+
+\hypertarget{connections-to-related-models}{%
+\subsubsection{Connections to Related
+Models}\label{connections-to-related-models}}
+
+In the MLSM defined in definition \ref{def:mlsm}, the only commonality
+that we assume from graph to graph is that they are all LSMs with the
+same underlying distribution family. If we impose further restrictions,
+namely that the latent structures are linear, we obtain the multilayer
+random dot product graph \citep{jones2021multilayer}.
+
+\begin{example}[Comparison to the multilayer DCBM \citep{agterberg2022joint}, multi-RDPG \citep{nielsen2018multiple}, and MREG \citep{8889404}]
+In the $K$-community DCBM, the probability of an edge between a pair of vertices is given by
+
+$$A_{ij} \indep \Bernoulli(\omega_i \omega_j B_{z_i, z_j}),$$
+
+where $z_i \in \{1, ..., K\}$ is the community label for vertex $i$, $B_{k, \ell}$ is the block connectivity between communities $k$ and $\ell$, and $\omega_i$ is the degree correction parameter for vertex $i$. 
+In order to preserve identifiability and uniqueness, a common constraint on these parameters is to set $\sum_{i : z_i = k} \omega_i^2 = 1$ \citep{Karrer_2011}. 
+As in 
+
+The edge parameter matrix of a $K$-community DCBM with $n$ vertices can be decomposed as follows:
+
+$$P = \Omega B \Omega^\top,$$
+
+where $B$ is a $K \times K$ matrix of block connectivities and $\Omega$ is an $n \times K$ matrix such that $\Omega_{ik} = \omega_i$ if vertex $i$ is in community $k$ and $0$ otherwise. 
+Then it is clear that if $B$ is positive semidefinite matrix of rank $K$, $P$ can also be viewed as a $K$-dimensional RDPG, since the rows of $\Omega$ are normalized and can be seen as eigenvectors, and $B$ is full rank and can be decomposed into a diagonal matrix and a rotation matrix, i.e., $P = (\Omega V) \Lambda (\Omega V)^\top$. 
+Furthermore, this matrix decomposition implies that the latent vectors lie on one of $K$ line segments that intersect at the origin \citep{rubindelanchy2017statistical}. 
+Thus, the DCBM is a special case of the LSM in which there are $K$ latent ``linear curves'' (i.e., lines) in $\mathbb{R}^K$. 
+
+The multilayer DCBM as described by \citet{agterberg2022joint} extends this to a sequence of DCBMs with the same community structure, allowing the block connectivities and degree correction parameters to change for each layer but keeping the same community structure throughout, i.e., each element of $P^{(\ell)} = \Omega^{(\ell)} B^{(\ell)} (\Omega^{(\ell)})^\top$ can vary with $\ell$ but $\Omega^{(\ell)} = 0 \iff \Omega^{(\ell')} = 0$ and similarly, $\Omega^{(\ell)} > 0 \iff \Omega^{(\ell')} > 0$, for every pair $(\ell, \ell')$. 
+On the other hand, if the further restriction of $\Omega^{(\ell)} = \Omega^{(\ell')}$ for all $(\ell, \ell')$, i.e., $P^{(\ell)} = \Omega B^{(\ell)} \Omega^\top$, we obtain a special case of the multiple RDPG (multi-RDPG) with the identity link function, as described by \citet{nielsen2018multiple}, or equivalently, a special case of the multiple random eigen graphs model (MREG), as described by \citet{8889404}. 
+However, if the community labels are not identical from graph to graph, the sequence of DCBMs cannot be described as a multilayer DCBM, multi-RDPG, or MREG, but it can still be described as an MLSM. 
+\end{example}
+
+\begin{example}[Nonlinear MLSM and comparison to MREG and multi-RDPG]
+\end{example}
+
+\hypertarget{classification-and-regression-on-the-mlsm}{%
+\subsubsection{Classification and Regression on the
+MLSM}\label{classification-and-regression-on-the-mlsm}}
+
+To use the MLSM for classification or regression problems, we assign
+response variables \(y_1, ..., y_L\) to each graph. Then if each
+response \(y_\ell\) depends on \(p^{(\ell)}(t)\) (the parameterization
+of the \(\ell^{th}\) curve) or \(\theta_\ell\) (the parameter of the
+\(\ell^{th}\) distribution), or some combination of the two, there is a
+plausible setup for a predictive modeling task for predicting \(y_\ell\)
+after observing \(A^{(\ell)}\). Four such scenarios are given:
+
+\begin{definition}[MLSM for classification 1]
+\label{def:mlsm-c-1}
+Let $A^{(1)}, ..., A^{(L)} \sim \MLSM(\{p^{(\ell)}\}, F, \{\theta_\ell\}_L)$, $y_1, ..., y_L \in \{1, ..., M\}$ be labels for each of the $L$ graphs of the MLSM, and each $\theta_\ell$ take on one of $M$ values $\{\phi_1, ..., \phi_M\}$ corresponding to its response, $y_\ell$, i.e., $\theta_\ell = \phi_{y_\ell}$. 
+
+We observe the adjacency matrices $A^{(1)}, ..., A^{(L)}$ and the first $r$ labels $y_1, ..., y_r$, and the task is to predict the unknown labels $y_{r+1}, ..., y_L$. 
+
+This can be described by the following generative model:
+
+\begin{enumerate}
+  \item Draw labels $y_1, ..., y_L \iid \Categorical(\{1, ..., M\}, \{\pi_1, ..., \pi_M\})$.
+  \item Set each $\theta_\ell = \phi_{y_\ell}$.
+  \item Draw adjacency matrices as $A^{(1)}, ..., A^{(L)} \sim \MLSM(\{p^{(\ell)}\}, F, \{\theta_\ell\}_L)$.
+\end{enumerate}
+\end{definition}
+
+\begin{definition}[MLSM for classification 2]
+\label{def:mlsm-c-2}
+Let $A^{(1)}, ..., A^{(L)} \sim \MLSM(\{\mathcal{C}^{(\ell)}\}, F, \{\theta_\ell\}_L)$, $y_1, ..., y_L \in \{1, ..., M\}$ be labels for each of the $L$ graphs of the MLSM, and each $\mathcal{C}^{(\ell)}$ take on one of $M$ functional forms $\{p^{(1)}(t), ..., p^{(M)}(t)\}$ corresponding to its response variable, $y_\ell$, i.e., $\mathcal{C}^{(\ell)}$ is parameterized by $p^{(y_\ell)}(t)$. 
+
+We observe the adjacency matrices $A^{(1)}, ..., A^{(L)}$ and the first $r$ labels $y_1, ..., y_r$, and the task is to predict the unknown labels $y_{r+1}, ..., y_L$. 
+
+This can be described by the following generative model:
+
+\begin{enumerate}
+  \item Draw labels $y_1, ..., y_L \iid \Categorical(\{1, ..., M\}, \{\pi_1, ..., \pi_M\})$.
+  \item Set each $p^{(\ell)}(t) = p^{(y_\ell)}(t)$.
+  \item Draw adjacency matrices as $A^{(1)}, ..., A^{(L)} \sim \MLSM(\{p^{(\ell)}\}, F, \{\theta_\ell\}_L)$.
+\end{enumerate}
+
+As in remark \ref{remark:mlsm-mixture}, we also allow for each adjacency matrix $A^{(\ell)}$ to be drawn from a latent structure consisting of multiple curves $\{p^{(\ell)}_k\}_K$. 
+\end{definition}
+
+\begin{definition}[MLSM for regression 1]
+\label{def:mlsm-r-1}
+Let $A^{(1)}, ..., A^{(L)} \sim \MLSM(\{p^{(\ell)}\}, F, \{\theta_\ell\}_L)$, and suppose that for each $\ell = 1, ..., L$, the $\ell^{th}$ graph is coupled with a response variable, $y_\ell$, as $y_\ell \indep \mathcal{N}(\theta_\ell^\top \beta, \sigma^2)$. 
+
+We observe the adjacency matrices $A^{(1)}, ..., A^{(L)}$ and the first $r$ response variables $y_1, ..., y_r$. 
+In this setting, there are two plausible inference tasks. 
+The first is to estimate the coefficient vector $\beta$. 
+The second is to predict the unobserved response variables $y_{r+1}, ..., y_L$. 
+\end{definition}
+
+\begin{definition}[MLSM for regression 2]
+\label{def:mlsm-r-2}
+Let $A^{(1)}, ..., A^{(L)} \sim \MLSM(\{p^{(\ell)}\}, F, \{\theta_\ell\}_L)$ and each $p^{(\ell)}(t) = p(t; \gamma_\ell)$, where $\gamma_\ell$ is the vector of parameters for function $p$. 
+Suppose that for each $\ell = 1, ..., L$, the $\ell^{th}$ graph is coupled with a response variable, $y_\ell$, as $y_\ell \indep \mathcal{N}(\gamma_\ell^\top \beta, \sigma^2)$. 
+
+We observe the adjacency matrices $A^{(1)}, ..., A^{(L)}$ and the first $r$ response variables $y_1, ..., y_r$. 
+In this setting, there are two plausible inference tasks. 
+The first is to estimate the coefficient vector $\beta$. 
+The second is to predict the unobserved response variables $y_{r+1}, ..., y_L$. 
+
+As in remark \ref{remark:mlsm-mixture}, we also allow for each adjacency matrix $A^{(\ell)}$ to be drawn from a latent structure consisting of multiple curves $\{p^{(\ell)}_k\}_K$. 
+\end{definition}
+
+In all of these settings, the ASE of \(A^{(\ell)}\) provides some
+insight into both \(p^{(\ell)}\) and \(\theta_\ell\).
+\citet{athreya2020estimation} showed that with some additional
+information, the ASE of \(A^{(\ell)}\) can lead to a consistent
+estimator for \(\theta_\ell\).
+
+\hypertarget{main-results}{%
+\subsection{Main Results}\label{main-results}}
 
 \hypertarget{simulation-study}{%
 \section{Simulation Study}\label{simulation-study}}
@@ -121,11 +429,10 @@
 \subsection{Classification}\label{classification}}
 
 In this simulation experiment, the latent vectors were sampled along a
-Bezier curve defined by
-\(g(t) = \begin{bmatrix} t^2 & 2 t (1-t) \end{bmatrix}^\top\). The
-timepoints \(t_i\) were sampled as iid Beta random variables with two
-sets of parameters, \((\alpha_1, \beta_1)\) and \((\alpha_2, \beta_2)\).
-The setup is as follows:
+Bezier curve defined by \(g(t) = \bigl[ t^2 \; 2 t (1-t) \bigr]^\top\).
+The timepoints \(t_i\) were sampled as iid Beta random variables with
+two sets of parameters, \((\alpha_1, \beta_1)\) and
+\((\alpha_2, \beta_2)\). The setup is as follows:
 
 \begin{enumerate}
 \def\labelenumi{\arabic{enumi}.}
@@ -150,8 +457,7 @@ The setup is as follows:
   \end{itemize}
 \item
   Construct each latent vector as \(x_i = g(t_i)\) and compile them in
-  data matrix
-  \(X = \begin{bmatrix} x_1 & \cdots & x_n \end{bmatrix}^\top\).
+  data matrix \(X = \bigl[ x_1 \; \cdots \; x_n \bigr]^\top\).
 \item
   Sample graph and its adjacency matrix as \(A \sim \RDPG(X)\).
 \end{enumerate}
@@ -161,15 +467,29 @@ parameters \((\hat{\alpha}, \hat{\beta})\) for the graph, using the
 maximum likelihood method. The estimated parameters were then used as
 predictors \(y_1, ..., y_n\), setting aside half for training and half
 for testing. We investigated graphs of size \(|V| = 32, 64, 128, 256\).
-The number of graphs for each experiment was set to \(n = 64\). For each
+The number of graphs for each experiment was set to \(L = 64\). For each
 (number of graphs, size of graph) pair, we performed 32 replicates.
 Figure \ref{fig:class-sim-ase} shows the ASE of one graph.\\
 Figure \ref{fig:classification-sim} shows the boxplots of the
 classification error rates.
 
-\begin{center}\includegraphics{draft_files/figure-latex/class-sim-ase-1} \end{center}
+\begin{figure}[H]
 
-\begin{center}\includegraphics{draft_files/figure-latex/classification-sim-1} \end{center}
+{\centering \includegraphics{draft_files/figure-latex/class-sim-ase-1} 
+
+}
+
+\caption{One simulated graph (left) and its ASE (right). The red curve is the fitted quadratic Bezier curve on the ASE.}\label{fig:class-sim-ase}
+\end{figure}
+
+\begin{figure}[H]
+
+{\centering \includegraphics{draft_files/figure-latex/classification-sim-1} 
+
+}
+
+\caption{Median classification error rate and its IQR vs. number of vertices in each graph.}\label{fig:classification-sim}
+\end{figure}
 
 \hypertarget{regression}{%
 \subsection{Regression}\label{regression}}
@@ -192,18 +512,17 @@ classification error rates.
     Draw \(z_1, ..., z_n \iid \Multinomial(1/2, 1/2)\);
   \item
     For each \(i = 1, ..., n\), set
-    \(x_i = \begin{cases} \begin{bmatrix} t_i & 0 \end{bmatrix}^\top & z_i = 1 \\ \begin{bmatrix} t_i \cos \theta_k & t_i \sin \theta_k \end{bmatrix}^\top & z_i = 2 \end{cases}\);
+    \(x_i = \begin{cases} \bigl[ t_i \; 0 \bigr]^\top \; z_i = 1 \\ \bigl[ t_i \cos \theta_\ell \; t_i \sin \theta_\ell \bigr]^\top \; z_i = 2 \end{cases}\);
   \item
-    Collect
-    \(X = \begin{bmatrix} x_1 & \cdots & x_n \end{bmatrix}^\top\) and
-    draw \(A \sim \RDPG(X)\);
+    Collect \(X = \bigl[ x_1 \; \cdots \; x_n \bigr]^\top\) and draw
+    \(A \sim \RDPG(X)\);
   \item
-    Set the response \(y_k = \beta_0 + \beta_1 \theta_k\).
+    Set the response \(y_\ell = \beta_0 + \beta_1 \theta_\ell\)
   \end{enumerate}
 \end{enumerate}
 
 In this simulation, we set \(\beta_0 = \beta_1 = 1\). The number of
-graphs was set to \(N = 64\), and the number of vertices per graph was
+graphs was set to \(L = 64\), and the number of vertices per graph was
 set to \(n = 128, 256, 512, 1024\). For each \(n\), we simulated 32
 replicates.
 
@@ -213,6 +532,10 @@ replicates.
 
 \hypertarget{applications}{%
 \section{Applications}\label{applications}}
+
+\hypertarget{human-connectome-project-aging-study}{%
+\subsection{Human Connectome Project Aging
+Study}\label{human-connectome-project-aging-study}}
 
 In the first example, we analyzed fiber count data between brain regions
 from the Human Connectome Project (HCP). When analyzing these data as
@@ -224,30 +547,102 @@ is Poisson distributed, i.e., the adjacency matrix is sampled as
 \(\Theta \in \mathbb{R}_+^{n \times n}\) is a symmetric matrix of
 Poisson parameters.
 
-In this dataset, there are \(N = 136\) graphs (corresponding to
-individual subjects), each with \(n = 68\) vertices (corresponding to
+In this dataset, there are \(N = 516\) graphs (corresponding to
+individual subjects), each with \(n = 84\) vertices (corresponding to
 brain regions). Analyzing these graphs as RDPGs reveals that the DCBM is
-a good candidate for these data (fig \ref{fig:hcp-ase}).
+a good candidate for these data (figure \ref{fig:hcp-ase}).
 
 \begin{figure}[H]
 
-{\centering \includegraphics{draft_files/figure-latex/hcp-ase-1} 
+{\centering \includegraphics[width=1\linewidth]{draft_files/figure-latex/hcp-ase-1} 
 
 }
 
-\caption{ASE of one graph from the HCP dataset. The lines are fitted via $K$-curves clustering using degree = 1. The outputted clusters correspond exactly to the left (red) and right (blue) hemispheres.}\label{fig:hcp-ase}
+\caption{One graph from the HCP dataset (left) and its ASE (right). In the ASE, the lines are fitted via $K$-curves clustering using degree = 1. The outputted clusters correspond exactly to the left (red) and right (blue) hemispheres.}\label{fig:hcp-ase}
 \end{figure}
 
-For each graph, the
+\begin{figure}[H]
 
-\begin{center}\includegraphics{draft_files/figure-latex/hcp-gender-1} \end{center}
+{\centering \includegraphics{draft_files/figure-latex/hcp-age-regression-1} 
 
-\begin{center}\includegraphics{draft_files/figure-latex/hcp-age-1} \end{center}
+}
+
+\caption{Scatterplot between the subject age (in months) vs. the fitted angle between hemispheres of the brain in the latent space.}\label{fig:hcp-age-regression}
+\end{figure}
+
+\begin{figure}[H]
+
+{\centering \includegraphics[width=1\linewidth]{draft_files/figure-latex/hcp-age-regression-degree-1} 
+
+}
+
+\caption{Scatterplot between the subject age (in months) vs. the average degree within (left) and between (right) hemispheres.}\label{fig:hcp-age-regression-degree}
+\end{figure}
+
+The ASE suggests a latent structure comprised of two line segments, one
+for each hemisphere of the brain, that meet at the origin. One possible
+parameter is the angle between the two lines. The estimated angles were
+observed to correlate with the subject's age, with wider angles
+corresponding to older subjects (figure \ref{fig:hcp-age-regression}). A
+linear regression setting aside half of the brain connectivity graphs as
+test data achieves an RMSE of \(11.89\) months.
+
+Other plausible statistics from the graphs are the average degrees
+within and between hemispheres. When analyzing these as stochastic block
+models (SBM) or degree corrected block models (DCBM), these statistics
+would roughly correspond to the expected edge weights within and between
+communities. Both of these statistics are correlated with the target
+value (figure \ref{fig:hcp-age-regression-degree}), but a linear model
+using them (i.e., \(age \sim degree_{within} + degree_{between}\))
+achieves a higher RMSE (\(12.3\) months) while adding another parameter
+to the model. Similarly, the assortativity of each graph with respect to
+hemisphere results in a higher RMSE of \(156.5\) when regressed on age.
+
+We also note that this structure is consistent with the DCBM. The
+multilayer DCBM was previously studied by \citet{agterberg2022joint}
+
+\begin{center}\includegraphics[width=1\linewidth]{draft_files/figure-latex/cosine-heatmap-1} \end{center}
+
+\begin{center}\includegraphics[width=1\linewidth]{draft_files/figure-latex/cosine-heatmap-2-1} \end{center}
+
+\begin{center}\includegraphics[width=1\linewidth]{draft_files/figure-latex/cosine-heatmap-2-2} \end{center}
+
+\begin{center}\includegraphics[width=1\linewidth]{draft_files/figure-latex/cosine-heatmap-2-3} \end{center}
+
+\begin{center}\includegraphics[width=1\linewidth]{draft_files/figure-latex/cosine-heatmap-2-4} \end{center}
+
+\begin{longtable}[]{@{}lr@{}}
+\caption{Correlation between age and various graph
+metrics}\tabularnewline
+\toprule\noalign{}
+Metric & Correlation \\
+\midrule\noalign{}
+\endfirsthead
+\toprule\noalign{}
+Metric & Correlation \\
+\midrule\noalign{}
+\endhead
+\bottomrule\noalign{}
+\endlastfoot
+Angle between hemispheres & 0.558 \\
+Degree within hemisphere & 0.436 \\
+Degree between hemispheres & -0.499 \\
+Number of triangles in left hemisphere & -0.025 \\
+Number of triangles in right hemisphere & 0.002 \\
+Assortativity w.r.t. hemisphere & 0.436 \\
+Transitivity & -0.261 \\
+Modularity w.r.t. hemisphere & 0.434 \\
+\end{longtable}
 
 \hypertarget{discussion}{%
 \section{Discussion}\label{discussion}}
 
+\newpage
+
+\bibliographystyle{apalike}
 \renewcommand\refname{Bibliography}
-  \bibliography{bibliography.bib}
+\bibliography{bibliography.bib}
+
+
 
 \end{document}

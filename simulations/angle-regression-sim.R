@@ -36,6 +36,7 @@ out.df <- foreach::foreach(n = n.vec, .combine = dplyr::bind_rows) %do% {
       clustering <- manifold.clustering(Xhat, 
                                         degree = 1,
                                         initialization = z,
+                                        normalize = TRUE,
                                         intercept = FALSE)
       angle.1 <- atan2(clustering$p[[1]][2, 2],
                        clustering$p[[1]][2, 1])

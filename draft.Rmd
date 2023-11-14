@@ -1,12 +1,32 @@
 ---
-output:
-  pdf_document:
-    keep_tex: true
-    citation_package: natbib
-    number_sections: yes
+title: Classification and Regression on Random Dot Product Graphs
+
+# to produce blinded version set to 1
+blinded: 0
+
+authors: 
+- name: 
+  affiliation: Department of YYY, University of XXX
+
+keywords:
+- latent structure models
+- random dot product graph 
+- neuroimaging 
+- brain connectivity networks
+
+
+output: rticles::asa_article
+# output: rticles::arxiv_article
+# output:
+#   pdf_document:
+#     keep_tex: true
+#     citation_package: natbib
+#     number_sections: yes
+
 fontsize: 11pt
+
 # geometry: "left=1in,right=1in,top=1in,bottom=1in"
-urlcolor: blue
+
 header-includes:
 - \usepackage{setspace}
 - \usepackage{float}
@@ -17,9 +37,16 @@ header-includes:
 - \usepackage{verbatim}
 - \usepackage{amsthm}
 - \usepackage{comment}
+- \usepackage{amsfonts}
+- \usepackage{pdfpages}
+- \usepackage{xcolor}
+- \usepackage{sectsty}
+
 bibliography: bibliography.bib
+biblio-style: apalike
+
 abstract: |
-  asdf
+  The random dot product graph (RDPG) has become a powerful modeling tool in uncovering latent structures within graphs. In particular, it has been shown that the RDPG describes a wide range of popular random graph models with rigid latent structures. More recently, joint modeling of mutliple random graphs that share common properties or structures across graphs have been introduced, such as the multilayer RDPG, multiple RPDG, multilayer stochastic block model, etc. In this work, we use these joint random graph models in the context of statistical learning, such as classification and regression, by introducing the multiple latent structure model, in which the graphs share a common latent structure with different parameters that correspond to different response variables. Then we propose various estimation techniques involving manifold learning to estimate these parameters and in turn predict the responses, with theorems guaranteeing convergence of the predictions. Simulations and applications on functional MRI data verify the performance of these methods. 
 ---
 
 ```{r setup, include = FALSE}
@@ -38,7 +65,9 @@ options(xtable.comment = FALSE,
         xtable.table.placement = 'H')
 
 import::from(magrittr, `%>%`, `%<>%`)
+import::from(foreach, foreach, `%do%`, `%dopar%`)
 library(ggplot2)
+library(ggraph)
 source('~/dev/pabm-grdpg/functions.R')
 source('~/dev/manifold-block-models/functions.R')
 ```
@@ -57,6 +86,7 @@ source('~/dev/manifold-block-models/functions.R')
 \newcommand{\RDPG}{\mathrm{RDPG}}
 \newcommand{\GRDPG}{\mathrm{GRDPG}}
 \newcommand{\Multinomial}{\mathrm{Multinomial}}
+\newcommand{\Categorical}{\mathrm{Categorical}}
 \newcommand{\dd}{\mathrm{d}}
 \newcommand{\as}{\stackrel{\mathrm{a.s.}}{\to}}
 \newcommand{\ER}{\text{Erd\"{o}s-R\'{e}nyi}}
@@ -64,18 +94,225 @@ source('~/dev/manifold-block-models/functions.R')
 \newcommand{\DCBM}{\mathrm{DCBM}}
 \newcommand{\rank}{\mathrm{rank}}
 \newcommand{\MBM}{\mathrm{MBM}}
+\newcommand{\LSM}{\mathrm{LSM}}
+\newcommand{\MLSM}{\mathrm{MLSM}}
 \newcommand{\Poisson}{\mathrm{Poisson}}
+\newtheorem{theorem}{Theorem}
+\newtheorem{lemma}{Lemma}
+\newtheorem{corollary}{Corollary}
+\newtheorem{proposition}{Proposition}
+\theoremstyle{remark}
+\newtheorem{remark}{Remark}
+\theoremstyle{definition}
+\newtheorem{definition}{Definition}
+\newtheorem{example}{Example}
 ```
+
 
 # Introduction
 
+Graph and network data are now as ubiquitous as traditional feature data in the fields of sociology (e.g., social networks), neuroimaging (e.g., brain connectivity networks), and deep learning (e.g., graph neural networks). 
+As a result, new statistical and machine learning methods have recently been developed to analyze network data. 
+One approach is to treat the network as a random graph that comes from some probability model. 
+In particular, if we sum up the network in an adjacency matrix $A \in \mathbb{R}^{n \times n}$, then one probability model might be to draw each element $A_{ij}$, which represents the existence of an edge or the edge weight from vertex $i$ to $j$, independently from some distribution, perhaps with a unique parameter for the pair $(i,j)$, e.g., $A_{ij} \indep F_{\theta_{ij}}$. 
+The classical example of this is the $\ER$ model \citep{Gilbert:1959}, in which every edge is drawn from the same distribution, typically a Bernoulli distribution, using the same parameter, i.e., $A_{ij} \iid \Bernoulli (p)$. 
+The inhomogeneous Bernoulli graph extends this by allowing each edge, represented by $A_{ij}$, to have its own parameter, $P_{ij}$, e.g., in the Bernoulli case, $A_{ij} \indep \Bernoulli(P_{ij})$. 
+Typically, the parameters are collected into an edge probability matrix (in the case of unweighted graphs) or edge parameter matrix (in the case of weighted graphs), denoted as $P \in \mathbb{R}^{n \times n}$. 
+The network analysis problem in this setting is to estimate $P$ given $A$. 
+
+If we let the parameter matrix $P$ be unconstrained, the inference problem is overparameterized. 
+On the other hand, the classical $\ER$ model is often too restrictive to describe real, observed networks. 
+Much work has been done to develop models that are constrained enough for robust statistical inference while being generalizable to describe a wide range of networks. 
+One such family of random graph models is the random dot product graph (RDPG), first proposed by \citet{10.1007/978-3-540-77004-6_11}, which is a type of latent space graph in which each vertex of the graph has a corresponding latent vector in a low-dimensional Euclidean space $\mathbb{R}^d$, and the edge parameter between each pair of vertices is determined by the dot product of the corresponding vectors. 
+In this model, the constraint is the low rank of the parameter matrix $P$, assuming that the latent dimension $d$ is less than the number of vertices $n$. 
+Further constraints can be imposed on the RDPG in the form of distributional assumptions on the latent vectors or restricting the latent vectors to lie on subspaces or manifolds in the latent space \citep{athreya2020estimation}.
+
+It has been shown \citep{rubindelanchy2017statistical, Koo_2022} that the RDPG (as well as the generalized random dot product graph \citep{rubindelanchy2017statistical}) can describe a wide range of popular random graph models, such as the $\ER$ model, the stochastic block model (SBM) \citep{doi:10.1080/0022250X.1971.9989788}, degree corrected block model (DCBM) \citep{Karrer_2011}, and popularity adjusted block model (PABM) \citep{307cbeb9b1be48299388437423d94bf1}, and describing these models as RDPGs (or its generalized version) is useful for parameter estimation. 
+The RDPG captures a wide range of phenomena that can be described as networks, and in fact any network that can be thought of as being sampled from a parameter matrix $P$ can be described as a (generalized) RDPG, especially if $P$ is low rank. 
+The RPDG representation of these networks 
+
 # Methods
+
+## Definitions and Models
+
+We begin by defining the RDPG and the LSM. 
+
+\begin{definition}[Random dot product graph (RDPG) \citep{10.1007/978-3-540-77004-6_11}]
+\label{def:rdpg}
+Let $\mathcal{X}$ be a subset of $\mathbb{R}^d$ for some latent space dimension $d \geq 1$ such that for any $x_1, x_2 \in \mathcal{X}$, $x_1^\top x_2 \in [0, 1]$. 
+Let $F_\theta$ be a distribution with support $\mathcal{X}$ and parameters $\theta$, and sample $x_1, ..., x_n \iid F_\theta$. 
+A graph $G$ with adjacency matrix $A$ is a random dot product graph with latent vectors $X = \bigl[x_1 \; \cdots \; x_n\bigr]^\top$ drawn from distribution $F_\theta$ if $A \sim X X^\top$. 
+
+We use the notation $A \sim \RDPG(F_\theta)$ to denote a random adjacency matrix $A$ drawn from latent vectors distributed as $F_\theta$. 
+\end{definition}
+
+\begin{remark}
+\label{remark:nonunique}
+The latent vectors of an RDPG are not unique. 
+Suppose that $P = X X^\top$ is the edge parameter matrix of an RDPG with latent positions $X$. 
+Then any orthogonal transformation $W$ on $X$ results in the same edge parameter matrix. 
+More precisely, let $\tilde{X} = X W$. 
+Then it is clear that $\tilde{X} \tilde{X}^\top = X W W^\top X^\top = X X^\top = P$ results in the same edge parameter matrix. 
+Thus, there are infinitely many latent vector configurations that can result in the same $P$, but for any two latent vector configurations, there exists an orthogonal mapping that connects the two. 
+\end{remark}
+
+\begin{definition}[Latent structure model (LSM) \citep{athreya2020estimation}]
+\label{def:lsm}
+Let $\mathcal{C} \subset \mathcal{X} \subset \mathbb{R}^d$ be a smooth, nonintersecting one-dimensional manifold on the domain of a RDPG as defined in definition \ref{def:rdpg}, parameterized by function $p(t) : [0, 1] \to \mathcal{C}$. 
+Then if $t_1, ..., t_n \iid F_\theta$ for some distribution $F_\theta$ with support $[0, 1]$ and parameter $\theta$, each $x_i = p(t_i)$, and $ A \sim X X^\top$ for $X = \bigl[x_1 \; \cdots \; x_n\bigr]^\top$, $A$ is the adjacency matrix of a latent structure model on curve $\mathcal{C}$ with parameterization $p$ and underlying distribution $F_\theta$. 
+
+We use the notation $A \sim \LSM(\mathcal{C}, F_\theta)$ or $A \sim \LSM(p, F_\theta)$ to denote an adjacency matrix $A$ drawn as an LSM on curve $\mathcal{C}$ or its parameterization $p$ with underlying distribution $F_\theta$. 
+\end{definition}
+
+\begin{remark}
+Although \citet{athreya2020estimation} defined the LSM by a single one-dimensional manifold $\mathcal{C}$ in the latent space, in this paper, we will allow for the existence of multiple one-dimensional manifolds, $\mathcal{C}_1, ..., \mathcal{C}_K$, (i.e., mixture of manifolds distribution). 
+This type of latent space mixture distribution is observed in networks with community structure (\citep{10.5555/3122009.3242083}). 
+For estimation, if the membership of each latent vector to the manifolds is known, then each manifold can be learned separately using the vectors that belong to that manifold. 
+If the memberships are not known, then we use an iterative algorithm to both cluster the latent vectors to a known number of manifolds and learn the manifolds using the cluster assignments. 
+
+In the case of a mixture of $K$ curves, we use the notation $A \sim \LSM(\{\mathcal{C}_k\}_K, F_\theta, \alpha)$ or $A \sim \LSM(\{p_k\}_K, F_\theta, \alpha)$, where $\alpha = (\alpha_1, ..., \alpha_K)$, $\sum_{k=1}^K \alpha_k = 1$ is the mixture parameter. 
+For simplicity, we only consider the case where the underlying distribution is the same for each curve. 
+\end{remark}
+
+A plausible inference task in the RDPG is to estimate the original latent vectors. 
+The adjacency spectral embedding \citep{doi:10.1080/01621459.2012.699795} is a consistent estimator of the latent vectors, up to some unknown orthogonal transformation.
+
+\begin{remark}[Sparsity parameter]
+\end{remark}
+
+\begin{definition}[Adjacency spectral embedding (ASE) \citep{doi:10.1080/01621459.2012.699795}]
+\label{def:ase}
+\end{definition}
+
+\begin{theorem}[Consistency of the ASE \citep{lyzinski2014}]
+\label{theorem:ase-consistency}
+\end{theorem}
+
+Theorem \ref{theorem:ase-consistency} implies that the embedding vectors of the ASE converge to the original latent vectors, up to some unidentifiable orthogonal transformation, and the maximum deviation from the original latent vectors after the orthogonal transformation is bounded by a value that decays to $0$. 
+This implies that in the LSM, the ASE can lead to consistent estimation of $F_\theta$, the underlying distribution, and in fact, \citet{athreya2020estimation} showed exactly this. 
+
+\begin{definition}[Multiple latent structure model (MLSM)]
+\label{def:mlsm}
+Let $\mathcal{C}^{(1)}, ..., \mathcal{C}^{(L)} \subset \mathbb{R}^d$ be a sequence of curves defining the latent positions of a sequence of $L$ LSMs as in definition \ref{def:lsm}. 
+Each $\mathcal{C}^{(\ell)}$ is parameterized by function $p^{(\ell)}(t) : [0, 1] \to \mathcal{C}^{(\ell)}$. 
+Let $p^{(1)}, ..., p^{(L)}$ be a sequence of functions with domain $[0, 1]$ that parameterize the curves $\mathcal{C}^{(1)}, ..., \mathcal{C}^{(L)}$, let $F$ be a parametric distribution with support $[0, 1]$, and let $\theta_1, ..., \theta_L$ be a sequence of parameters for distribution $F$. 
+For each $p^{(\ell)}$, sample $t_1^{(\ell)}, ..., t_{n_\ell}^{(\ell)} \iid F_{\theta^{(\ell)}}$ for some distribution $F$ parameterized by $\theta_\ell$, and let $x_i^{(\ell)} = p_\ell(t_i^{(\ell)})$ for each $i = 1, ..., n_\ell$, again as in definition \ref{def:lsm}. 
+Sample a sequence of $L$ adjacency matrices, each as $A^{(\ell)} \indep \LSM(p_\ell, F_{\theta_\ell})$. 
+Then the sequence $\{A^{(\ell)}\}_L$ is are the adjacency matrices of a multiple latent structure model with curves $\{C^{(\ell)}\}_L$ parameterized by $\{p^{(\ell)}\}$ and underlying distribution $F$ with parameters $\{\theta_\ell\}_L$. 
+
+We use the notation $A^{(1)}, ..., A^{(L)} \sim \MLSM(\{p^{(\ell)}\}, F, \{\theta_\ell\}_L)$ to denote a sequence of adjacency matrices drawn from an MLSM with parameterizations $\{p^{(\ell)}\}$ and parameters $\{\theta_\ell\}$ on underlying distrubtion $F$. 
+\end{definition}
+
+\begin{remark}
+\label{remark:mlsm-mixture}
+Again as in the case of a single LSM, we also allow for each $A^{(\ell)}$ to be sampled from a latent structure composed of $K$ curves with mixture parameter $\alpha^{(\ell)}$. 
+In this case, we use the notation $A^{(1)}, ..., A^{(L)} \sim \MLSM(\{\mathcal{C}_k^{(\ell)}\}_{K, L}, F, \{\theta_\ell\}_L, \{\alpha^{(\ell)}\}_L)$ or $A^{(1)}, ..., A^{(L)} \sim \MLSM(\{p_k^{(\ell)}\}_{K, L}, F, \{\theta_\ell\}_L, \{\alpha^{(\ell)}\}_L)$.
+\end{remark}
+
+### Connections to Related Models
+
+In the MLSM defined in definition \ref{def:mlsm}, the only commonality that we assume from graph to graph is that they are all LSMs with the same underlying distribution family. 
+If we impose further restrictions, namely that the latent structures are linear, we obtain the multilayer random dot product graph \citep{jones2021multilayer}.
+
+\begin{example}[Comparison to the multilayer DCBM \citep{agterberg2022joint}, multi-RDPG \citep{nielsen2018multiple}, and MREG \citep{8889404}]
+In the $K$-community DCBM, the probability of an edge between a pair of vertices is given by
+
+$$A_{ij} \indep \Bernoulli(\omega_i \omega_j B_{z_i, z_j}),$$
+
+where $z_i \in \{1, ..., K\}$ is the community label for vertex $i$, $B_{k, \ell}$ is the block connectivity between communities $k$ and $\ell$, and $\omega_i$ is the degree correction parameter for vertex $i$. 
+In order to preserve identifiability and uniqueness, a common constraint on these parameters is to set $\sum_{i : z_i = k} \omega_i^2 = 1$ \citep{Karrer_2011}. 
+As in 
+
+The edge parameter matrix of a $K$-community DCBM with $n$ vertices can be decomposed as follows:
+
+$$P = \Omega B \Omega^\top,$$
+
+where $B$ is a $K \times K$ matrix of block connectivities and $\Omega$ is an $n \times K$ matrix such that $\Omega_{ik} = \omega_i$ if vertex $i$ is in community $k$ and $0$ otherwise. 
+Then it is clear that if $B$ is positive semidefinite matrix of rank $K$, $P$ can also be viewed as a $K$-dimensional RDPG, since the rows of $\Omega$ are normalized and can be seen as eigenvectors, and $B$ is full rank and can be decomposed into a diagonal matrix and a rotation matrix, i.e., $P = (\Omega V) \Lambda (\Omega V)^\top$. 
+Furthermore, this matrix decomposition implies that the latent vectors lie on one of $K$ line segments that intersect at the origin \citep{rubindelanchy2017statistical}. 
+Thus, the DCBM is a special case of the LSM in which there are $K$ latent ``linear curves'' (i.e., lines) in $\mathbb{R}^K$. 
+
+The multilayer DCBM as described by \citet{agterberg2022joint} extends this to a sequence of DCBMs with the same community structure, allowing the block connectivities and degree correction parameters to change for each layer but keeping the same community structure throughout, i.e., each element of $P^{(\ell)} = \Omega^{(\ell)} B^{(\ell)} (\Omega^{(\ell)})^\top$ can vary with $\ell$ but $\Omega^{(\ell)} = 0 \iff \Omega^{(\ell')} = 0$ and similarly, $\Omega^{(\ell)} > 0 \iff \Omega^{(\ell')} > 0$, for every pair $(\ell, \ell')$. 
+On the other hand, if the further restriction of $\Omega^{(\ell)} = \Omega^{(\ell')}$ for all $(\ell, \ell')$, i.e., $P^{(\ell)} = \Omega B^{(\ell)} \Omega^\top$, we obtain a special case of the multiple RDPG (multi-RDPG) with the identity link function, as described by \citet{nielsen2018multiple}, or equivalently, a special case of the multiple random eigen graphs model (MREG), as described by \citet{8889404}. 
+However, if the community labels are not identical from graph to graph, the sequence of DCBMs cannot be described as a multilayer DCBM, multi-RDPG, or MREG, but it can still be described as an MLSM. 
+\end{example}
+
+\begin{example}[Nonlinear MLSM and comparison to MREG and multi-RDPG]
+\end{example}
+
+### Classification and Regression on the MLSM
+
+To use the MLSM for classification or regression problems, we assign response variables $y_1, ..., y_L$ to each graph. 
+Then if each response $y_\ell$ depends on $p^{(\ell)}(t)$ (the parameterization of the $\ell^{th}$ curve) or $\theta_\ell$ (the parameter of the $\ell^{th}$ distribution), or some combination of the two, there is a plausible setup for a predictive modeling task for predicting $y_\ell$ after observing $A^{(\ell)}$. 
+Four such scenarios are given:
+
+\begin{definition}[MLSM for classification 1]
+\label{def:mlsm-c-1}
+Let $A^{(1)}, ..., A^{(L)} \sim \MLSM(\{p^{(\ell)}\}, F, \{\theta_\ell\}_L)$, $y_1, ..., y_L \in \{1, ..., M\}$ be labels for each of the $L$ graphs of the MLSM, and each $\theta_\ell$ take on one of $M$ values $\{\phi_1, ..., \phi_M\}$ corresponding to its response, $y_\ell$, i.e., $\theta_\ell = \phi_{y_\ell}$. 
+
+We observe the adjacency matrices $A^{(1)}, ..., A^{(L)}$ and the first $r$ labels $y_1, ..., y_r$, and the task is to predict the unknown labels $y_{r+1}, ..., y_L$. 
+
+This can be described by the following generative model:
+
+\begin{enumerate}
+  \item Draw labels $y_1, ..., y_L \iid \Categorical(\{1, ..., M\}, \{\pi_1, ..., \pi_M\})$.
+  \item Set each $\theta_\ell = \phi_{y_\ell}$.
+  \item Draw adjacency matrices as $A^{(1)}, ..., A^{(L)} \sim \MLSM(\{p^{(\ell)}\}, F, \{\theta_\ell\}_L)$.
+\end{enumerate}
+\end{definition}
+
+\begin{definition}[MLSM for classification 2]
+\label{def:mlsm-c-2}
+Let $A^{(1)}, ..., A^{(L)} \sim \MLSM(\{\mathcal{C}^{(\ell)}\}, F, \{\theta_\ell\}_L)$, $y_1, ..., y_L \in \{1, ..., M\}$ be labels for each of the $L$ graphs of the MLSM, and each $\mathcal{C}^{(\ell)}$ take on one of $M$ functional forms $\{p^{(1)}(t), ..., p^{(M)}(t)\}$ corresponding to its response variable, $y_\ell$, i.e., $\mathcal{C}^{(\ell)}$ is parameterized by $p^{(y_\ell)}(t)$. 
+
+We observe the adjacency matrices $A^{(1)}, ..., A^{(L)}$ and the first $r$ labels $y_1, ..., y_r$, and the task is to predict the unknown labels $y_{r+1}, ..., y_L$. 
+
+This can be described by the following generative model:
+
+\begin{enumerate}
+  \item Draw labels $y_1, ..., y_L \iid \Categorical(\{1, ..., M\}, \{\pi_1, ..., \pi_M\})$.
+  \item Set each $p^{(\ell)}(t) = p^{(y_\ell)}(t)$.
+  \item Draw adjacency matrices as $A^{(1)}, ..., A^{(L)} \sim \MLSM(\{p^{(\ell)}\}, F, \{\theta_\ell\}_L)$.
+\end{enumerate}
+
+As in remark \ref{remark:mlsm-mixture}, we also allow for each adjacency matrix $A^{(\ell)}$ to be drawn from a latent structure consisting of multiple curves $\{p^{(\ell)}_k\}_K$. 
+\end{definition}
+
+\begin{definition}[MLSM for regression 1]
+\label{def:mlsm-r-1}
+Let $A^{(1)}, ..., A^{(L)} \sim \MLSM(\{p^{(\ell)}\}, F, \{\theta_\ell\}_L)$, and suppose that for each $\ell = 1, ..., L$, the $\ell^{th}$ graph is coupled with a response variable, $y_\ell$, as $y_\ell \indep \mathcal{N}(\theta_\ell^\top \beta, \sigma^2)$. 
+
+We observe the adjacency matrices $A^{(1)}, ..., A^{(L)}$ and the first $r$ response variables $y_1, ..., y_r$. 
+In this setting, there are two plausible inference tasks. 
+The first is to estimate the coefficient vector $\beta$. 
+The second is to predict the unobserved response variables $y_{r+1}, ..., y_L$. 
+\end{definition}
+
+\begin{definition}[MLSM for regression 2]
+\label{def:mlsm-r-2}
+Let $A^{(1)}, ..., A^{(L)} \sim \MLSM(\{p^{(\ell)}\}, F, \{\theta_\ell\}_L)$ and each $p^{(\ell)}(t) = p(t; \gamma_\ell)$, where $\gamma_\ell$ is the vector of parameters for function $p$. 
+Suppose that for each $\ell = 1, ..., L$, the $\ell^{th}$ graph is coupled with a response variable, $y_\ell$, as $y_\ell \indep \mathcal{N}(\gamma_\ell^\top \beta, \sigma^2)$. 
+
+We observe the adjacency matrices $A^{(1)}, ..., A^{(L)}$ and the first $r$ response variables $y_1, ..., y_r$. 
+In this setting, there are two plausible inference tasks. 
+The first is to estimate the coefficient vector $\beta$. 
+The second is to predict the unobserved response variables $y_{r+1}, ..., y_L$. 
+
+As in remark \ref{remark:mlsm-mixture}, we also allow for each adjacency matrix $A^{(\ell)}$ to be drawn from a latent structure consisting of multiple curves $\{p^{(\ell)}_k\}_K$. 
+\end{definition}
+
+In all of these settings, the ASE of $A^{(\ell)}$ provides some insight into both $p^{(\ell)}$ and $\theta_\ell$. 
+\citet{athreya2020estimation} showed that with some additional information, the ASE of $A^{(\ell)}$ can lead to a consistent estimator for $\theta_\ell$. 
+
+## Main Results
+
+
 
 # Simulation Study
 
 ## Classification
 
-In this simulation experiment, the latent vectors were sampled along a Bezier curve defined by $g(t) = \begin{bmatrix} t^2 & 2 t (1-t) \end{bmatrix}^\top$. 
+In this simulation experiment, the latent vectors were sampled along a Bezier curve defined by $g(t) = \bigl[ t^2 \; 2 t (1-t) \bigr]^\top$. 
 The timepoints $t_i$ were sampled as iid Beta random variables with two sets of parameters, $(\alpha_1, \beta_1)$ and $(\alpha_2, \beta_2)$. 
 The setup is as follows:
 
@@ -85,26 +322,24 @@ The setup is as follows:
     * $\beta_1 = 2$
     * $\alpha_2 = 2$
     * $\beta_2 = 1$
-3. Construct each latent vector as $x_i = g(t_i)$ and compile them in data matrix $X = \begin{bmatrix} x_1 & \cdots & x_n \end{bmatrix}^\top$.
+3. Construct each latent vector as $x_i = g(t_i)$ and compile them in data matrix $X = \bigl[ x_1 \; \cdots \; x_n \bigr]^\top$.
 4. Sample graph and its adjacency matrix as $A \sim \RDPG(X)$. 
 
 For each graph, we constructed the ASE, which was used to estimate the parameters $(\hat{\alpha}, \hat{\beta})$ for the graph, using the maximum likelihood method. 
 The estimated parameters were then used as predictors $y_1, ..., y_n$, setting aside half for training and half for testing. 
 We investigated graphs of size $|V| = 32, 64, 128, 256$. 
-The number of graphs for each experiment was set to $n = 64$.
+The number of graphs for each experiment was set to $L = 64$.
 For each (number of graphs, size of graph) pair, we performed 32 replicates. 
 Figure \ref{fig:class-sim-ase} shows the ASE of one graph.  
 Figure \ref{fig:classification-sim} shows the boxplots of the classification error rates.
 
-```{r class-sim-ase, cache = TRUE}
+```{r class-sim-ase, cache = TRUE, fig.cap = 'One simulated graph (left) and its ASE (right). The red curve is the fitted quadratic Bezier curve on the ASE.'}
 K <- 2
-a.vec <- c(1, 2)
-b.vec <- c(2, 1)
 n <- 256
 
-z <- 1
+z <- 2
 
-t. <- rbeta(n, a.vec[z], b.vec[z])
+t. <- rbeta(n, 1, 1)
 x1 <- t. ^ 2
 x2 <- 2 * t. * (1 - t.)
 X <- cbind(x1, x2)
@@ -112,28 +347,46 @@ P <- X %*% t(X)
 A <- draw.graph(P)
 Xhat <- embedding(A, 2, 0)
 
+A.graph <- tidygraph::as_tbl_graph(unname(A), directed = FALSE)
+graph.plot <- ggraph(A.graph, layout = 'auto') + 
+  geom_edge_link(alpha = n ^ -.6) + 
+  geom_node_point(show.legend = FALSE) + 
+  labs(colour = NULL) + 
+  theme_void() + 
+  scale_colour_brewer(palette = 'Set1')
+
 curve.est <- estimate.bezier.curve.2(Xhat, 
                                      degree = 2, 
                                      intercept = FALSE, 
                                      initialization = 'isomap', 
-                                     min.t = 0, max.t = 1)
-ggplot() + 
+                                     normalize = TRUE)
+ase.plot <- ggplot() + 
   geom_point(aes(x = Xhat[, 1], y = Xhat[, 2])) + 
-  geom_point(aes(x = curve.est$X[, 1], y = curve.est$X[, 2]), 
+  geom_line(aes(x = curve.est$X[, 1], y = curve.est$X[, 2]), 
              colour = 'red',
              size = .2) + 
   coord_fixed() + 
-  labs(x = expression(x[1]), y = expression(x[2]))
+  labs(x = expression(x[1]), y = expression(x[2])) + 
+  theme_bw()
+
+gridExtra::grid.arrange(graph.plot, ase.plot, nrow = 1)
 ```
 
-```{r classification-sim}
+```{r classification-sim, cache = TRUE, fig.cap = 'Median classification error rate and its IQR vs. number of vertices in each graph.', fig.height = 2, fig.width = 4}
 sim.df <- readr::read_csv('~/Documents/postdoc-first-project/classification-sim.csv')
 
 n.vec <- unique(sim.df$n)
 
 sim.df %>% 
+  dplyr::group_by(n) %>% 
+  dplyr::summarise(acc.med = median(acc),
+                   acc.high = quantile(acc, .75),
+                   acc.low = quantile(acc, .25)) %>% 
   ggplot() + 
-  geom_boxplot(aes(x = n, y = 1 - acc, group = n)) + 
+  geom_line(aes(x = n, y = 1 - acc.med)) + 
+  geom_point(aes(x = n, y = 1 - acc.med)) + 
+  geom_errorbar(aes(x = n, ymin = 1 - acc.high, ymax = 1 - acc.low),
+                width = .1) + 
   scale_x_log10(breaks = sort(n.vec)) +
   # scale_y_log10() +
   theme_bw() + 
@@ -146,12 +399,12 @@ sim.df %>%
 2. For each $k = 1, ..., N$, 
     i. Draw $t_1, ..., t_n \iid \Uniform(0, 1)$;
     ii. Draw $z_1, ..., z_n \iid \Multinomial(1/2, 1/2)$;
-    iii. For each $i = 1, ..., n$, set $x_i = \begin{cases} \begin{bmatrix} t_i & 0 \end{bmatrix}^\top & z_i = 1 \\ \begin{bmatrix} t_i \cos \theta_k & t_i \sin \theta_k \end{bmatrix}^\top & z_i = 2 \end{cases}$;
-    iv. Collect $X = \begin{bmatrix} x_1 & \cdots & x_n \end{bmatrix}^\top$ and draw $A \sim \RDPG(X)$;
-    v. Set the response $y_k = \beta_0 + \beta_1 \theta_k$.
+    iii. For each $i = 1, ..., n$, set $x_i = \begin{cases} \bigl[ t_i \; 0 \bigr]^\top \; z_i = 1 \\ \bigl[ t_i \cos \theta_\ell \; t_i \sin \theta_\ell \bigr]^\top \; z_i = 2 \end{cases}$;
+    iv. Collect $X = \bigl[ x_1 \; \cdots \; x_n \bigr]^\top$ and draw $A \sim \RDPG(X)$;
+    v. Set the response $y_\ell = \beta_0 + \beta_1 \theta_\ell$
 
 In this simulation, we set $\beta_0 = \beta_1 = 1$. 
-The number of graphs was set to $N = 64$, and the number of vertices per graph was set to $n = 128, 256, 512, 1024$. 
+The number of graphs was set to $L = 64$, and the number of vertices per graph was set to $n = 128, 256, 512, 1024$. 
 For each $n$, we simulated 32 replicates. 
 
 ```{r angle-reg-example, cache = TRUE}
@@ -177,46 +430,73 @@ clustering <- manifold.clustering(Xhat,
                                   degree = 1,
                                   initialization = z,
                                   intercept = FALSE)
-plot.estimated.curves(Xhat, clustering) + 
+ase.plot <- plot.estimated.curves(Xhat, clustering) +
   scale_colour_brewer(palette = 'Set1')
+
+A.graph <- tidygraph::as_tbl_graph(unname(A), directed = FALSE)
+graph.plot <- ggraph(A.graph, layout = 'auto') + 
+  geom_edge_link(alpha = n ^ -.6) + 
+  geom_node_point(colour = 'black',
+                  fill = 'white',
+                  show.legend = FALSE) + 
+  labs(colour = NULL) + 
+  theme_void() + 
+  scale_colour_brewer(palette = 'Set1')
+
+gridExtra::grid.arrange(graph.plot, ase.plot, nrow = 1)
 ```
 
-```{r angle-reg-results, cache = TRUE}
-out.df <- readr::read_csv('~/dev/multilayer-rdpg/simulations/angle-regression-sim.csv')
+```{r angle-reg-results, cache = TRUE, fig.height = 2, fig.width = 4}
+sim.df <- readr::read_csv('~/dev/multilayer-rdpg/simulations/angle-regression-sim.csv')
 n.vec <- c(128, 256, 512, 1024)
 N <- 64
 
-ggplot(out.df) + 
-  geom_boxplot(aes(x = n, y = mse * N, group = n)) + 
+sim.df %>% 
+  dplyr::group_by(n) %>% 
+  dplyr::summarise(mse.med = median(mse),
+                   mse.high = quantile(mse, .75),
+                   mse.low = quantile(mse, .25)) %>% 
+  ggplot() + 
+  geom_line(aes(x = n, y = mse.med)) + 
+  geom_point(aes(x = n, y = mse.med)) + 
+  geom_errorbar(aes(x = n, ymin = mse.high, ymax = mse.low),
+                width = .1) + 
   scale_x_log10(breaks = sort(n.vec)) +
-  scale_y_log10() +
-  labs(x = 'number of vertices', y = 'SSE') + 
-  theme_bw()
+  # scale_y_log10() +
+  theme_bw() + 
+  labs(x = 'number of vertices', y = 'MSE')
 ```
 
 # Applications
 
+## Human Connectome Project Aging Study
+
 ```{r load-hcp}
-load('~/Downloads/HCP/HCP-Y/DTI_fMRI/Data.RData')
-ids <- dimnames(dti.countV2)[[3]]
+load('~/Downloads/Data/HCP/HCP-A/DTI/Data.RData')
+z <- dti.info$hemisphere %>% 
+  as.factor()
+rois <- dti.info$aparc_aseg_region.names.short
+
+ase.stats.df <- readr::read_csv('~/dev/multilayer-rdpg/hcp-a-eda.csv')
+N <- nrow(ase.stats.df)
+n <- nrow(dat.NumFibers[[1]])
+
+ids <- ase.stats.df$id
 ```
 
 In the first example, we analyzed fiber count data between brain regions from the Human Connectome Project (HCP). 
 When analyzing these data as graphs, we denote the regions as vertices and the fiber counts between pairs of regions as weighted edges. 
 A plausible statistical model for these data is to assume that the edge weights between pairs of vertices is Poisson distributed, i.e., the adjacency matrix is sampled as $A_{ij} \indep \Poisson(\Theta_{ij})$, where $\Theta \in \mathbb{R}_+^{n \times n}$ is a symmetric matrix of Poisson parameters. 
 
-In this dataset, there are $N = 136$ graphs (corresponding to individual subjects), each with $n = 68$ vertices (corresponding to brain regions). 
-Analyzing these graphs as RDPGs reveals that the DCBM is a good candidate for these data (fig \ref{fig:hcp-ase}). 
+In this dataset, there are $N = `r N`$ graphs (corresponding to individual subjects), each with $n = `r n`$ vertices (corresponding to brain regions). 
+Analyzing these graphs as RDPGs reveals that the DCBM is a good candidate for these data (figure \ref{fig:hcp-ase}). 
 
-```{r hcp-ase, cache = TRUE, fig.cap = 'ASE of one graph from the HCP dataset. The lines are fitted via $K$-curves clustering using degree = 1. The outputted clusters correspond exactly to the left (red) and right (blue) hemispheres.', fig.width = 10, fig.height = 10}
-id <- ids[1]
-A <- dti.countV2[, , id] %>% 
-  unique() %>% 
-  t() %>% 
-  unique()
-z <- colnames(A) %>% 
-  stringi::stri_sub(-1, -1) %>% 
-  as.factor()
+```{r hcp-ase, cache = TRUE, fig.cap = 'One graph from the HCP dataset (left) and its ASE (right). In the ASE, the lines are fitted via $K$-curves clustering using degree = 1. The outputted clusters correspond exactly to the left (red) and right (blue) hemispheres.', fig.width = 15, fig.height = 5, out.width = '100%'}
+i <- 10
+A <- dat.NumFibers[[i]] %>% 
+  as.matrix()
+A <- (A + t(A)) / 2
+diag(A) <- 0
 
 Xhat <- embedding(A, 2, 0, scale = TRUE)
 clustering <- manifold.clustering(Xhat, 
@@ -225,31 +505,281 @@ clustering <- manifold.clustering(Xhat,
                                   normalize = TRUE,
                                   intercept = FALSE,
                                   parallel = FALSE)
-plot.estimated.curves(Xhat, clustering) + 
-  scale_colour_brewer(palette = 'Set1') + 
-  ggrepel::geom_label_repel(aes(x = Xhat[, 1],
-                                y = Xhat[, 2],
-                                label = colnames(A)))
+
+A.graph <- tidygraph::as_tbl_graph(unname(A), directed = FALSE)
+graph.plot <- ggraph(A.graph, layout = 'auto') + 
+  geom_edge_link(alpha = n ^ -.6) + 
+  geom_node_point(aes(colour = factor(z)),
+                  show.legend = FALSE) + 
+  labs(colour = NULL) + 
+  theme_void() + 
+  scale_colour_brewer(palette = 'Set1')
+
+ase.plot <- plot.estimated.curves(Xhat, clustering) +
+  # ggrepel::geom_label_repel(aes(x = Xhat[, 1],
+  #                               y = Xhat[, 2],
+  #                               label = rois)) +
+  scale_colour_brewer(palette = 'Set1')
+gridExtra::grid.arrange(graph.plot, ase.plot, nrow = 1)
 ```
 
-For each graph, the 
+```{r age-lm}
+set.seed(12345)
 
-```{r hcp-gender, cache = TRUE}
-hcp.df <- readr::read_csv('~/Documents/postdoc-first-project/hcp-eda.csv')
-hcp.df %>% 
-  na.omit() %>% 
-  GGally::ggpairs(columns = 2:8, aes(colour = gender)) + 
-  scale_colour_brewer(palette = 'Set1')
+train.ind <- sample(c(TRUE, FALSE), nrow(ase.stats.df), replace = TRUE)
+train.df <- ase.stats.df[train.ind, ]
+test.df <- ase.stats.df[!train.ind, ]
+
+angle.lm <- lm(age ~ angle.diff, data = train.df)
+y.hat.angle <- predict(angle.lm, newdata = test.df)
+
+degree.lm <- lm(age ~ deg.within + deg.between, data = train.df)
+y.hat.deg <- predict(degree.lm, newdata = test.df)
+
+rmse.angle <- mean((test.df$age - y.hat.angle) ^ 2) ^ .5
+rmse.deg <- mean((test.df$age - y.hat.deg) ^ 2) ^ .5
 ```
-```{r hcp-age, cache = TRUE}
-hcp.df <- readr::read_csv('~/Documents/postdoc-first-project/hcp-eda.csv')
-hcp.df %>% 
-  na.omit() %>% 
-  dplyr::filter(age != '36+') %>% 
-  GGally::ggpairs(columns = 2:8, aes(colour = age)) + 
-  scale_colour_brewer(palette = 'Set1')
+
+```{r hcp-age-regression, fig.cap = 'Scatterplot between the subject age (in months) vs. the fitted angle between hemispheres of the brain in the latent space.'}
+ggplot(ase.stats.df) + 
+  geom_point(aes(x = angle.diff, 
+                 y = age)) + 
+  labs(x = 'angle between hemispheres in latent space (radians)',
+       y = 'subject age (months)') + 
+  theme_bw() + 
+  stat_smooth(aes(x = angle.diff, y = age), method = 'lm')
+```
+
+```{r hcp-age-regression-degree, fig.cap = 'Scatterplot between the subject age (in months) vs. the average degree within (left) and between (right) hemispheres.', fig.width = 10, fig.height = 3, out.width = '100%'}
+w.plot <- ggplot(ase.stats.df) + 
+  geom_point(aes(x = deg.within, 
+                 y = age)) + 
+  labs(x = 'average degree within hemispheres',
+       y = 'subject age (months)') + 
+  theme_bw() + 
+  stat_smooth(aes(x = deg.within, y = age), method = 'lm')
+b.plot <- ggplot(ase.stats.df) + 
+  geom_point(aes(x = deg.between, 
+                 y = age)) + 
+  labs(x = 'average degree between hemispheres',
+       y = 'subject age (months)') + 
+  theme_bw() + 
+  stat_smooth(aes(x = deg.between, y = age), method = 'lm')
+gridExtra::grid.arrange(w.plot, b.plot, nrow = 1)
+```
+
+The ASE suggests a latent structure comprised of two line segments, one for each hemisphere of the brain, that meet at the origin. 
+One possible parameter is the angle between the two lines. 
+The estimated angles were observed to correlate with the subject's age, with wider angles corresponding to older subjects (figure \ref{fig:hcp-age-regression}). 
+A linear regression setting aside half of the brain connectivity graphs as test data achieves an RMSE of $`r round(rmse.angle, 2)`$ months. 
+
+Other plausible statistics from the graphs are the average degrees within and between hemispheres. 
+When analyzing these as stochastic block models (SBM) or degree corrected block models (DCBM), these statistics would roughly correspond to the expected edge weights within and between communities. 
+Both of these statistics are correlated with the target value (figure \ref{fig:hcp-age-regression-degree}), but a linear model using them (i.e., $age \sim degree_{within} + degree_{between}$) achieves a higher RMSE ($`r round(rmse.deg, 2)`$ months) while adding another parameter to the model. 
+Similarly, the assortativity of each graph with respect to hemisphere results in a higher RMSE of $156.5$ when regressed on age. 
+
+We also note that this structure is consistent with the DCBM. 
+The multilayer DCBM was previously studied by \citet{agterberg2022joint}
+
+```{r}
+pairwise.angles.df <- readr::read_csv('~/dev/multilayer-rdpg/pairwise-angles.csv')
+
+dti.info.df <- dti.info %>% 
+  dplyr::select(roi = aparc_aseg_region.names,
+                rsn = RSN,
+                hemisphere = hemisphere) %>% 
+  dplyr::arrange(hemisphere, rsn)
+
+pairwise.angles.df %<>%
+  dplyr::mutate(roi1 = factor(roi1, levels = dti.info.df$roi),
+                roi2 = factor(roi2, levels = dti.info.df$roi))
+```
+
+```{r cosine-heatmap, cache = TRUE, fig.width = 20, fig.height = 20, out.width = '100%'}
+# i <- ids[1]
+# 
+# pairwise.angles.df %>% 
+#   dplyr::filter(id == i) %>% 
+#   ggplot() +
+#   geom_tile(aes(x = roi1, y = roi2, fill = angle)) +
+#   viridis::scale_fill_viridis() +
+#   coord_fixed() +
+#   theme_minimal() +
+#   labs(x = NULL, y = NULL) +
+#   theme(axis.text.x = element_text(angle = 90, vjust = .5, hjust = 1))
+
+# 36-46.5
+# 46.5-56.5
+# 56.5-69
+# 69-90
+
+pairwise.angles.df %>%
+  dplyr::group_by(roi1, roi2) %>%
+  dplyr::mutate(mean.angle = mean(angle)) %>%
+  dplyr::ungroup() %>%
+  dplyr::mutate(age = ifelse(age < 46.5, '36-46.5',
+                             ifelse(age < 56.5, '46.5-56.5',
+                                    ifelse(age < 69, '56.5-69',
+                                           '69-90')))) %>%
+  dplyr::group_by(age, roi1, roi2, rsn1, rsn2) %>%
+  dplyr::summarise(angle = mean(angle) - mean.angle) %>%
+  dplyr::ungroup() %>%
+  ggplot() +
+  geom_tile(aes(x = roi1, y = roi2, fill = angle)) +
+  viridis::scale_fill_viridis() +
+  coord_fixed() +
+  theme_minimal() +
+  theme(legend.position = 'bottom') +
+  labs(x = NULL, y = NULL) +
+  theme(axis.text.x = element_text(angle = 90, vjust = .5, hjust = 1),
+        legend.key.width = unit(2, 'cm')) +
+  facet_wrap(~ age)
+```
+
+```{r cosine-heatmap-2, cache = TRUE, fig.width = 10, fig.height = 10, out.width = '100%'}
+angles.plot.1 <- pairwise.angles.df %>%
+  dplyr::filter(age < 46.5) %>%
+  dplyr::group_by(roi1, roi2) %>%
+  dplyr::summarise(angle = mean(angle)) %>%
+  dplyr::ungroup() %>%
+  ggplot() +
+  geom_tile(aes(x = roi1, y = roi2, fill = angle)) +
+  viridis::scale_fill_viridis() +
+  coord_fixed() +
+  theme_minimal() + 
+  theme(legend.position = 'bottom') +
+  theme(axis.text.x = element_text(angle = 90, vjust = .5, hjust = 1),
+        legend.key.width = unit(2, 'cm')) +
+  labs(x = NULL, y = NULL, title = '36-46.5') +
+  theme(axis.text.x = element_text(angle = 90, vjust = .5, hjust = 1))
+angles.plot.2 <- pairwise.angles.df %>%
+  dplyr::filter(age < 56.5, age >= 36) %>%
+  dplyr::group_by(roi1, roi2) %>%
+  dplyr::summarise(angle = mean(angle)) %>%
+  dplyr::ungroup() %>%
+  ggplot() +
+  geom_tile(aes(x = roi1, y = roi2, fill = angle)) +
+  viridis::scale_fill_viridis() +
+  coord_fixed() +
+  theme_minimal() +
+  theme(legend.position = 'bottom') +
+  theme(axis.text.x = element_text(angle = 90, vjust = .5, hjust = 1),
+        legend.key.width = unit(2, 'cm')) +
+  labs(x = NULL, y = NULL, title = '46.5-56.5') +
+  theme(axis.text.x = element_text(angle = 90, vjust = .5, hjust = 1))
+angles.plot.3 <- pairwise.angles.df %>%
+  dplyr::filter(age < 69, age >= 56.5) %>%
+  dplyr::group_by(roi1, roi2) %>%
+  dplyr::summarise(angle = mean(angle)) %>%
+  dplyr::ungroup() %>%
+  ggplot() +
+  geom_tile(aes(x = roi1, y = roi2, fill = angle)) +
+  viridis::scale_fill_viridis() +
+  coord_fixed() +
+  theme_minimal() +
+  theme(legend.position = 'bottom') +
+  theme(axis.text.x = element_text(angle = 90, vjust = .5, hjust = 1),
+        legend.key.width = unit(2, 'cm')) +
+  labs(x = NULL, y = NULL, title = '56.5-69') +
+  theme(axis.text.x = element_text(angle = 90, vjust = .5, hjust = 1))
+angles.plot.4 <- pairwise.angles.df %>%
+  dplyr::filter(age >= 69) %>%
+  dplyr::group_by(roi1, roi2) %>%
+  dplyr::summarise(angle = mean(angle)) %>%
+  dplyr::ungroup() %>%
+  ggplot() +
+  geom_tile(aes(x = roi1, y = roi2, fill = angle)) +
+  viridis::scale_fill_viridis() +
+  coord_fixed() +
+  theme_minimal() +
+  theme(legend.position = 'bottom') +
+  theme(axis.text.x = element_text(angle = 90, vjust = .5, hjust = 1),
+        legend.key.width = unit(2, 'cm')) +
+  labs(x = NULL, y = NULL, title = '69-90') +
+  theme(axis.text.x = element_text(angle = 90, vjust = .5, hjust = 1))
+
+angles.plot.1
+angles.plot.2
+angles.plot.3
+angles.plot.4
+
+```
+
+```{r roi-angles, cache = TRUE, out.width = '100%', fig.height = 10, fig.width = 10}
+# pairwise.angles.df %>% 
+#   dplyr::mutate(hemisphere1 = ifelse(grepl('(rh-)|(Right-)', roi1), 'R', 'L'),
+#                 hemisphere2 = ifelse(grepl('(rh-)|(Right-)', roi2), 'R', 'L')) %>% 
+#   dplyr::mutate(roi1 = gsub('(ctx-rh-)|(Right-)|(ctx-lh-)|(Left-)', '', roi1),
+#                 roi2 = gsub('(ctx-rh-)|(Right-)|(ctx-lh-)|(Left-)', '', roi2)) %>% 
+#   dplyr::filter(roi1 == roi2, hemisphere1 != hemisphere2) %>% 
+#   ggplot() + 
+#   geom_point(aes(x = age, y = angle, groups = roi1),
+#              size = .1) +
+#   facet_wrap(~ roi1) + 
+#   theme_bw()
+```
+
+```{r cache = TRUE}
+assort.df <- foreach(id = ids, .combine = dplyr::bind_rows) %dopar% {
+  A <- dat.NumFibers[[id]] %>% 
+    as.matrix()
+  A <- (A + t(A)) / 2
+  diag(A) <- 0
+  # A <- A / mean(A[upper.tri(A)])
+  
+  A.graph <- igraph::graph_from_adjacency_matrix(A) %>% 
+    igraph::set_vertex_attr('hemisphere', value = z)
+  
+  assortativity <- igraph::assortativity(A.graph, z)
+  n_triangles <- igraph::count_triangles(A.graph, z) %>% 
+    unique()
+  transitivity <- igraph::transitivity(A.graph)
+  modularity <- igraph::modularity(A.graph, z)
+  
+  individual.stats.df <- dplyr::tibble(
+    id = id,
+    assortativity = assortativity,
+    n_tri1 = n_triangles[1],
+    n_tri2 = n_triangles[2],
+    transitivity = transitivity,
+    modularity = modularity
+  )
+  
+  return(individual.stats.df)
+} %>% 
+  # dplyr::filter(!(id %in% ids.to.remove)) %>% 
+  dplyr::inner_join(
+    demo.data %>% 
+      dplyr::filter(QC_Issue_Codes == '',
+                    Full_MR_Compl == 1) %>% 
+      dplyr::transmute(id = src_subject_id,
+                       sex = sex,
+                       age = as.numeric(interview_age)) %>% 
+      dplyr::filter(age < 1200), 
+    by = 'id'
+  )
+
+dplyr::tibble(Metric = c('Angle between hemispheres',
+                         'Degree within hemisphere',
+                         'Degree between hemispheres',
+                         'Number of triangles in left hemisphere',
+                         'Number of triangles in right hemisphere',
+                         'Assortativity w.r.t. hemisphere',
+                         'Transitivity',
+                         'Modularity w.r.t. hemisphere'),
+              Correlation = c(cor(ase.stats.df$age, ase.stats.df$angle.diff),
+                              cor(ase.stats.df$age, ase.stats.df$deg.within),
+                              cor(ase.stats.df$age, ase.stats.df$deg.between),
+                              cor(assort.df$age, assort.df$n_tri1),
+                              cor(assort.df$age, assort.df$n_tri2),
+                              cor(assort.df$age, assort.df$assortativity),
+                              cor(assort.df$age, assort.df$transitivity),
+                              cor(assort.df$age, assort.df$modularity))) %>% 
+  knitr::kable(digits = 3, caption = 'Correlation between age and various graph metrics')
 ```
 
 # Discussion
+
+\newpage
 
 # Bibliography
