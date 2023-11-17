@@ -115,8 +115,8 @@ with different parameters that correspond to different response
 variables. Then we propose various estimation techniques involving
 manifold learning to estimate these parameters and in turn predict the
 responses, with theorems guaranteeing convergence of the predictions.
-Simulations and applications on functional MRI data verify the
-performance of these methods.
+Simulations, as well as applications on brain connectivity networks,
+verify the performance of our methods.
 \end{abstract}
 
 \noindent%
@@ -247,6 +247,7 @@ Then any orthogonal transformation $W$ on $X$ results in the same edge parameter
 More precisely, let $\tilde{X} = X W$. 
 Then it is clear that $\tilde{X} \tilde{X}^\top = X W W^\top X^\top = X X^\top = P$ results in the same edge parameter matrix. 
 Thus, there are infinitely many latent vector configurations that can result in the same $P$, but for any two latent vector configurations, there exists an orthogonal mapping that connects the two. 
+Similarly, if $A \sim \RDPG(F_{\mu, \Sigma})$ and $F_{\mu, \Sigma}$ is the normal distribution with mean vector $\mu$ and covariance matrix $\Sigma$, then $A \sim \RDPG(F_{W \mu, W \Sigma W^\top})$ is an equivalent RDPG for any orthogonal matrix $W$. 
 \end{remark}
 
 \begin{definition}[Latent structure model (LSM) \citep{athreya2020estimation}]
@@ -258,8 +259,9 @@ We use the notation $A \sim \LSM(\mathcal{C}, F_\theta)$ or $A \sim \LSM(p, F_\t
 \end{definition}
 
 \begin{remark}
+\label{rem:lsm-mixture}
 Although \citet{athreya2020estimation} defined the LSM by a single one-dimensional manifold $\mathcal{C}$ in the latent space, in this paper, we will allow for the existence of multiple one-dimensional manifolds, $\mathcal{C}_1, ..., \mathcal{C}_K$, (i.e., mixture of manifolds distribution). 
-This type of latent space mixture distribution is observed in networks with community structure (\citep{10.5555/3122009.3242083}). 
+This type of latent space mixture distribution is observed in networks with community structure \citep{10.5555/3122009.3242083}. 
 For estimation, if the membership of each latent vector to the manifolds is known, then each manifold can be learned separately using the vectors that belong to that manifold. 
 If the memberships are not known, then we use an iterative algorithm to both cluster the latent vectors to a known number of manifolds and learn the manifolds using the cluster assignments. 
 
@@ -273,14 +275,31 @@ latent vectors. The adjacency spectral embedding
 the latent vectors, up to some unknown orthogonal transformation.
 
 \begin{remark}[Sparsity parameter]
+In many real networks, the degree of each vertex often does not grow proportionally with the size of the network. 
+To account for this, a sparsity factor $\rho_n \in (0, 1]$ is introduced in the edge probabilities, i.e., $P_{ij} \leftarrow \rho_n P_{ij}$, for some sequence $\{\rho_n\}$. 
+Oftentimes the additional constraint of $\lim\limits_{n \to \infty} \rho_n = 0$ is included. 
+For example, a sparse SBM has edge probabilities $P_{ij} = \rho_n \theta_{z_i, z_j}$, for which we use the notation $A \sim \SBM(z, \{\theta_{k \ell}\}_K; \rho_n)$ or $A \sim \SBM(\alpha, \{\theta_{k \ell}\}_K; \rho_n)$, depending on whether we treat the labels as random or fixed. 
+Then the expected degree grows as $O(n \rho_n)$ instead of linearly as $O(n)$. 
+For the sake of unifying the sparse and dense regimes, we also allow for the special case $\rho_n = 1$ and include the sparsity factor throughout, unless otherwise stated. 
+Finally, we also note that while $\rho_n$ limits the rate of growth of the expected degree, our theoretical results still require $n \rho_n$ to diverge to infinity, albeit at a slower rate than $O(n)$. 
+For example, if $\rho_n \propto 1 / \sqrt{n}$, then the expected degree for each vertex of the SBM is $O(\sqrt{n})$. 
+In general, for consistency in estimation and inference, most results on Bernoulli random graphs require $n \rho_n = \omega \big( (\log n)^c \big)$ for some $c > 1$. 
+(See \citet{JMLR:v18:16-480}, \citet{https://doi.org/10.48550/arxiv.2106.09840}, and \citet{rubindelanchy2017statistical} for further discussion.)
 \end{remark}
 
 \begin{definition}[Adjacency spectral embedding (ASE) \citep{doi:10.1080/01621459.2012.699795}]
 \label{def:ase}
+Let $A = V \Lambda V^\top$ be the spectral decomposition of $A$. 
+Define $\lambda_i$ as the $i^{th}$ largest eigenvalue of $A$ and $v_i$ by its corresponding eigenvector, and let $V_d = \bigl[ v_1 \; \cdots \; v_d \bigr]$ and $\Lambda_d = \diag(\lambda_1, ..., \lambda_d)$. 
+Then $\hat{X} = V_d |\Lambda|^{1/2}$ is the $d$-dimensional adjacency spectral embedding of $A$. 
 \end{definition}
 
 \begin{theorem}[Consistency of the ASE \citep{lyzinski2014}]
 \label{theorem:ase-consistency}
+Suppose the sparsity parameter is such that $n \rho_n = \omega (\log^{4 c} n)$ for some constant $c > 1$. 
+Then for some orthogonal transformation $W \in \mathbb{O}(d)$, 
+$$\max_i \|W \hat{x}_i - x_i \| = O_P \bigg( \frac{\log^c n}{n^{1/2}} \bigg),$$
+where $x_i^\top$ and $\hat{x}_i^\top$ are the rows of $X$ and $\hat{X}$, respectively. 
 \end{theorem}
 
 Theorem \ref{theorem:ase-consistency} implies that the embedding vectors
@@ -422,6 +441,225 @@ estimator for \(\theta_\ell\).
 \hypertarget{main-results}{%
 \subsection{Main Results}\label{main-results}}
 
+We propose our methodology for classification and regression in three
+steps:
+
+\begin{enumerate}
+\def\labelenumi{\arabic{enumi}.}
+\tightlist
+\item
+  Curve-fitting algorithm to recover the LSM curves from the ASEs.
+\item
+  Quasi-maximum likelihood estimation to recover the parameters of the
+  underlying distributions.
+\item
+  Classification or regression to determine the relationship between the
+  parameters and the responses.
+\end{enumerate}
+
+\hypertarget{estimation-of-the-lsm-curves}{%
+\subsubsection{Estimation of the LSM
+Curves}\label{estimation-of-the-lsm-curves}}
+
+For curve-fitting, we will restrict the LSM curves to
+non-self-intersecting Bezier polynomials \citep{10.5555/320367}. A
+polynomial curve of degree \(R\) in \(\mathbb{R}^d\) is uniquely defined
+by a Bezier polynomial within the space of Bezier polynomials of degree
+at most \(R\), up to reverse order, although there are infinitely many
+Bezier polynomials of degree greater than \(R\) that can describe the
+curve \citep{SANCHEZREYES2022102118}. We further restrict the curves to
+the case \(p(0) = 0\), i.e., the curve begins at the origin. This is
+consistent with well-known models such as the DCBM and PABM when viewed
+as LSMs or mixtures of LSMs
+\citep{Koo_2022, rubindelanchy2017statistical}, as well as real networks
+that can adequately be described as LSMs \citep{athreya2020estimation}.
+This constraint also removes the reverse order nonidentifiability. Thus,
+if \(R\), the degree of the polynomial, can be determined, and the curve
+begins at the origin, a collection of \(n \geq R\) unique vectors on the
+curve and not at the origin can determine the unique Bezier polynomial
+that describes the curve.
+
+A Bezier polynomial of this form, is defined as \begin{equation}
+\label{eq:bezier}
+p(t; b_1, ..., b_R) = \sum_{r=1}^R \binom{R}{r} b_r (1-t)^r t^{R-r},
+\end{equation} where \(b_r \in \mathbb{R}^d\) are Bezier coefficients
+(control points). In the scenario in which an adjacency matrix \(A\)
+sampled from an LSM with curve \(p\) that can be described by a Bezier
+polynomial, the ASE of \(A\) consists of embedding vectors that lie on
+or near a rotation of the curve. Then if embedding vectors
+\(x_1, ..., x_n \in \mathbb{R}^d\) are such that
+\(x_i = p(t_i) + \epsilon_i\) (for simplicity, redefine \(p\) to be the
+rotated version of the original curve), the squared loss function for
+the curve fit is of the form \begin{equation}
+\label{eq:bezier-loss-full}
+L(t_1, ..., t_n; b_1, ..., b_R) = \sum_{i=1}^n \big( x_i - p(t_i; b_1, ..., b_R) \big)^2.
+\end{equation}
+
+Letting
+\(X = \bigl[ x_1 \; \cdots \; x_n \bigr]^\top \in \mathbb{R}^{n \times p}\),
+\(T \in \mathbb{R}^{n \times R}\) such that
+\(T_{ir} = \binom{R}{r} (1-t_i)^{R-r} t_i^r\),
+\(b = \bigl[b_1 \; \cdots \; b_R\bigr]^\top \in \mathbb{R}^{R \times d}\),
+the loss function can be rewritten as \begin{equation}
+\label{eq:bezier-loss}
+L(T, b) = \|X - T b\|_F^2,
+\end{equation} where \(\|\cdot\|_F\) is the Frobenius norm. Then if
+\(t_1, ..., t_n\) are known, the solution to the least squares best fit
+Bezier coefficients is given by the ordinary least squares estimate,
+\begin{equation}
+\label{eq:bezier-ols}
+\hat{b} = (T^\top T)^{-1} T^\top X.
+\end{equation}
+
+On the other hand, if the coefficients are known but the timepoints
+\(t_1, ..., t_n\) are not, this turns into \(n\) individual minimization
+problems for polynomials of degree \(2 R\). More precisely,
+\(L(t_1, ..., t_n; b_1, ..., b_R) = \sum_{i=1}^n L(t_i; b_1, ..., b_R)\)
+where \begin{equation}
+\label{eq:bezier-ls}
+L(t_i; b_1, ..., b_R) = x_i - \sum_r \binom{R}{r} b_r (1-t_i)^{R-r} t_i^r. 
+\end{equation} To solve, we find the at most \(2 R - 1\) roots of its
+derivative, \begin{equation}
+\label{eq:dbezier}
+\dot{L}(t_i; b_1, ..., b_R) = \bigg(\sum_{r=1}^R \binom{R}{r} (-1)^r c_r t_i^r \bigg) \bigg(\sum_{r=0}^{R-1} \binom{R-1}{r} (-1)^r c_{r+1} t_i^r \bigg) = 0,
+\end{equation} where \(c_r = \sum_{s=1}^r (-1)^{r-s} \binom{r}{s} b_s\).
+Since each \(t_i\) can be solved separately, this method is highly
+parallelizable.
+
+For initialization, the ordering of \(t_1, ..., t_n\) is determined via
+a one-dimensional Isomap embedding \citep{Tenenbaum2000-ff}.
+
+Combining equation \ref{eq:bezier-ols} with the solutions to equation
+\ref{eq:dbezier} for each \(i = 1, ..., n\) provides an alternating
+coordinate descent algorithm, as outlined in algorithm
+\ref{alg:bezier-fit}.
+
+\begin{algorithm}[h]
+\label{alg:bezier-fit}
+\DontPrintSemicolon
+\SetAlgoLined
+\setstretch{1.1}
+\KwData{Adjacency matrix $A$, embedding dimension $d$, polynomial degree $R$, Isomap neighborhood parameter $\lambda$, stopping criterion $\epsilon$.}
+\KwResult{Bezier coefficients $\hat{b}$, timepoint values $\hat{t}_1, ..., \hat{t}_n$.}
+Compute $\hat{X} \in \mathbb{R}^{n \times d}$, the ASE of $A$.\;
+Initialize timepoints $\hat{t}_1, ..., \hat{t}_n$, first via a one-dimensional Isomap embedding of $\hat{X}$ using neighborhood parameter $\lambda$, then by normalizing the embedding to $[0, 1]$.\;
+\Repeat {the change in equation \ref{eq:bezier-ls} is less than $\epsilon$.} {
+  Fit $\hat{b}$ by equation \ref{eq:bezier-ols}.\;
+  \For {$i = 1, ..., n$} {
+    Fit $\hat{t}_i$ by equation by finding the roots of equation \ref{eq:dbezier} and choosing the roots that minimizes equation \ref{eq:bezier-ls}.\;
+  }
+}
+\caption{Procedure for estimating an LSM curve as a Bezier polynomial from an adjacency matrix.}
+\end{algorithm}
+
+In the case of a mixture of LSMs (as in remark \ref{rem:lsm-mixture}),
+algorithm \ref{alg:bezier-fit} is modified by fitting Bezier polynomials
+for each vertex label (if the labels are known) or by estimating the
+labels via an alternating coordinate descent algorithm outlined in
+algorithm \ref{alg:bezier-fit-mixture}.
+
+\begin{algorithm}[H]
+\label{alg:bezier-fit-mixture}
+\DontPrintSemicolon
+\SetAlgoLined
+\setstretch{1.1}
+\KwData{Adjacency matrix $A$, embedding dimension $d$, polynomial degree $R$, number of latent structures $K$, Isomap neighborhood parameter $\lambda$, stopping criterion $\epsilon$.}
+\KwResult{Bezier coefficients $\hat{b}$, timepoint values $\hat{t}_1, ..., \hat{t}_n$, curve memberships $\hat{z}_1, ..., \hat{z}_n$.}
+Compute $\hat{X} \in \mathbb{R}^{n \times d}$, the ASE of $A$.\;
+Initialize $\hat{z}_1, ..., \hat{z}_n \in \{1, ..., K\}$, the membership of each vertex to each latent curve.\;
+\For {$k = 1, ..., K$} {
+  Subset the rows of $\hat{X}$ by $z_i = k$ to obtain $\hat{x}_{k_1}, ..., \hat{x}_{k_{n_k}}$, where $n_k$ is the number of vertices with label $k$.\;
+  Initialize timepoints $\hat{t}_{k_1}, ..., \hat{t}_{k_{n_k}}$, first via a one-dimensional Isomap embedding of $\hat{x}_{k_1}, ..., \hat{x}_{k_{n_k}}$ using neighborhood parameter $\lambda$, then by normalizing the embedding to $[0, 1]$.\;
+}
+\Repeat {the change in equation \ref{eq:bezier-ls} is less than $\epsilon$.} {
+  \For {$k = 1, ..., K$} {
+    Fit $\hat{b}^{(k)}$ by equation \ref{eq:bezier-ols}, using the row subsets of $T$ and $X$ such that $z_i = k$.\;
+    \For {$i = 1, ..., n_k$} {
+      Fit $\hat{t}_{k_i}$ by equation by finding the roots of equation \ref{eq:dbezier} and choosing the roots that minimizes equation \ref{eq:bezier-ls}.\;
+    }
+  }
+  \For {$k = 1, ..., n$} {
+    Reassign $z_i$ based on the latent curve closest to $\hat{x}_i$. 
+  }
+}
+\caption{Procedure for estimating multiple LSM curves as a Bezier polynomial from an adjacency matrix.}
+\end{algorithm}
+
+\begin{lemma}[Recovery of LSM curves in noiseless case]
+\label{lem:lsm-noiseless}
+Suppose $t_1, ..., t_n \iid F_\theta$ such that $F_\theta$ has probability density function $f_\theta(t)$ that is absolutely continuous on support $[0, 1]$ and $\min_t f_\theta(t) > 0$ $\forall t \in [0, 1]$. 
+Let each $x_i = p(t_i)$ such that $p: [0, 1] \to \mathbb{R}^d$ is a non-self-intersecting Bezier polynomial of degree $R$ that begins at the origin with unknown coefficients $b_1, ..., b_R$. 
+Then there exists a sequence of Isomap neighborhood parameters $\lambda_n \to 0$ such that as $n \to \infty$, algorithm \ref{alg:bezier-fit}, $L(t_1, ..., t_n; b_1, ..., b_R) \stackrel{p}{\to} 0$.
+\end{lemma}
+
+\begin{proof}
+Let $z_1, ..., z_n$ be the one-dimensional Isomap embedding of $x_1, ..., x_n$ using neighborhood parameter $\lambda_n$, and let $l_{ij}$ be the arc length along the curve defined by $p$ between $x_i$ and $x_j$. 
+Then by theorem 5 of \citet{acharyya2023}, $|z_i - z_j| - l_{ij} \stackrel{p}{\to} 0$ $\forall i, j \in \{1, ...,n\}$. 
+Let $z_{\min} = \min_i z_i$ and $z_{\max} = \max_i z_i$, and initialize each $\hat{t}_i = (z_i - z_{\min}) / (z_{\max} - z_{\min})$. 
+\end{proof}
+
+\begin{theorem}[Recovery of timepoints of the LSM]
+Suppose $A \sim \LSM(p, F_\theta)$ such that $p : [0, 1] \to \mathbb{R}^d$ is a bezier polynomial of degree $R$ and $F_\theta$ is a probability distribution with probability density function $f_\theta(t)$ that is absolutely continuous on support $[0, 1]$ and $\min_t f_\theta(t) > 0$ $\forall t \in [0, 1]$. 
+Let $\hat{X}$ be the ASE of $A$ with embedding vectors $\hat{x}_1, ..., \hat{x}_n \in \mathbb{R}^d$. 
+Let $\hat{t}_1, ..., \hat{t}_n$ be the timepoint estimates outputted by algorithm \ref{alg:bezier-fit}. 
+Then there exists a sequence of Isomap parameters $\lambda_n \to 0$ such that as $n \to \infty$, $|t_i - \hat{t}_i| \stackrel{p}{\to} 0$ for each $i, j \in \{1, ..., n\}$. 
+\end{theorem}
+
+\hypertarget{recovery-of-the-underlying-distributions}{%
+\subsubsection{Recovery of the Underlying
+Distributions}\label{recovery-of-the-underlying-distributions}}
+
+\begin{algorithm}[H]
+\label{alg:bezier-param-fit}
+\DontPrintSemicolon
+\SetAlgoLined
+\setstretch{1.1}
+\KwData{Adjacency matrix $A$, embedding dimension $d$, probability distribution family $F$, polynomial degree $R$, Isomap neighborhood parameter $\lambda$, stopping criterion $\epsilon$.}
+\KwResult{Bezier coefficients $\hat{b}$, timepoint values $\hat{t}_1, ..., \hat{t}_n$.}
+Compute $\hat{X} \in \mathbb{R}^{n \times d}$, the $d$-dimensional ASE of $A$.\;
+Initialize timepoints $\hat{t}_1, ..., \hat{t}_n$, first via a one-dimensional Isomap embedding of $\hat{X}$ using neighborhood parameter $\lambda$, then by normalizing the embedding to $[0, 1]$.\;
+\Repeat {the change in equation \ref{eq:bezier-ls} is less than $\epsilon$.} {
+  Fit $\hat{b}$ by equation \ref{eq:bezier-ols}.\;
+  \For {$i = 1, ..., n$} {
+    Fit $\hat{t}_i$ by equation by finding the roots of equation \ref{eq:dbezier} and choosing the roots that minimizes equation \ref{eq:bezier-ls}.\;
+  }
+}
+Estimate $\hat{\theta}$ from $\hat{t}_1, ..., \hat{t}_n$ via maximum likelihood estimation.\; 
+\caption{Procedure for estimating the underlying distribution of a Bezier LSM curve from an adjacency matrix.}
+\end{algorithm}
+
+\begin{theorem}[Consistency of algorithm \ref{alg:bezier-param-fit}]
+\end{theorem}
+
+\hypertarget{classification-and-regression}{%
+\subsubsection{Classification and
+Regression}\label{classification-and-regression}}
+
+\begin{algorithm}[H]
+\label{alg:mlsm-fit}
+\DontPrintSemicolon
+\SetAlgoLined
+\setstretch{1.1}
+\KwData{Adjacency matrices $A^{(1)}, ..., A^{(L)}$, response variables $y_1, ..., y_L$, embedding dimension $d$, probability distribution family $F$, polynomial degree $R$, Isomap neighborhood parameters $\lambda_1, ..., \lambda_L$, stopping criterion $\epsilon$.}
+\KwResult{Bezier coefficients $\hat{b}$, timepoint values $\hat{t}_1, ..., \hat{t}_n$.}
+\For {$\ell = \{1, ..., L\}$} {
+  Compute $\hat{X}^{(\ell)} \in \mathbb{R}^{n_\ell \times d}$, the $d$-dimensional ASE of $A^{(\ell)} \in \mathbb{R}^{n_\ell \times n_\ell}$.\;
+  Initialize timepoints $\hat{t}_1, ..., \hat{t}_{n_\ell}$, first via a one-dimensional Isomap embedding of $\hat{X}^{(\ell)}$ using neighborhood parameter $\lambda_\ell$, then by normalizing the embedding to $[0, 1]$.\;
+  \Repeat {the change in equation \ref{eq:bezier-ls} is less than $\epsilon$.} {
+    Fit $\hat{b}$ by equation \ref{eq:bezier-ols}.\;
+    \For {$i = 1, ..., {n_\ell}$} {
+      Fit $\hat{t}_i$ by equation by finding the roots of equation \ref{eq:dbezier} and choosing the roots that minimizes equation \ref{eq:bezier-ls}.\;
+    }
+  }
+  Estimate $\hat{\theta}_\ell$ from $\hat{t}_1, ..., \hat{t}_{n_\ell}$ via maximum likelihood estimation.\;
+}
+Fit a model for predicting $y_1, ..., y_L$ using the estimated parameters $\theta_1, ..., \theta_L$ (e.g., via linear regression).\;
+\caption{Procedure for fitting a classification or regression model for an MLSM.}
+\end{algorithm}
+
+\begin{theorem}
+\end{theorem}
+
 \hypertarget{simulation-study}{%
 \section{Simulation Study}\label{simulation-study}}
 
@@ -442,19 +680,8 @@ two sets of parameters, \((\alpha_1, \beta_1)\) and
 \item
   For each \(i = 1, ..., n\), draw
   \(t_i \mid y_i \indep \Betadist(\alpha_{y_i}, \beta_{y_i})\), such
-  that
-
-  \begin{itemize}
-  \tightlist
-  \item
-    \(\alpha_1 = 1\)
-  \item
-    \(\beta_1 = 2\)
-  \item
-    \(\alpha_2 = 2\)
-  \item
-    \(\beta_2 = 1\)
-  \end{itemize}
+  that \(\alpha_1 = 1\), \(\beta_1 = 2\), \(\alpha_2 = 2\), and
+  \(\beta_2 = 1\).
 \item
   Construct each latent vector as \(x_i = g(t_i)\) and compile them in
   data matrix \(X = \bigl[ x_1 \; \cdots \; x_n \bigr]^\top\).
@@ -547,10 +774,11 @@ is Poisson distributed, i.e., the adjacency matrix is sampled as
 \(\Theta \in \mathbb{R}_+^{n \times n}\) is a symmetric matrix of
 Poisson parameters.
 
-In this dataset, there are \(N = 516\) graphs (corresponding to
-individual subjects), each with \(n = 84\) vertices (corresponding to
-brain regions). Analyzing these graphs as RDPGs reveals that the DCBM is
-a good candidate for these data (figure \ref{fig:hcp-ase}).
+In this dataset, there are \(L = 516\) graphs (corresponding to
+individual subjects), each with \(n_\ell = n = 84\) vertices
+(corresponding to brain regions). Analyzing these graphs as RDPGs
+reveals that the DCBM is a good candidate for these data (figure
+\ref{fig:hcp-ase}).
 
 \begin{figure}[H]
 
@@ -570,36 +798,38 @@ a good candidate for these data (figure \ref{fig:hcp-ase}).
 \caption{Scatterplot between the subject age (in months) vs. the fitted angle between hemispheres of the brain in the latent space.}\label{fig:hcp-age-regression}
 \end{figure}
 
-\begin{figure}[H]
-
-{\centering \includegraphics[width=1\linewidth]{draft_files/figure-latex/hcp-age-regression-degree-1} 
-
-}
-
-\caption{Scatterplot between the subject age (in months) vs. the average degree within (left) and between (right) hemispheres.}\label{fig:hcp-age-regression-degree}
-\end{figure}
-
-The ASE suggests a latent structure comprised of two line segments, one
-for each hemisphere of the brain, that meet at the origin. One possible
-parameter is the angle between the two lines. The estimated angles were
+The ASE suggests a latent structure comprised of two Bezier curves of
+degree 1 (i.e., lines), one for each hemisphere of the brain, that meet
+at the origin. One possible parameter when analyzing these data as a
+MLSM is the angle between the two lines. The estimated angles were
 observed to correlate with the subject's age, with wider angles
 corresponding to older subjects (figure \ref{fig:hcp-age-regression}). A
 linear regression setting aside half of the brain connectivity graphs as
-test data achieves an RMSE of \(11.89\) months.
+test data achieves an RMSE of \(11.889\) months.
 
-Other plausible statistics from the graphs are the average degrees
-within and between hemispheres. When analyzing these as stochastic block
-models (SBM) or degree corrected block models (DCBM), these statistics
-would roughly correspond to the expected edge weights within and between
-communities. Both of these statistics are correlated with the target
-value (figure \ref{fig:hcp-age-regression-degree}), but a linear model
-using them (i.e., \(age \sim degree_{within} + degree_{between}\))
-achieves a higher RMSE (\(12.3\) months) while adding another parameter
-to the model. Similarly, the assortativity of each graph with respect to
-hemisphere results in a higher RMSE of \(156.5\) when regressed on age.
+To compare this parameter as a covariate for age against other network
+statistics, we analyzed these data as a multilayer DCBM, first studied
+by \citep{agterberg2022joint}, who proposed the degree corrected
+multiple adjacency spectral embedding (DC-MASE) algorithm. Since these
+graphs come with hemisphere labels, we did not apply DC-MASE for
+community detection but instead used the estimators for the three edge
+connectivity parameters, \(B_{LL}\), \(B_{RR}\), and \(B_{LR}\). A
+linear model trained on these parameter estimates achieves a higher RMSE
+of \(12.889\) months, despite using three covariates instead of one. In
+addition, since the angles between the latent structures under the MLSM
+depend primarily on the shape of the latent structures rather than the
+exact community memberships, it does not depend on recovery of the
+original community labels. Ultimately, these two methods are estimators
+for transformations of the same parameters, and while we cannot
+determine how close these estimates are on the ``true'' edge
+connectivity parameters since they are unknown, we observe that the MLSM
+estimate is a better linear predictor than the rest.
 
-We also note that this structure is consistent with the DCBM. The
-multilayer DCBM was previously studied by \citet{agterberg2022joint}
+Other graph statistics were extracted for each brain network, and their
+correlations to age are reported in table \ref{tab:cor-comparison}. Note
+that aside from the angle between the latent structures under the MLSM
+model, these statistics assume that it is known which vertex belongs to
+which hemisphere.
 
 \begin{center}\includegraphics[width=1\linewidth]{draft_files/figure-latex/cosine-heatmap-1} \end{center}
 
@@ -611,27 +841,44 @@ multilayer DCBM was previously studied by \citet{agterberg2022joint}
 
 \begin{center}\includegraphics[width=1\linewidth]{draft_files/figure-latex/cosine-heatmap-2-4} \end{center}
 
-\begin{longtable}[]{@{}lr@{}}
+\begin{longtable}[]{@{}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 4\tabcolsep) * \real{0.5915}}
+  >{\raggedleft\arraybackslash}p{(\columnwidth - 4\tabcolsep) * \real{0.1690}}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 4\tabcolsep) * \real{0.2394}}@{}}
 \caption{Correlation between age and various graph
 metrics}\tabularnewline
 \toprule\noalign{}
-Metric & Correlation \\
+\begin{minipage}[b]{\linewidth}\raggedright
+Metric
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedleft
+Correlation
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+95\% conf. int.
+\end{minipage} \\
 \midrule\noalign{}
 \endfirsthead
 \toprule\noalign{}
-Metric & Correlation \\
+\begin{minipage}[b]{\linewidth}\raggedright
+Metric
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedleft
+Correlation
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+95\% conf. int.
+\end{minipage} \\
 \midrule\noalign{}
 \endhead
 \bottomrule\noalign{}
 \endlastfoot
-Angle between hemispheres & 0.558 \\
-Degree within hemisphere & 0.436 \\
-Degree between hemispheres & -0.499 \\
-Number of triangles in left hemisphere & -0.025 \\
-Number of triangles in right hemisphere & 0.002 \\
-Assortativity w.r.t. hemisphere & 0.436 \\
-Transitivity & -0.261 \\
-Modularity w.r.t. hemisphere & 0.434 \\
+Angle between hemispheres & 0.558 & (0.496, 0.615) \\
+Edge connectivity within left hemisphere & 0.241 & (0.158, 0.321) \\
+Edge connectivity within right hemisphere & 0.243 & (0.16, 0.322) \\
+Edge connectivity between hemispheres & -0.436 & (-0.503, -0.363) \\
+Degree within hemisphere & 0.436 & (0.363, 0.503) \\
+Degree between hemispheres & -0.499 & (-0.561, -0.431) \\
+Number of triangles in left hemisphere & -0.025 & (-0.111, 0.062) \\
+Number of triangles in right hemisphere & 0.002 & (-0.084, 0.088) \\
+Assortativity w.r.t. hemisphere & 0.436 & (0.363, 0.503) \\
+Modularity w.r.t. hemisphere & 0.434 & (0.362, 0.502) \\
 \end{longtable}
 
 \hypertarget{discussion}{%

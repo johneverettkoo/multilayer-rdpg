@@ -96,6 +96,13 @@ ase.stats.df <- foreach(id = ids, .combine = dplyr::bind_rows) %dopar% {
   
   A.eigen <- eigen(A, symmetric = TRUE)
   
+  degrees <- colSums(A)
+  n.l <- sum(z == 'L')
+  n.r <- sum(z == 'R')
+  B.ll <- 1 / n.l / n.l * sum(A[z == 'L', z == 'L'])
+  B.rr <- 1 / n.r / n.r * sum(A[z == 'R', z == 'R'])
+  B.lr <- 1 / n.l / n.r * sum(A[z == 'L', z == 'R'])
+  
   individual.stats.df <- dplyr::tibble(
     id = id,
     a.l = params.l[1],
@@ -108,7 +115,10 @@ ase.stats.df <- foreach(id = ids, .combine = dplyr::bind_rows) %dopar% {
     deg.within = deg.within,
     deg.between = deg.between,
     lambda1 = A.eigen$values[1],
-    lambda2 = A.eigen$values[2]
+    lambda2 = A.eigen$values[2],
+    B.ll = B.ll,
+    B.rr = B.rr,
+    B.lr = B.lr
   )
   
   return(individual.stats.df)
@@ -119,7 +129,7 @@ ase.stats.df <- foreach(id = ids, .combine = dplyr::bind_rows) %dopar% {
     by = 'id'
   )
 
-GGally::ggpairs(ase.stats.df, columns = c(2:14), 
+GGally::ggpairs(ase.stats.df, columns = c(5:17), 
                 aes(colour = sex)) + 
   theme_bw()
 
