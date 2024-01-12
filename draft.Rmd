@@ -431,25 +431,51 @@ Initialize $\hat{z}_1, ..., \hat{z}_n \in \{1, ..., K\}$, the membership of each
 \caption{Procedure for estimating multiple LSM curves as a Bezier polynomial from an adjacency matrix.}
 \end{algorithm}
 
-\begin{lemma}[Recovery of LSM curves in noiseless case]
-\label{lem:lsm-noiseless}
-Suppose $t_1, ..., t_n \iid F_\theta$ such that $F_\theta$ has probability density function $f_\theta(t)$ that is absolutely continuous on support $[0, 1]$ and $\min_t f_\theta(t) > 0$ $\forall t \in [0, 1]$. 
-Let each $x_i = p(t_i)$ such that $p: [0, 1] \to \mathbb{R}^d$ is a non-self-intersecting Bezier polynomial of degree $R$ that begins at the origin with unknown coefficients $b_1, ..., b_R$. 
-Then there exists a sequence of Isomap neighborhood parameters $\lambda_n \to 0$ such that as $n \to \infty$, algorithm \ref{alg:bezier-fit}, $L(t_1, ..., t_n; b_1, ..., b_R) \stackrel{p}{\to} 0$.
+\begin{lemma}
+\label{lem:bezier-consistency}
+Suppose $A \sim \LSM(p, F_\theta)$ such that $p : [0, 1] \to \mathbb{R}^d$ is a Bezier polynomial of degree $R$ with coefficients $b$, and $F_\theta$ is a probability distribution with probability density function $f_\theta(t)$ that is absolutely continuous on support $[0, 1]$ and $\min_t f_\theta(t) > 0$ $\forall t \in [0, 1]$. 
+Let $\hat{T}$ and $\hat{b}$ be the minimizers of the loss function in equation \ref{eq:bezier-ls} from $A$, and let $\tilde{X} = \hat{T} \hat{b}$, the estimated vectors along the fitted Bezier curve. 
+Then as $n \to \infty$, $\|X - \tilde{X} W\|_{2,\infty} \stackrel{p}{\to} 0$ for some $W \in \mathbb{O}(d)$.
 \end{lemma}
 
 \begin{proof}
-Let $z_1, ..., z_n$ be the one-dimensional Isomap embedding of $x_1, ..., x_n$ using neighborhood parameter $\lambda_n$, and let $l_{ij}$ be the arc length along the curve defined by $p$ between $x_i$ and $x_j$. 
-Then by theorem 5 of \citet{acharyya2023}, $|z_i - z_j| - l_{ij} \stackrel{p}{\to} 0$ $\forall i, j \in \{1, ...,n\}$. 
-Let $z_{\min} = \min_i z_i$ and $z_{\max} = \max_i z_i$, and initialize each $\hat{t}_i = (z_i - z_{\min}) / (z_{\max} - z_{\min})$. 
+Let $X$ be the true latent positions of the LSM and $\hat{X}$ be the ASE of $A$ drawn from $X$. 
+Then $X = T b$, and $\hat{X} = \hat{T} \hat{b} + \hat{E}$, where $\hat{E}$ is the matrix of distances from the estimated positions along the fitted Bezier curves and the embedding vectors. 
+Then
+$$
+\begin{aligned}
+\|X - \tilde{X} W\| & = \|T b - \hat{T} \hat{b} W\|_{2,\infty} \\
+& = \|T b - (\hat{T} \hat{b} + \hat{E} - \hat{E}) W \|_{2,\infty} \\
+& = \|T b - (\hat{T} \hat{b} + \hat{E}) W + \hat{E} W\|_{2,\infty} \\
+& \leq \|X - \hat{X} W\|_{2,\infty} + \|\hat{E} W\|_{2,\infty}.
+\end{aligned}
+$$
+The first term $\|X - \hat{X} W\|_{2,\infty}$ converges to $0$ in probability \citep{lyzinski2014}. 
+Since the ASE is consistent, the embedding vectors will converge in probability to a Bezier curve, so $\|\hat{E} W\|_{2,\infty} \stackrel{p}{\to} 0$. 
 \end{proof}
 
-\begin{theorem}[Recovery of timepoints of the LSM]
-Suppose $A \sim \LSM(p, F_\theta)$ such that $p : [0, 1] \to \mathbb{R}^d$ is a bezier polynomial of degree $R$ and $F_\theta$ is a probability distribution with probability density function $f_\theta(t)$ that is absolutely continuous on support $[0, 1]$ and $\min_t f_\theta(t) > 0$ $\forall t \in [0, 1]$. 
-Let $\hat{X}$ be the ASE of $A$ with embedding vectors $\hat{x}_1, ..., \hat{x}_n \in \mathbb{R}^d$. 
-Let $\hat{t}_1, ..., \hat{t}_n$ be the timepoint estimates outputted by algorithm \ref{alg:bezier-fit}. 
-Then there exists a sequence of Isomap parameters $\lambda_n \to 0$ such that as $n \to \infty$, $|t_i - \hat{t}_i| \stackrel{p}{\to} 0$ for each $i, j \in \{1, ..., n\}$. 
+\begin{theorem}[Consistency of algorithm \ref{alg:bezier-fit}]
+\label{thm:bezier-consistency}
+Suppose $A \sim \LSM(p, F_\theta)$ such that $p : [0, 1] \to \mathbb{R}^d$ is a Bezier polynomial of degree $R$ with coefficients $b$, and $F_\theta$ is a probability distribution with probability density function $f_\theta(t)$ that is absolutely continuous on support $[0, 1]$ and $\min_t f_\theta(t) > 0$ $\forall t \in [0, 1]$. 
+Let $\hat{T}$ and $\hat{b}$ be the minimizers of the loss function in equation \ref{eq:bezier-ls} from $A$. 
+Then as $n \to \infty$, $\|T - \hat{T}\|_{2, \infty} \stackrel{p}{\to} 0$ where $T$ is defined as in equation \ref{eq:bezier-loss}, and $\|b - \hat{b} W \|_F \stackrel{p}{\to} 0$ for some $W \in \mathbb{O}(d)$.
 \end{theorem}
+
+\begin{proof}
+By lemma \ref{lem:bezier-consistency}, $\|T b - \hat{T} \hat{b} W\|_{2,\infty} \stackrel{p}{\to} 0$ as $n \to \infty$. 
+Then 
+
+$$
+\begin{aligned}
+\|T b - \hat{T} \hat{b} W\|_{2,\infty} & = \|T b - \hat{T} \hat{b} W + \hat{T} b - \hat{T} b\|_{2,\infty} \\
+& = \|(T - \hat{T}) b - \hat{T} (\hat{b} W - b)\|_{2,\infty} \\
+& \leq \|(T - \hat{T}) b\|_{2,\infty} + \|\hat{T} (\hat{b} W - b)\|_{2,\infty} \\
+& \leq \|T - \hat{T}\|_{2,\infty} \|b\|_F + \|\hat{T}\|_{2,\infty} \|b - \hat{b} W\|_F \\
+& \stackrel{p}{\to} 0.
+\end{aligned}
+$$
+$\|b\|_F$ and $\|\hat{T}\|_{2,\infty}$ are finite, so both $\|T - \hat{T}\|_{2,\infty}$ and $\|b - \hat{b} W\|_F$ must converge to $0$ in probability. 
+\end{proof}
 
 ### Recovery of the Underlying Distributions
 
@@ -473,6 +499,9 @@ Estimate $\hat{\theta}$ from $\hat{t}_1, ..., \hat{t}_n$ via maximum likelihood 
 \end{algorithm}
 
 \begin{theorem}[Consistency of algorithm \ref{alg:bezier-param-fit}]
+Suppose $A \sim \LSM(p, F_\theta)$ such that $p : [0, 1] \to \mathbb{R}^d$ is a Bezier polynomial of degree $R$ with coefficients $b$, and $F_\theta$ is a probability distribution with probability density function $f_\theta(t)$ that is absolutely continuous on support $[0, 1]$ and $\min_t f_\theta(t) > 0$ $\forall t \in [0, 1]$. 
+Let $\hat{t}_1, ..., \hat{t}_n$ and $\hat{b}$ be the minimizers of the loss function in equation \ref{eq:bezier-ls} from $A$, and let $\tilde{theta}$ be the maximum likelihood estimator for $\theta$ using $\hat{t}_1, ..., \hat{t}_n$. 
+Then $\tilde{\theta} \stackrel{p}{\to} \theta$. 
 \end{theorem}
 
 ### Classification and Regression

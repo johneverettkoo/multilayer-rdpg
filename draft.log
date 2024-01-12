@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.141592653-2.6-1.40.25 (TeX Live 2023) (preloaded format=pdflatex 2023.5.16)  17 NOV 2023 14:06
+This is pdfTeX, Version 3.141592653-2.6-1.40.25 (TeX Live 2023) (preloaded format=pdflatex 2023.5.16)  12 JAN 2024 14:20
 entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
@@ -549,111 +549,111 @@ Non-PDF special ignored!
 \c@remark=\count320
 \c@definition=\count321
 \c@example=\count322
-[2] [3] [4] [5] [6] [7] [8] [9] [10] [11] [12] [13] [14] [15] [16]
-<draft_files/figure-latex/class-sim-ase-1.pdf, id=292, 351.3125pt x 203.76125pt
+[2] [3] [4] [5] [6] [7] [8] [9] [10] [11] [12] [13] [14] [15] [16] [17]
+<draft_files/figure-latex/class-sim-ase-1.pdf, id=298, 351.3125pt x 203.76125pt
 >
 File: draft_files/figure-latex/class-sim-ase-1.pdf Graphic file (type pdf)
 <use draft_files/figure-latex/class-sim-ase-1.pdf>
 Package pdftex.def Info: draft_files/figure-latex/class-sim-ase-1.pdf  used on 
-input line 705.
+input line 734.
 (pdftex.def)             Requested size: 351.31163pt x 203.76074pt.
-<draft_files/figure-latex/classification-sim-1.pdf, id=293, 278.03876pt x 132.4
+<draft_files/figure-latex/classification-sim-1.pdf, id=299, 278.03876pt x 132.4
 95pt>
 File: draft_files/figure-latex/classification-sim-1.pdf Graphic file (type pdf)
 
 <use draft_files/figure-latex/classification-sim-1.pdf>
 Package pdftex.def Info: draft_files/figure-latex/classification-sim-1.pdf  use
-d on input line 714.
+d on input line 743.
 (pdftex.def)             Requested size: 278.03807pt x 132.49466pt.
-[17 <./draft_files/figure-latex/class-sim-ase-1.pdf>]
-<draft_files/figure-latex/angle-reg-example-1.pdf, id=313, 353.32pt x 202.7575p
+[18 <./draft_files/figure-latex/class-sim-ase-1.pdf>]
+<draft_files/figure-latex/angle-reg-example-1.pdf, id=320, 353.32pt x 202.7575p
 t>
 File: draft_files/figure-latex/angle-reg-example-1.pdf Graphic file (type pdf)
 <use draft_files/figure-latex/angle-reg-example-1.pdf>
 Package pdftex.def Info: draft_files/figure-latex/angle-reg-example-1.pdf  used
- on input line 756.
+ on input line 785.
 (pdftex.def)             Requested size: 353.31914pt x 202.757pt.
-[18 <./draft_files/figure-latex/classification-sim-1.pdf>]
-<draft_files/figure-latex/angle-reg-results-1.pdf, id=334, 279.0425pt x 132.495
+[19 <./draft_files/figure-latex/classification-sim-1.pdf>]
+<draft_files/figure-latex/angle-reg-results-1.pdf, id=342, 279.0425pt x 132.495
 pt>
 File: draft_files/figure-latex/angle-reg-results-1.pdf Graphic file (type pdf)
 <use draft_files/figure-latex/angle-reg-results-1.pdf>
 Package pdftex.def Info: draft_files/figure-latex/angle-reg-results-1.pdf  used
- on input line 758.
+ on input line 787.
 (pdftex.def)             Requested size: 279.04181pt x 132.49466pt.
-[19 <./draft_files/figure-latex/angle-reg-example-1.pdf> <./draft_files/figure-
+[20 <./draft_files/figure-latex/angle-reg-example-1.pdf> <./draft_files/figure-
 latex/angle-reg-results-1.pdf>]
-<draft_files/figure-latex/hcp-ase-1.pdf, id=362, 911.405pt x 352.31625pt>
+<draft_files/figure-latex/hcp-ase-1.pdf, id=369, 911.405pt x 352.31625pt>
 File: draft_files/figure-latex/hcp-ase-1.pdf Graphic file (type pdf)
 <use draft_files/figure-latex/hcp-ase-1.pdf>
 Package pdftex.def Info: draft_files/figure-latex/hcp-ase-1.pdf  used on input 
-line 785.
+line 814.
 (pdftex.def)             Requested size: 462.26999pt x 178.70049pt.
-<draft_files/figure-latex/hcp-age-regression-1.pdf, id=363, 351.3125pt x 206.77
+<draft_files/figure-latex/hcp-age-regression-1.pdf, id=370, 351.3125pt x 206.77
 25pt>
 File: draft_files/figure-latex/hcp-age-regression-1.pdf Graphic file (type pdf)
 
 <use draft_files/figure-latex/hcp-age-regression-1.pdf>
 Package pdftex.def Info: draft_files/figure-latex/hcp-age-regression-1.pdf  use
-d on input line 794.
+d on input line 823.
 (pdftex.def)             Requested size: 351.31163pt x 206.77199pt.
-[20 <./draft_files/figure-latex/hcp-ase-1.pdf> <./draft_files/figure-latex/hcp-
+[21 <./draft_files/figure-latex/hcp-ase-1.pdf> <./draft_files/figure-latex/hcp-
 age-regression-1.pdf>]
 
-LaTeX Warning: Reference `tab:cor-comparison' on page 21 undefined on input lin
-e 829.
+LaTeX Warning: Reference `tab:cor-comparison' on page 22 undefined on input lin
+e 858.
 
-<draft_files/figure-latex/cosine-heatmap-1.pdf, id=393, 1348.03625pt x 1423.317
+<draft_files/figure-latex/cosine-heatmap-1.pdf, id=400, 1348.03625pt x 1423.317
 5pt>
 File: draft_files/figure-latex/cosine-heatmap-1.pdf Graphic file (type pdf)
 <use draft_files/figure-latex/cosine-heatmap-1.pdf>
 Package pdftex.def Info: draft_files/figure-latex/cosine-heatmap-1.pdf  used on
- input line 834.
+ input line 863.
 (pdftex.def)             Requested size: 462.26999pt x 488.0697pt.
-[21]
-<draft_files/figure-latex/cosine-heatmap-2-1.pdf, id=398, 642.4pt x 705.63625pt
+[22]
+<draft_files/figure-latex/cosine-heatmap-2-1.pdf, id=405, 642.4pt x 705.63625pt
 >
 File: draft_files/figure-latex/cosine-heatmap-2-1.pdf Graphic file (type pdf)
 <use draft_files/figure-latex/cosine-heatmap-2-1.pdf>
 Package pdftex.def Info: draft_files/figure-latex/cosine-heatmap-2-1.pdf  used 
-on input line 836.
+on input line 865.
 (pdftex.def)             Requested size: 462.26999pt x 507.78853pt.
-[22 <./draft_files/figure-latex/cosine-heatmap-1.pdf>]
-<draft_files/figure-latex/cosine-heatmap-2-2.pdf, id=411, 642.4pt x 705.63625pt
+[23 <./draft_files/figure-latex/cosine-heatmap-1.pdf>]
+<draft_files/figure-latex/cosine-heatmap-2-2.pdf, id=418, 642.4pt x 705.63625pt
 >
 File: draft_files/figure-latex/cosine-heatmap-2-2.pdf Graphic file (type pdf)
 <use draft_files/figure-latex/cosine-heatmap-2-2.pdf>
 Package pdftex.def Info: draft_files/figure-latex/cosine-heatmap-2-2.pdf  used 
-on input line 838.
+on input line 867.
 (pdftex.def)             Requested size: 462.26999pt x 507.78853pt.
-[23 <./draft_files/figure-latex/cosine-heatmap-2-1.pdf>]
-<draft_files/figure-latex/cosine-heatmap-2-3.pdf, id=424, 642.4pt x 705.63625pt
+[24 <./draft_files/figure-latex/cosine-heatmap-2-1.pdf>]
+<draft_files/figure-latex/cosine-heatmap-2-3.pdf, id=431, 642.4pt x 705.63625pt
 >
 File: draft_files/figure-latex/cosine-heatmap-2-3.pdf Graphic file (type pdf)
 <use draft_files/figure-latex/cosine-heatmap-2-3.pdf>
 Package pdftex.def Info: draft_files/figure-latex/cosine-heatmap-2-3.pdf  used 
-on input line 840.
+on input line 869.
 (pdftex.def)             Requested size: 462.26999pt x 507.78853pt.
-[24 <./draft_files/figure-latex/cosine-heatmap-2-2.pdf>]
-<draft_files/figure-latex/cosine-heatmap-2-4.pdf, id=437, 642.4pt x 705.63625pt
+[25 <./draft_files/figure-latex/cosine-heatmap-2-2.pdf>]
+<draft_files/figure-latex/cosine-heatmap-2-4.pdf, id=445, 642.4pt x 705.63625pt
 >
 File: draft_files/figure-latex/cosine-heatmap-2-4.pdf Graphic file (type pdf)
 <use draft_files/figure-latex/cosine-heatmap-2-4.pdf>
 Package pdftex.def Info: draft_files/figure-latex/cosine-heatmap-2-4.pdf  used 
-on input line 842.
+on input line 871.
 (pdftex.def)             Requested size: 462.26999pt x 507.78853pt.
-[25 <./draft_files/figure-latex/cosine-heatmap-2-3.pdf>] [26 <./draft_files/fig
-ure-latex/cosine-heatmap-2-4.pdf>] [27] (./draft.bbl [28] [29]) [30] (./draft.a
+[26 <./draft_files/figure-latex/cosine-heatmap-2-3.pdf>] [27 <./draft_files/fig
+ure-latex/cosine-heatmap-2-4.pdf>] [28] (./draft.bbl [29] [30]) [31] (./draft.a
 ux)
 
 LaTeX Warning: There were undefined references.
 
  ) 
 Here is how much of TeX's memory you used:
- 14250 strings out of 476025
- 232353 string characters out of 5790017
- 1868388 words of memory out of 5000000
- 34277 multiletter control sequences out of 15000+600000
+ 14248 strings out of 476025
+ 232312 string characters out of 5790017
+ 1865388 words of memory out of 5000000
+ 34275 multiletter control sequences out of 15000+600000
  522621 words of font info for 71 fonts, out of 8000000 for 9000
  1141 hyphenation exceptions out of 8191
  89i,18n,90p,579b,642s stack positions out of 10000i,1000n,20000p,200000b,200000s
@@ -673,10 +673,10 @@ e/2023/texmf-dist/fonts/type1/public/amsfonts/cm/cmsy10.pfb></usr/local/texlive
 023/texmf-dist/fonts/type1/public/amsfonts/cm/cmsy8.pfb></usr/local/texlive/202
 3/texmf-dist/fonts/type1/public/amsfonts/cm/cmti12.pfb></usr/local/texlive/2023
 /texmf-dist/fonts/type1/public/amsfonts/symbols/msbm10.pfb>
-Output written on draft.pdf (30 pages, 21096492 bytes).
+Output written on draft.pdf (31 pages, 21098600 bytes).
 PDF statistics:
- 638 PDF objects out of 1000 (max. 8388607)
- 530 compressed objects within 6 object streams
+ 646 PDF objects out of 1000 (max. 8388607)
+ 537 compressed objects within 6 object streams
  187 named destinations out of 1000 (max. 500000)
  176 words of extra memory for PDF output out of 10000 (max. 10000000)
 
