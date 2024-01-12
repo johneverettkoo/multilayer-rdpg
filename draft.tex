@@ -624,11 +624,11 @@ $$
 \|T b - \hat{T} \hat{b} W\|_{2,\infty} & = \|T b - \hat{T} \hat{b} W + \hat{T} b - \hat{T} b\|_{2,\infty} \\
 & = \|(T - \hat{T}) b - \hat{T} (\hat{b} W - b)\|_{2,\infty} \\
 & \leq \|(T - \hat{T}) b\|_{2,\infty} + \|\hat{T} (\hat{b} W - b)\|_{2,\infty} \\
-& \leq \|T - \hat{T}\|_{2,\infty} \|b\|_F + \|\hat{T}\|_{2,\infty} \|b - \hat{b} W\|_F \\
-& \stackrel{p}{\to} 0.
+& \leq \|T - \hat{T}\|_{2,\infty} \|b\|_F + \|\hat{T}\|_{2,\infty} \|b - \hat{b} W\|_F.
 \end{aligned}
 $$
-$\|b\|_F$ and $\|\hat{T}\|_{2,\infty}$ are finite, so both $\|T - \hat{T}\|_{2,\infty}$ and $\|b - \hat{b} W\|_F$ must converge to $0$ in probability. 
+Since $\|T b - \hat{T} \hat{b} W\|_{2,\infty} \stackrel{p}{to} 0$, $\|T - \hat{T}\|_{2,\infty} \|b\|_F + \|\hat{T}\|_{2,\infty} \|b - \hat{b} W\|_F \stackrel{p}{\to} 0$. 
+Then since $\|b\|_F$ and $\|\hat{T}\|_{2,\infty}$ are finite, both $\|T - \hat{T}\|_{2,\infty}$ and $\|b - \hat{b} W\|_F$ must converge to $0$ in probability. 
 \end{proof}
 
 \hypertarget{recovery-of-the-underlying-distributions}{%

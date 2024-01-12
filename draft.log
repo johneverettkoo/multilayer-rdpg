@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.141592653-2.6-1.40.25 (TeX Live 2023) (preloaded format=pdflatex 2023.5.16)  12 JAN 2024 14:20
+This is pdfTeX, Version 3.141592653-2.6-1.40.25 (TeX Live 2023) (preloaded format=pdflatex 2023.5.16)  12 JAN 2024 14:23
 entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
@@ -550,14 +550,14 @@ Non-PDF special ignored!
 \c@definition=\count321
 \c@example=\count322
 [2] [3] [4] [5] [6] [7] [8] [9] [10] [11] [12] [13] [14] [15] [16] [17]
-<draft_files/figure-latex/class-sim-ase-1.pdf, id=298, 351.3125pt x 203.76125pt
+<draft_files/figure-latex/class-sim-ase-1.pdf, id=299, 351.3125pt x 203.76125pt
 >
 File: draft_files/figure-latex/class-sim-ase-1.pdf Graphic file (type pdf)
 <use draft_files/figure-latex/class-sim-ase-1.pdf>
 Package pdftex.def Info: draft_files/figure-latex/class-sim-ase-1.pdf  used on 
 input line 734.
 (pdftex.def)             Requested size: 351.31163pt x 203.76074pt.
-<draft_files/figure-latex/classification-sim-1.pdf, id=299, 278.03876pt x 132.4
+<draft_files/figure-latex/classification-sim-1.pdf, id=300, 278.03876pt x 132.4
 95pt>
 File: draft_files/figure-latex/classification-sim-1.pdf Graphic file (type pdf)
 
@@ -652,7 +652,7 @@ LaTeX Warning: There were undefined references.
 Here is how much of TeX's memory you used:
  14248 strings out of 476025
  232312 string characters out of 5790017
- 1865388 words of memory out of 5000000
+ 1867388 words of memory out of 5000000
  34275 multiletter control sequences out of 15000+600000
  522621 words of font info for 71 fonts, out of 8000000 for 9000
  1141 hyphenation exceptions out of 8191
@@ -673,7 +673,7 @@ e/2023/texmf-dist/fonts/type1/public/amsfonts/cm/cmsy10.pfb></usr/local/texlive
 023/texmf-dist/fonts/type1/public/amsfonts/cm/cmsy8.pfb></usr/local/texlive/202
 3/texmf-dist/fonts/type1/public/amsfonts/cm/cmti12.pfb></usr/local/texlive/2023
 /texmf-dist/fonts/type1/public/amsfonts/symbols/msbm10.pfb>
-Output written on draft.pdf (31 pages, 21098600 bytes).
+Output written on draft.pdf (31 pages, 21098814 bytes).
 PDF statistics:
  646 PDF objects out of 1000 (max. 8388607)
  537 compressed objects within 6 object streams
