@@ -8,14 +8,13 @@ doMC::registerDoMC(parallel::detectCores())
 
 nrep <- 50
 
-K <- 2
 beta0 <- 1
 beta1 <- 2
 beta2 <- -1
 sigma_eps <- 1
 
 N <- 2 ^ 6
-n.vec <- 2 ^ c(10, 9, 8, 7, 6)
+n.vec <- 2 ^ c(9, 8, 7, 6)
 
 sim.dir <- '~/dev/multilayer-rdpg/simulations/beta-regression'
 
@@ -49,7 +48,7 @@ out.df <- foreach(n = n.vec, .combine = dplyr::bind_rows) %do% {
         } else {
           a <- runif(1, 1, 2)
           b <- runif(1, 1, 2)
-          y <- beta0 + beta1 * a + beta2 * b + rnorm(1, sigma_eps)
+          y <- beta0 + beta1 * a + beta2 * b + rnorm(1, 0, sigma_eps)
           t. <- rbeta(n, a, b)
           x1 <- t. ^ 2
           x2 <- 2 * t. * (1 - t.)
