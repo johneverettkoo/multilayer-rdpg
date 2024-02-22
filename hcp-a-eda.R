@@ -105,13 +105,13 @@ ase.stats.df <- foreach(id = ids, .combine = dplyr::bind_rows) %dopar% {
   
   individual.stats.df <- dplyr::tibble(
     id = id,
-    # a.l = params.l[1],
-    # b.l = params.l[2],
-    # a.r = params.r[1],
-    # b.r = params.r[2],
+    a.l = params.l[1],
+    b.l = params.l[2],
+    a.r = params.r[1],
+    b.r = params.r[2],
     angle.diff = angle.diff,
-    # radius.l = radius.l,
-    # radius.r = radius.r,
+    radius.l = radius.l,
+    radius.r = radius.r,
     deg.within = deg.within,
     deg.between = deg.between,
     lambda1 = A.eigen$values[1],
@@ -292,3 +292,18 @@ A.list <- lapply(ids, function(id) {
   
   return(A)
 })
+
+ase.stats.long.df <- dplyr::tibble(
+  a = c(ase.stats.df$a.l, ase.stats.df$a.r),
+  b = c(ase.stats.df$b.l, ase.stats.df$b.r),
+  radius = c(ase.stats.df$radius.l, ase.stats.df$radius.r),
+  hemisphere = c(rep('left', nrow(ase.stats.df)), rep('right', nrow(ase.stats.df)))
+)
+ggplot(ase.stats.long.df) + 
+  geom_point(aes(x = a, y = b, colour = hemisphere)) + 
+  coord_fixed()
+ggplot(ase.stats.long.df) + 
+  geom_density(aes(x = radius, group = hemisphere))
+
+zhat <- mclust::Mclust(ase.stats.long.df[c('a', 'b')], G = 2)$classification
+plot(a ~ b, data = ase.stats.long.df, col = zhat)
