@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.141592653-2.6-1.40.25 (TeX Live 2023) (preloaded format=pdflatex 2023.5.16)  26 JAN 2024 13:49
+This is pdfTeX, Version 3.141592653-2.6-1.40.25 (TeX Live 2023) (preloaded format=pdflatex 2023.5.16)  20 FEB 2024 18:32
 entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
@@ -643,17 +643,30 @@ Package pdftex.def Info: draft_files/figure-latex/cosine-heatmap-2-4.pdf  used
 on input line 869.
 (pdftex.def)             Requested size: 462.26999pt x 507.78853pt.
 [26 <./draft_files/figure-latex/cosine-heatmap-2-3.pdf>] [27 <./draft_files/fig
-ure-latex/cosine-heatmap-2-4.pdf>] [28] (./draft.bbl [29] [30]) [31] (./draft.a
-ux)
+ure-latex/cosine-heatmap-2-4.pdf>]
+<draft_files/figure-latex/hcp-clustering-1.pdf, id=473, 512.91624pt x 277.035pt
+>
+File: draft_files/figure-latex/hcp-clustering-1.pdf Graphic file (type pdf)
+<use draft_files/figure-latex/hcp-clustering-1.pdf>
+Package pdftex.def Info: draft_files/figure-latex/hcp-clustering-1.pdf  used on
+ input line 927.
+(pdftex.def)             Requested size: 512.915pt x 277.03432pt.
+
+Overfull \hbox (50.645pt too wide) in paragraph at lines 927--928
+ [][] 
+ []
+
+[28] [29 <./draft_files/figure-latex/hcp-clustering-1.pdf>] (./draft.bbl [30] [
+31]) [32] (./draft.aux)
 
 LaTeX Warning: There were undefined references.
 
  ) 
 Here is how much of TeX's memory you used:
- 14249 strings out of 476025
- 232319 string characters out of 5790017
+ 14261 strings out of 476025
+ 232793 string characters out of 5790017
  1865388 words of memory out of 5000000
- 34275 multiletter control sequences out of 15000+600000
+ 34284 multiletter control sequences out of 15000+600000
  522621 words of font info for 71 fonts, out of 8000000 for 9000
  1141 hyphenation exceptions out of 8191
  89i,18n,90p,579b,642s stack positions out of 10000i,1000n,20000p,200000b,200000s
@@ -673,10 +686,10 @@ e/2023/texmf-dist/fonts/type1/public/amsfonts/cm/cmsy10.pfb></usr/local/texlive
 023/texmf-dist/fonts/type1/public/amsfonts/cm/cmsy8.pfb></usr/local/texlive/202
 3/texmf-dist/fonts/type1/public/amsfonts/cm/cmti12.pfb></usr/local/texlive/2023
 /texmf-dist/fonts/type1/public/amsfonts/symbols/msbm10.pfb>
-Output written on draft.pdf (31 pages, 21098533 bytes).
+Output written on draft.pdf (32 pages, 21166074 bytes).
 PDF statistics:
- 648 PDF objects out of 1000 (max. 8388607)
- 539 compressed objects within 6 object streams
- 188 named destinations out of 1000 (max. 500000)
- 176 words of extra memory for PDF output out of 10000 (max. 10000000)
+ 663 PDF objects out of 1000 (max. 8388607)
+ 550 compressed objects within 6 object streams
+ 190 named destinations out of 1000 (max. 500000)
+ 181 words of extra memory for PDF output out of 10000 (max. 10000000)
 

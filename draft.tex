@@ -107,7 +107,7 @@ been shown that the RDPG describes a wide range of popular random graph
 models with rigid latent structures. More recently, joint modeling of
 mutliple random graphs that share common properties or structures across
 graphs have been introduced, such as the multilayer RDPG, multiple RPDG,
-multilayer stochastic block model, etc. In this work, we use these joint
+and multilayer stochastic block model. In this work, we use these joint
 random graph models in the context of statistical learning, such as
 classification and regression, by introducing the multiple latent
 structure model, in which the graphs share a common latent structure
@@ -907,6 +907,29 @@ Number of triangles in right hemisphere & 0.002 & (-0.084, 0.088) \\
 Assortativity w.r.t. hemisphere & 0.436 & (0.363, 0.503) \\
 Modularity w.r.t. hemisphere & 0.434 & (0.362, 0.502) \\
 \end{longtable}
+
+Next, we considered each hemisphere separately and fit a Beta
+distribution to the embedding of each half-network. The scatterplot of
+the fitted \(\alpha\) and \(\beta\) parameters suggests that there are
+two clusters of brain networks (figure \ref{fig:hcp-clustering}).
+Greater \(\alpha\) values correspond to more embedding vectors farther
+away from the origin, corresponding to more nodes of higher degree,
+which in turn correspond to more brain regions with a greater number of
+connections. Conversely, greater \(\beta\) values correspond to more
+embedding vectors closer to the origin, which in turn correspond to more
+brain regions with fewer connections. This may suggest that there are
+underlying groups, one of which tends to have higher connectivity in the
+left hemisphere, and the other having higher connectivity in the right
+hemisphere.
+
+\begin{figure}[H]
+
+{\centering \includegraphics{draft_files/figure-latex/hcp-clustering-1} 
+
+}
+
+\caption{Scatterplot of fitted parameters of the Beta distribution. The left image are the parameters fitted on the embedding of the left hemisphere, and the right image are the parameters fitted on the embedding of the right hemisphere.}\label{fig:hcp-clustering}
+\end{figure}
 
 \hypertarget{discussion}{%
 \section{Discussion}\label{discussion}}
