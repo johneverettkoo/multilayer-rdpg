@@ -748,6 +748,10 @@ classification error rates.
 \hypertarget{regression}{%
 \subsection{Regression}\label{regression}}
 
+In the first regression simulation,
+
+In the next regression simulation, we applied
+
 \begin{enumerate}
 \def\labelenumi{\arabic{enumi}.}
 \tightlist
@@ -787,17 +791,70 @@ replicates.
 \hypertarget{applications}{%
 \section{Applications}\label{applications}}
 
+\hypertarget{drosophila-connectome}{%
+\subsection{Drosophila Connectome}\label{drosophila-connectome}}
+
+In the second example, we analyzed the larval \emph{Drosophila} mushroom
+body connectome \citep{Eichler141762}, which has been studied as a GRDPG
+by \citet{athreya2020estimation}. This dataset consists of two graphs
+representing two networks of neurons, one for each hemisphere of the
+\emph{Drosophila} brain. In these graphs, each vertex is a neuron, and
+the labels correspond to one of four neuron types (Kenyon Cells, Input
+Neurons, Output Neurons, and Projection Neurons). The resulting graphs
+are illustrated in figure \ref{fig:mbconnectome-graph}.
+
+\begin{figure}[H]
+
+{\centering \includegraphics{draft_files/figure-latex/mbconnectome-graph-1} 
+
+}
+
+\caption{Graphs of the Drosophila connectomes. The left and right are of the left and right hemispheres, respectively. Each vertex represents a neuron, which are labeled by neuron type.}\label{fig:mbconnectome-graph}
+\end{figure}
+
+\begin{figure}[H]
+
+{\centering \includegraphics{draft_files/figure-latex/mbconnectome-ase-1} 
+
+}
+
+\caption{ASEs of the Drosophila connectome graphs. The embedding vectors are labeled by neuron type. }\label{fig:mbconnectome-ase}
+\end{figure}
+
+When analyzed as a GRDPG, the ASE of each hemisphere suggests that nodes
+of each type falls along a curve in the latent space (figure
+\ref{fig:mbconnectome-ase}). This matches observations by
+\citet{athreya2020estimation}. In our analysis, we set the embedding
+dimension to \(d = 4\), with 3 assortative dimensions and 1
+disassortative dimension. We fit three latent structure Bezier curves,
+one for Kenyon Cells, one for Input and Output Neurons, and one for
+Projection Neurons, to the embedding for each hemisphere. Then we fit a
+Beta distribution to to the timepoints along each curve and extracted
+the two Beta parameter estimates (via likelihood maximization) for each
+curve. If these Beta parameters are informative, we would expect the
+parameters for each hemisphere to match by neuron type, which is what we
+observe in these data (fig \ref{fig:mbconnectome-beta}).
+
+\begin{figure}[H]
+
+{\centering \includegraphics{draft_files/figure-latex/mbconnectome-beta-1} 
+
+}
+
+\caption{Beta parameter estimates for each curve and hemisphere.}\label{fig:mbconnectome-beta}
+\end{figure}
+
 \hypertarget{human-connectome-project-aging-study}{%
 \subsection{Human Connectome Project Aging
 Study}\label{human-connectome-project-aging-study}}
 
-In the first example, we analyzed fiber count data between brain regions
-from the Human Connectome Project (HCP). When analyzing these data as
-graphs, we denote the regions as vertices and the fiber counts between
-pairs of regions as weighted edges. A plausible statistical model for
-these data is to assume that the edge weights between pairs of vertices
-is Poisson distributed, i.e., the adjacency matrix is sampled as
-\(A_{ij} \indep \Poisson(\Theta_{ij})\), where
+In the second example, we analyzed fiber count data between brain
+regions from the Human Connectome Project (HCP). When analyzing these
+data as graphs, we denote the regions as vertices and the fiber counts
+between pairs of regions as weighted edges. A plausible statistical
+model for these data is to assume that the edge weights between pairs of
+vertices is Poisson distributed, i.e., the adjacency matrix is sampled
+as \(A_{ij} \indep \Poisson(\Theta_{ij})\), where
 \(\Theta \in \mathbb{R}_+^{n \times n}\) is a symmetric matrix of
 Poisson parameters.
 
@@ -906,6 +963,7 @@ Number of triangles in left hemisphere & -0.025 & (-0.111, 0.062) \\
 Number of triangles in right hemisphere & 0.002 & (-0.084, 0.088) \\
 Assortativity w.r.t. hemisphere & 0.436 & (0.363, 0.503) \\
 Modularity w.r.t. hemisphere & 0.434 & (0.362, 0.502) \\
+Joint Embedding & 0.556 & (0.493, 0.613) \\
 \end{longtable}
 
 Next, we considered each hemisphere separately and fit a Beta

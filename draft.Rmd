@@ -613,6 +613,10 @@ sim.df %>%
 
 ## Regression
 
+In the first regression simulation, 
+
+In the next regression simulation, we applied 
+
 1. Draw angles $\theta_1, ..., \theta_N \iid \Uniform(\pi / 6, \pi / 3)$.
 2. For each $k = 1, ..., N$, 
     i. Draw $t_1, ..., t_n \iid \Uniform(0, 1)$;
@@ -687,6 +691,93 @@ sim.df %>%
 
 # Applications
 
+## Drosophila Connectome
+
+In the second example, we analyzed the larval *Drosophila* mushroom body connectome \citep{Eichler141762}, which has been studied as a GRDPG by \citet{athreya2020estimation}. 
+This dataset consists of two graphs representing two networks of neurons, one for each hemisphere of the *Drosophila* brain. 
+In these graphs, each vertex is a neuron, and the labels correspond to one of four neuron types (Kenyon Cells, Input Neurons, Output Neurons, and Projection Neurons). 
+The resulting graphs are illustrated in figure \ref{fig:mbconnectome-graph}. 
+
+```{r mbconnectome-graph, fig.cap = 'Graphs of the Drosophila connectomes. The left and right are of the left and right hemispheres, respectively. Each vertex represents a neuron, which are labeled by neuron type.', fig.height = 2, figh.width = 12, cache = TRUE}
+library(mbstructure)
+data(MBconnectome)
+
+graph.r <- generate.graph(newrdat, vdf.right)
+A.r <- as.matrix(igraph::as_adjacency_matrix(graph.r$g, type = 'both'))
+z.r <- as.numeric(graph.r$vdf$type)
+n.r <- length(z.r)
+A.r <- sign(A.r + t(A.r))
+diag(A.r) <- 0
+graph.r <- ggraph(A.r, layout = 'stress') + 
+  geom_edge_link(alpha = 1 / sqrt(n.r) / 2) + 
+  geom_node_point(aes(colour = factor(z.r)), 
+                  show.legend = FALSE) + 
+  labs(colour = NULL) + 
+  theme_void() + 
+  scale_colour_brewer(palette = 'Set1')
+
+graph.l <- generate.graph(newldat, vdf.left)
+A.l <- as.matrix(igraph::as_adjacency_matrix(graph.l$g, type = 'both'))
+z.l <- as.numeric(graph.l$vdf$type)
+n.l <- length(z.l)
+A.l <- sign(A.l + t(A.l))
+diag(A.l) <- 0
+graph.l <- ggraph(A.l, layout = 'stress') + 
+  geom_edge_link(alpha = 1 / sqrt(n.l) / 2) + 
+  geom_node_point(aes(colour = factor(z.l)), 
+                  show.legend = FALSE) + 
+  labs(colour = NULL) + 
+  theme_void() + 
+  scale_colour_brewer(palette = 'Set1')
+
+gridExtra::grid.arrange(graph.l, graph.r, nrow = 1)
+```
+
+```{r mbconnectome-ase, fig.cap = 'ASEs of the Drosophila connectome graphs. The embedding vectors are labeled by neuron type. ', fig.height = 2, fig.width = 8}
+Xhat.l <- embedding(A.l, 2, 1)
+ase.l <- ggplot() + 
+  geom_point(aes(x = Xhat.l[, 1], y = Xhat.l[, 2],
+                 colour = factor(z.l))) + 
+  coord_fixed(.5) +
+  theme_bw() + 
+  theme(legend.position = 'none') +
+  scale_colour_brewer(palette = 'Set1') + 
+  labs(x = NULL, y = NULL, colour = NULL)
+
+Xhat.r <- embedding(A.r, 2, 1)
+ase.r <- ggplot() + 
+  geom_point(aes(x = Xhat.r[, 1], y = Xhat.r[, 2],
+                 colour = factor(z.r))) + 
+  coord_fixed(.5) +
+  theme_bw() + 
+  theme(legend.position = 'none') +
+  scale_colour_brewer(palette = 'Set1') + 
+  labs(x = NULL, y = NULL, colour = NULL)
+
+gridExtra::grid.arrange(ase.l, ase.r, nrow = 1)
+```
+
+When analyzed as a GRDPG, the ASE of each hemisphere suggests that nodes of each type falls along a curve in the latent space (figure \ref{fig:mbconnectome-ase}). 
+This matches observations by \citet{athreya2020estimation}. 
+In our analysis, we set the embedding dimension to $d = 4$, with 3 assortative dimensions and 1 disassortative dimension. 
+We fit three latent structure Bezier curves, one for Kenyon Cells, one for Input and Output Neurons, and one for Projection Neurons, to the embedding for each hemisphere.
+Then we fit a Beta distribution to to the timepoints along each curve and extracted the two Beta parameter estimates (via likelihood maximization) for each curve. 
+If these Beta parameters are informative, we would expect the parameters for each hemisphere to match by neuron type, which is what we observe in these data (fig \ref{fig:mbconnectome-beta}). 
+
+```{r mbconnectome-beta, fig.cap = 'Beta parameter estimates for each curve and hemisphere.', fig.height = 3, fig.width = 6}
+param.est.df <- readr::read_csv('~/dev/multilayer-rdpg/drosophila.csv')
+
+param.est.df %>% 
+ggplot() + 
+  geom_point(aes(x = shape1, y = shape2, colour = region, shape = hemisphere)) +
+  labs(x = expression(hat(alpha)),
+       y = expression(hat(beta)),
+       colour = 'Neuron type',
+       shape = 'Hemisphere') +
+  coord_fixed() + 
+  theme_bw()
+```
+
 ## Human Connectome Project Aging Study
 
 ```{r load-hcp}
@@ -702,7 +793,7 @@ n <- nrow(dat.NumFibers[[1]])
 ids <- ase.stats.df$id
 ```
 
-In the first example, we analyzed fiber count data between brain regions from the Human Connectome Project (HCP). 
+In the second example, we analyzed fiber count data between brain regions from the Human Connectome Project (HCP). 
 When analyzing these data as graphs, we denote the regions as vertices and the fiber counts between pairs of regions as weighted edges. 
 A plausible statistical model for these data is to assume that the edge weights between pairs of vertices is Poisson distributed, i.e., the adjacency matrix is sampled as $A_{ij} \indep \Poisson(\Theta_{ij})$, where $\Theta \in \mathbb{R}_+^{n \times n}$ is a symmetric matrix of Poisson parameters. 
 
@@ -982,7 +1073,18 @@ assort.df <- foreach(id = ids, .combine = dplyr::bind_rows) %dopar% {
     by = 'id'
   )
 
-
+# https://github.com/jesusdaniel/JEG
+source('~/dev/JEG/Code/joint_embedding.R')
+A.list <- lapply(ids, function(id) {
+  A <- dat.NumFibers[[id]] %>% 
+    as.matrix()
+  A <- (A + t(A)) / 2
+  diag(A) <- 0
+  return(A)
+})
+jeg.out <- multidembed(A.list, 2)
+jeg.lm <- lm(ase.stats.df$age ~ jeg.out$lambda[, 1] + jeg.out$lambda[, 2])
+jeg.yhat <- jeg.lm$fitted.values
 
 dplyr::tibble(
   Metric = c('Angle between hemispheres',
@@ -995,7 +1097,8 @@ dplyr::tibble(
              'Number of triangles in right hemisphere',
              'Assortativity w.r.t. hemisphere',
              # 'Transitivity',
-             'Modularity w.r.t. hemisphere'),
+             'Modularity w.r.t. hemisphere',
+             'Joint Embedding'),
   Correlation = c(cor(ase.stats.df$age, ase.stats.df$angle.diff),
                   cor(ase.stats.df$age, ase.stats.df$B.ll),
                   cor(ase.stats.df$age, ase.stats.df$B.rr),
@@ -1006,7 +1109,8 @@ dplyr::tibble(
                   cor(assort.df$age, assort.df$n_tri2),
                   cor(assort.df$age, assort.df$assortativity),
                   # cor(assort.df$age, assort.df$transitivity),
-                  cor(assort.df$age, assort.df$modularity)),
+                  cor(assort.df$age, assort.df$modularity),
+                  cor(assort.df$age, jeg.yhat)),
   `95% conf. int.` = c(cor.test(ase.stats.df$age, ase.stats.df$angle.diff)$conf.int %>% 
                          round(3) %>% 
                          paste(collapse = ', ') %>% 
@@ -1048,6 +1152,10 @@ dplyr::tibble(
                        #   paste(collapse = ', ') %>% 
                        #   paste0('(', ., ')'),
                        cor.test(assort.df$age, assort.df$modularity)$conf.int %>% 
+                         round(3) %>% 
+                         paste(collapse = ', ') %>% 
+                         paste0('(', ., ')'),
+                       cor.test(assort.df$age, jeg.yhat)$conf.int %>% 
                          round(3) %>% 
                          paste(collapse = ', ') %>% 
                          paste0('(', ., ')'))) %>% 
