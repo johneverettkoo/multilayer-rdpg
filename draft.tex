@@ -800,8 +800,10 @@ by \citet{athreya2020estimation}. This dataset consists of two graphs
 representing two networks of neurons, one for each hemisphere of the
 \emph{Drosophila} brain. In these graphs, each vertex is a neuron, and
 the labels correspond to one of four neuron types (Kenyon Cells, Input
-Neurons, Output Neurons, and Projection Neurons). The resulting graphs
-are illustrated in figure \ref{fig:mbconnectome-graph}.
+Neurons, Output Neurons, and Projection Neurons). The number of neurons
+in each hemisphere is not equal (209 in the left hemisphere and 213 in
+the right hemisphere). The resulting graphs are illustrated in figure
+\ref{fig:mbconnectome-graph}.
 
 \begin{figure}[H]
 
@@ -823,17 +825,18 @@ are illustrated in figure \ref{fig:mbconnectome-graph}.
 
 When analyzed as a GRDPG, the ASE of each hemisphere suggests that nodes
 of each type falls along a curve in the latent space (figure
-\ref{fig:mbconnectome-ase}). This matches observations by
-\citet{athreya2020estimation}. In our analysis, we set the embedding
+\ref{fig:mbconnectome-ase}). In our analysis, we set the embedding
 dimension to \(d = 4\), with 3 assortative dimensions and 1
-disassortative dimension. We fit three latent structure Bezier curves,
-one for Kenyon Cells, one for Input and Output Neurons, and one for
-Projection Neurons, to the embedding for each hemisphere. Then we fit a
-Beta distribution to to the timepoints along each curve and extracted
-the two Beta parameter estimates (via likelihood maximization) for each
-curve. If these Beta parameters are informative, we would expect the
-parameters for each hemisphere to match by neuron type, which is what we
-observe in these data (fig \ref{fig:mbconnectome-beta}).
+disassortative dimension, and the figure only shows the first two
+assortative dimensions. This matches observations by
+\citet{athreya2020estimation}. We fit three latent structure Bezier
+curves, one for Kenyon Cells, one for Input and Output Neurons, and one
+for Projection Neurons, to the embedding for each hemisphere. Then we
+fit a Beta distribution to to the timepoints along each curve and
+extracted the two Beta parameter estimates (via likelihood maximization)
+for each curve. If these Beta parameters are informative, we would
+expect the parameters for each hemisphere to match by neuron type, which
+is what we observe in these data (fig \ref{fig:mbconnectome-beta}).
 
 \begin{figure}[H]
 

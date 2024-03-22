@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.141592653-2.6-1.40.25 (TeX Live 2023) (preloaded format=pdflatex 2023.5.16)  22 MAR 2024 13:08
+This is pdfTeX, Version 3.141592653-2.6-1.40.25 (TeX Live 2023) (preloaded format=pdflatex 2023.5.16)  22 MAR 2024 13:35
 entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
@@ -587,7 +587,7 @@ File: draft_files/figure-latex/mbconnectome-graph-1.pdf Graphic file (type pdf)
 
 <use draft_files/figure-latex/mbconnectome-graph-1.pdf>
 Package pdftex.def Info: draft_files/figure-latex/mbconnectome-graph-1.pdf  use
-d on input line 808.
+d on input line 810.
 (pdftex.def)             Requested size: 351.31163pt x 136.50966pt.
 [20 <./draft_files/figure-latex/angle-reg-example-1.pdf> <./draft_files/figure-
 latex/angle-reg-results-1.pdf>]
@@ -596,10 +596,10 @@ t>
 File: draft_files/figure-latex/mbconnectome-ase-1.pdf Graphic file (type pdf)
 <use draft_files/figure-latex/mbconnectome-ase-1.pdf>
 Package pdftex.def Info: draft_files/figure-latex/mbconnectome-ase-1.pdf  used 
-on input line 817.
+on input line 819.
 (pdftex.def)             Requested size: 483.80632pt x 132.49466pt.
 
-Overfull \hbox (21.53633pt too wide) in paragraph at lines 817--818
+Overfull \hbox (21.53633pt too wide) in paragraph at lines 819--820
  [][] 
  []
 
@@ -610,13 +610,13 @@ pt>
 File: draft_files/figure-latex/mbconnectome-beta-1.pdf Graphic file (type pdf)
 <use draft_files/figure-latex/mbconnectome-beta-1.pdf>
 Package pdftex.def Info: draft_files/figure-latex/mbconnectome-beta-1.pdf  used
- on input line 840.
+ on input line 843.
 (pdftex.def)             Requested size: 417.55896pt x 149.55838pt.
 <draft_files/figure-latex/hcp-ase-1.pdf, id=403, 911.405pt x 352.31625pt>
 File: draft_files/figure-latex/hcp-ase-1.pdf Graphic file (type pdf)
 <use draft_files/figure-latex/hcp-ase-1.pdf>
 Package pdftex.def Info: draft_files/figure-latex/hcp-ase-1.pdf  used on input 
-line 869.
+line 872.
 (pdftex.def)             Requested size: 462.26999pt x 178.70049pt.
 [22 <./draft_files/figure-latex/mbconnectome-beta-1.pdf>]
 <draft_files/figure-latex/hcp-age-regression-1.pdf, id=420, 351.3125pt x 206.77
@@ -625,20 +625,20 @@ File: draft_files/figure-latex/hcp-age-regression-1.pdf Graphic file (type pdf)
 
 <use draft_files/figure-latex/hcp-age-regression-1.pdf>
 Package pdftex.def Info: draft_files/figure-latex/hcp-age-regression-1.pdf  use
-d on input line 878.
+d on input line 881.
 (pdftex.def)             Requested size: 351.31163pt x 206.77199pt.
 [23 <./draft_files/figure-latex/hcp-ase-1.pdf> <./draft_files/figure-latex/hcp-
 age-regression-1.pdf>]
 
 LaTeX Warning: Reference `tab:cor-comparison' on page 24 undefined on input lin
-e 913.
+e 916.
 
 <draft_files/figure-latex/cosine-heatmap-1.pdf, id=448, 1348.03625pt x 1423.317
 5pt>
 File: draft_files/figure-latex/cosine-heatmap-1.pdf Graphic file (type pdf)
 <use draft_files/figure-latex/cosine-heatmap-1.pdf>
 Package pdftex.def Info: draft_files/figure-latex/cosine-heatmap-1.pdf  used on
- input line 918.
+ input line 921.
 (pdftex.def)             Requested size: 462.26999pt x 488.0697pt.
 [24]
 <draft_files/figure-latex/cosine-heatmap-2-1.pdf, id=453, 642.4pt x 705.63625pt
@@ -646,7 +646,7 @@ Package pdftex.def Info: draft_files/figure-latex/cosine-heatmap-1.pdf  used on
 File: draft_files/figure-latex/cosine-heatmap-2-1.pdf Graphic file (type pdf)
 <use draft_files/figure-latex/cosine-heatmap-2-1.pdf>
 Package pdftex.def Info: draft_files/figure-latex/cosine-heatmap-2-1.pdf  used 
-on input line 920.
+on input line 923.
 (pdftex.def)             Requested size: 462.26999pt x 507.78853pt.
 [25 <./draft_files/figure-latex/cosine-heatmap-1.pdf>]
 <draft_files/figure-latex/cosine-heatmap-2-2.pdf, id=467, 642.4pt x 705.63625pt
@@ -654,7 +654,7 @@ on input line 920.
 File: draft_files/figure-latex/cosine-heatmap-2-2.pdf Graphic file (type pdf)
 <use draft_files/figure-latex/cosine-heatmap-2-2.pdf>
 Package pdftex.def Info: draft_files/figure-latex/cosine-heatmap-2-2.pdf  used 
-on input line 922.
+on input line 925.
 (pdftex.def)             Requested size: 462.26999pt x 507.78853pt.
 [26 <./draft_files/figure-latex/cosine-heatmap-2-1.pdf>]
 <draft_files/figure-latex/cosine-heatmap-2-3.pdf, id=480, 642.4pt x 705.63625pt
@@ -662,7 +662,7 @@ on input line 922.
 File: draft_files/figure-latex/cosine-heatmap-2-3.pdf Graphic file (type pdf)
 <use draft_files/figure-latex/cosine-heatmap-2-3.pdf>
 Package pdftex.def Info: draft_files/figure-latex/cosine-heatmap-2-3.pdf  used 
-on input line 924.
+on input line 927.
 (pdftex.def)             Requested size: 462.26999pt x 507.78853pt.
 [27 <./draft_files/figure-latex/cosine-heatmap-2-2.pdf>]
 <draft_files/figure-latex/cosine-heatmap-2-4.pdf, id=493, 642.4pt x 705.63625pt
@@ -670,7 +670,7 @@ on input line 924.
 File: draft_files/figure-latex/cosine-heatmap-2-4.pdf Graphic file (type pdf)
 <use draft_files/figure-latex/cosine-heatmap-2-4.pdf>
 Package pdftex.def Info: draft_files/figure-latex/cosine-heatmap-2-4.pdf  used 
-on input line 926.
+on input line 929.
 (pdftex.def)             Requested size: 462.26999pt x 507.78853pt.
 [28 <./draft_files/figure-latex/cosine-heatmap-2-3.pdf>] [29 <./draft_files/fig
 ure-latex/cosine-heatmap-2-4.pdf>]
@@ -679,10 +679,10 @@ ure-latex/cosine-heatmap-2-4.pdf>]
 File: draft_files/figure-latex/hcp-clustering-1.pdf Graphic file (type pdf)
 <use draft_files/figure-latex/hcp-clustering-1.pdf>
 Package pdftex.def Info: draft_files/figure-latex/hcp-clustering-1.pdf  used on
- input line 985.
+ input line 988.
 (pdftex.def)             Requested size: 512.915pt x 277.03432pt.
 
-Overfull \hbox (50.645pt too wide) in paragraph at lines 985--986
+Overfull \hbox (50.645pt too wide) in paragraph at lines 988--989
  [][] 
  []
 
@@ -716,7 +716,7 @@ e/2023/texmf-dist/fonts/type1/public/amsfonts/cm/cmsy10.pfb></usr/local/texlive
 023/texmf-dist/fonts/type1/public/amsfonts/cm/cmsy8.pfb></usr/local/texlive/202
 3/texmf-dist/fonts/type1/public/amsfonts/cm/cmti12.pfb></usr/local/texlive/2023
 /texmf-dist/fonts/type1/public/amsfonts/symbols/msbm10.pfb>
-Output written on draft.pdf (34 pages, 31579159 bytes).
+Output written on draft.pdf (34 pages, 31579295 bytes).
 PDF statistics:
  713 PDF objects out of 1000 (max. 8388607)
  589 compressed objects within 6 object streams
