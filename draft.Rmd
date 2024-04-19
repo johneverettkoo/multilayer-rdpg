@@ -123,18 +123,37 @@ The inhomogeneous Bernoulli graph extends this by allowing each edge, represente
 Typically, the parameters are collected into an edge probability matrix (in the case of unweighted graphs) or edge parameter matrix (in the case of weighted graphs), denoted as $P \in \mathbb{R}^{n \times n}$. 
 The network analysis problem in this setting is to estimate $P$ given $A$. 
 
-If we let the parameter matrix $P$ be unconstrained, the inference problem is overparameterized. 
+If the parameter matrix $P$ is unconstrained, the inference problem is overparameterized. 
 On the other hand, the classical $\ER$ model is often too restrictive to describe real, observed networks. 
-Much work has been done to develop models that are constrained enough for robust statistical inference while being generalizable to describe a wide range of networks. 
+Much work has been done to develop models that are constrained enough for robust statistical inference while being generalizable to describe a wide range of networks.
 One such family of random graph models is the random dot product graph (RDPG), first proposed by \citet{10.1007/978-3-540-77004-6_11}, which is a type of latent space graph in which each vertex of the graph has a corresponding latent vector in a low-dimensional Euclidean space $\mathbb{R}^d$, and the edge parameter between each pair of vertices is determined by the dot product of the corresponding vectors. 
 In this model, the constraint is the low rank of the parameter matrix $P$, assuming that the latent dimension $d$ is less than the number of vertices $n$. 
 Further constraints can be imposed on the RDPG in the form of distributional assumptions on the latent vectors or restricting the latent vectors to lie on subspaces or manifolds in the latent space \citep{athreya2020estimation}.
 
-It has been shown \citep{rubindelanchy2017statistical, Koo_2022} that the RDPG (as well as the generalized random dot product graph \citep{rubindelanchy2017statistical}) can describe a wide range of popular random graph models, such as the $\ER$ model, the stochastic block model (SBM) \citep{doi:10.1080/0022250X.1971.9989788}, degree corrected block model (DCBM) \citep{Karrer_2011}, and popularity adjusted block model (PABM) \citep{307cbeb9b1be48299388437423d94bf1}, and describing these models as RDPGs (or its generalized version) is useful for parameter estimation. 
-The RDPG captures a wide range of phenomena that can be described as networks, and in fact any network that can be thought of as being sampled from a parameter matrix $P$ can be described as a (generalized) RDPG, especially if $P$ is low rank. 
-The RPDG representation of these networks 
+It has been shown \citep{Koo_2022, rubindelanchy2017statistical} that the RDPG (as well as the generalized random dot product graph, or GRDPG, \citep{rubindelanchy2017statistical}) can describe a wide range of popular random graph models, such as the $\ER$ model, the stochastic block model (SBM) \citep{doi:10.1080/0022250X.1971.9989788}, degree corrected block model (DCBM) \citep{Karrer_2011}, and popularity adjusted block model (PABM) \citep{307cbeb9b1be48299388437423d94bf1}. 
+In these examples, the (G)RPDG representation of these networks allows for inference and analysis in more familiar Euclidean space rather than on graphs, and the geometry of the configuration of latent vectors correspond to the parameters of these graph models. 
+More specifically, when these network models are described as (G)RDPGs, each latent vector lies on a subspace. 
+\citet{athreya2020estimation} and \citet{Passino_2020} extended this to the latent structure model (LSM) and latent structure block model (LSBM) to include latent configurations that consist of nonlinear manifolds. 
+
+In this paper, we apply these highly structured GRDPG models to supervised learning problems in which there are multiple graphs, $G_1, ..., G_L$, each with a response $y^{(1)}, ..., y^{(L)}$. 
+Each graph, represented by adjacency matrix $A^{(l)}$, is presumed to be drawn from a GRDPG with parameter set $\theta_l$, and in turn, the response $y_l$ is drawn from a univariate distribution with parameter $\theta_l$.
+Since the latent vectors of each $A^{(l)}$ are presumed to be distributed on a structured subset of the latent space, e.g., a manifold, we call this the multiple latent structure model (MLSM). 
+Much previous work has been done on multilayer networks, such as the multilayer degree corrected block model of \citet{agterberg2022joint}, multiple random eigen graphs of \citet{8889404}, and the multiple common subspace independent edge graphs of \citet{arroyo2020inference}. 
+In each of these models, the main inference problem is to identify parameters that are shared across multiple graphs. 
+Our contribution is in applying similar methods to identify parameters specific to each graph, which are in turn used as features for supervised learning. 
+
+The following sections are organized as follows: Section 2 introduces the structured and parameterized 
 
 # Methods
+
+## Notation and Scope
+
+Let $G_1, ..., G_L$ be a collection of undirected graphs where each $G_l = (V_l, E_l)$. 
+In this setup, each graph can have its own vertex and edge sets. 
+Each graph is represented by adjacency matrices $A^{(1)}, ..., A^{(L)}$, where each $A^{(l)} \in \mathbb{R}^{n_l \times n_l}$ is a symmetric and hollow matrix such that $A^{(l)}_{ij}$ represents the edge weight between vertices $i$ and $j$, and $n_l$ represents the size of the vertex set of the $l$^th^ graph. 
+Let $P^{(1)}, ..., P^{(L)}$ be the corresponding collection of edge parameter matrices such that each $A^{(l)}_{ij} \indep H(P^{(l)}_{ij})$ for each $1 \leq i < j \leq n_l$ and $H$ is a specified probability distribution such that $E[A^{(l)}_{ij}] = P^{(l)}_{ij}$. 
+For ease of notation, we use $A^{(l)} \sim H(P^{(l)})$ for an adjacency matrix $A^{(l)}$ drawn from edge parameter matrix $P^{(l)}$ in this way.
+Denote $X^{(1)}, ..., X^{(L)}$ as the sets of latent vectors corresponding to each graph under the GRDPG framework. Each $X^{(l)} \in \mathbb{R}^{n_l \times d}$, i.e., the graphs share the same latent dimension, and $x_i^{(l)} \in \mathbb{R}^d$ is the latent vector corresponding to the $i$^th^ vertex in the $l$^th^ graph.
 
 ## Definitions and Models
 
@@ -144,7 +163,7 @@ We begin by defining the RDPG and the LSM.
 \label{def:rdpg}
 Let $\mathcal{X}$ be a subset of $\mathbb{R}^d$ for some latent space dimension $d \geq 1$ such that for any $x_1, x_2 \in \mathcal{X}$, $x_1^\top x_2 \in [0, 1]$. 
 Let $F_\theta$ be a distribution with support $\mathcal{X}$ and parameters $\theta$, and sample $x_1, ..., x_n \iid F_\theta$. 
-A graph $G$ with adjacency matrix $A$ is a random dot product graph with latent vectors $X = \bigl[x_1 \; \cdots \; x_n\bigr]^\top$ drawn from distribution $F_\theta$ if $A \sim X X^\top$. 
+A graph $G$ with adjacency matrix $A$ is a random dot product graph with latent vectors $X = \bigl[x_1 \; \cdots \; x_n\bigr]^\top$ drawn from distribution $F_\theta$ if $A \sim H(X X^\top)$. 
 
 We use the notation $A \sim \RDPG(F_\theta)$ to denote a random adjacency matrix $A$ drawn from latent vectors distributed as $F_\theta$. 
 \end{definition}
@@ -160,10 +179,18 @@ Thus, there are infinitely many latent vector configurations that can result in 
 Similarly, if $A \sim \RDPG(F_{\mu, \Sigma})$ and $F_{\mu, \Sigma}$ is the normal distribution with mean vector $\mu$ and covariance matrix $\Sigma$, then $A \sim \RDPG(F_{W \mu, W \Sigma W^\top})$ is an equivalent RDPG for any orthogonal matrix $W$. 
 \end{remark}
 
+\begin{remark}
+\label{remark:grdpg}
+The RDPG requires that $P = X X^\top$ be a positive semidefinite matrix. 
+To include matrices that are not positive semidefinite, the generalized random dot product graph (GRDPG) was introduced by \citet{rubindelanchy2017statistical}, in which $P = X I_{p,q} X^\top$. 
+Here, $I_{p,q}$ is a diagonal matrix of $p$ $1$'s followed by $q$ $-1$'s. 
+While the focus of this work is on the RDPG, the theoretical results also apply to the GRDPG. 
+\end{remark}
+
 \begin{definition}[Latent structure model (LSM) \citep{athreya2020estimation}]
 \label{def:lsm}
 Let $\mathcal{C} \subset \mathcal{X} \subset \mathbb{R}^d$ be a smooth, nonintersecting one-dimensional manifold on the domain of a RDPG as defined in definition \ref{def:rdpg}, parameterized by function $p(t) : [0, 1] \to \mathcal{C}$. 
-Then if $t_1, ..., t_n \iid F_\theta$ for some distribution $F_\theta$ with support $[0, 1]$ and parameter $\theta$, each $x_i = p(t_i)$, and $ A \sim X X^\top$ for $X = \bigl[x_1 \; \cdots \; x_n\bigr]^\top$, $A$ is the adjacency matrix of a latent structure model on curve $\mathcal{C}$ with parameterization $p$ and underlying distribution $F_\theta$. 
+Then if $t_1, ..., t_n \iid F_\theta$ for some distribution $F_\theta$ with support $[0, 1]$ and parameter $\theta$, each $x_i = p(t_i)$, and $ A \sim H(X X^\top)$ for $X = \bigl[x_1 \; \cdots \; x_n\bigr]^\top$, $A$ is the adjacency matrix of a latent structure model on curve $\mathcal{C}$ with parameterization $p$ and underlying distribution $F_\theta$. 
 
 We use the notation $A \sim \LSM(\mathcal{C}, F_\theta)$ or $A \sim \LSM(p, F_\theta)$ to denote an adjacency matrix $A$ drawn as an LSM on curve $\mathcal{C}$ or its parameterization $p$ with underlying distribution $F_\theta$. 
 \end{definition}
@@ -764,6 +791,7 @@ This matches observations by \citet{athreya2020estimation}.
 We fit three latent structure Bezier curves, one for Kenyon Cells, one for Input and Output Neurons, and one for Projection Neurons, to the embedding for each hemisphere.
 Then we fit a Beta distribution to to the timepoints along each curve and extracted the two Beta parameter estimates (via likelihood maximization) for each curve. 
 If these Beta parameters are informative, we would expect the parameters for each hemisphere to match by neuron type, which is what we observe in these data (fig \ref{fig:mbconnectome-beta}). 
+Using the three subgraphs of the left hemisphere as a training set to classify which subgraph of the right hemisphere belongs to which neuron type using the extracted Beta distribution parameter estimates as predictors results in 100\% accuracy. 
 
 ```{r mbconnectome-beta, fig.cap = 'Beta parameter estimates for each curve and hemisphere.', fig.height = 3, fig.width = 6}
 param.est.df <- readr::read_csv('~/dev/multilayer-rdpg/drosophila.csv')
@@ -910,7 +938,7 @@ pairwise.angles.df %<>%
                 roi2 = factor(roi2, levels = dti.info.df$roi))
 ```
 
-```{r cosine-heatmap, cache = TRUE, fig.width = 20, fig.height = 20, out.width = '100%'}
+```{r cosine-heatmap, cache = TRUE, fig.width = 20, fig.height = 20, out.width = '100%', eval=FALSE}
 # i <- ids[1]
 # 
 # pairwise.angles.df %>% 
@@ -951,7 +979,7 @@ pairwise.angles.df %>%
   facet_wrap(~ age)
 ```
 
-```{r cosine-heatmap-2, cache = TRUE, fig.width = 10, fig.height = 10, out.width = '100%'}
+```{r cosine-heatmap-2, cache = TRUE, fig.width = 10, fig.height = 10, out.width = '100%', eval=FALSE}
 angles.plot.1 <- pairwise.angles.df %>%
   dplyr::filter(age < 46.5) %>%
   dplyr::group_by(roi1, roi2) %>%
@@ -1089,26 +1117,26 @@ jeg.yhat <- jeg.lm$fitted.values
 
 dplyr::tibble(
   Metric = c('Angle between hemispheres',
-             'Edge connectivity within left hemisphere',
-             'Edge connectivity within right hemisphere',
-             'Edge connectivity between hemispheres',
+             # 'Edge connectivity within left hemisphere',
+             # 'Edge connectivity within right hemisphere',
+             # 'Edge connectivity between hemispheres',
              'Degree within hemisphere',
              'Degree between hemispheres',
-             'Number of triangles in left hemisphere',
-             'Number of triangles in right hemisphere',
-             'Assortativity w.r.t. hemisphere',
+             # 'Number of triangles in left hemisphere',
+             # 'Number of triangles in right hemisphere',
+             # Assortativity w.r.t. hemisphere',
              # 'Transitivity',
              'Modularity w.r.t. hemisphere',
              'Joint Embedding'),
   Correlation = c(cor(ase.stats.df$age, ase.stats.df$angle.diff),
-                  cor(ase.stats.df$age, ase.stats.df$B.ll),
-                  cor(ase.stats.df$age, ase.stats.df$B.rr),
-                  cor(ase.stats.df$age, ase.stats.df$B.lr),
+                  # cor(ase.stats.df$age, ase.stats.df$B.ll),
+                  # cor(ase.stats.df$age, ase.stats.df$B.rr),
+                  # cor(ase.stats.df$age, ase.stats.df$B.lr),
                   cor(ase.stats.df$age, ase.stats.df$deg.within),
                   cor(ase.stats.df$age, ase.stats.df$deg.between),
-                  cor(assort.df$age, assort.df$n_tri1),
-                  cor(assort.df$age, assort.df$n_tri2),
-                  cor(assort.df$age, assort.df$assortativity),
+                  # cor(assort.df$age, assort.df$n_tri1),
+                  # cor(assort.df$age, assort.df$n_tri2),
+                  # cor(assort.df$age, assort.df$assortativity),
                   # cor(assort.df$age, assort.df$transitivity),
                   cor(assort.df$age, assort.df$modularity),
                   cor(assort.df$age, jeg.yhat)),
@@ -1116,18 +1144,18 @@ dplyr::tibble(
                          round(3) %>% 
                          paste(collapse = ', ') %>% 
                          paste0('(', ., ')'),
-                       cor.test(ase.stats.df$age, ase.stats.df$B.ll)$conf.int %>% 
-                         round(3) %>% 
-                         paste(collapse = ', ') %>% 
-                         paste0('(', ., ')'),
-                       cor.test(ase.stats.df$age, ase.stats.df$B.rr)$conf.int %>% 
-                         round(3) %>% 
-                         paste(collapse = ', ') %>% 
-                         paste0('(', ., ')'),
-                       cor.test(ase.stats.df$age, ase.stats.df$B.lr)$conf.int %>% 
-                         round(3) %>% 
-                         paste(collapse = ', ') %>% 
-                         paste0('(', ., ')'),
+                       # cor.test(ase.stats.df$age, ase.stats.df$B.ll)$conf.int %>% 
+                       #   round(3) %>% 
+                       #   paste(collapse = ', ') %>% 
+                       #   paste0('(', ., ')'),
+                       # cor.test(ase.stats.df$age, ase.stats.df$B.rr)$conf.int %>% 
+                       #   round(3) %>% 
+                       #   paste(collapse = ', ') %>% 
+                       #   paste0('(', ., ')'),
+                       # cor.test(ase.stats.df$age, ase.stats.df$B.lr)$conf.int %>% 
+                       #   round(3) %>% 
+                       #   paste(collapse = ', ') %>% 
+                       #   paste0('(', ., ')'),
                        cor.test(ase.stats.df$age, ase.stats.df$deg.within)$conf.int %>% 
                          round(3) %>% 
                          paste(collapse = ', ') %>% 
@@ -1136,18 +1164,18 @@ dplyr::tibble(
                          round(3) %>% 
                          paste(collapse = ', ') %>% 
                          paste0('(', ., ')'),
-                       cor.test(assort.df$age, assort.df$n_tri1)$conf.int %>% 
-                         round(3) %>% 
-                         paste(collapse = ', ') %>% 
-                         paste0('(', ., ')'),
-                       cor.test(assort.df$age, assort.df$n_tri2)$conf.int %>% 
-                         round(3) %>% 
-                         paste(collapse = ', ') %>% 
-                         paste0('(', ., ')'),
-                       cor.test(assort.df$age, assort.df$assortativity)$conf.int %>% 
-                         round(3) %>% 
-                         paste(collapse = ', ') %>% 
-                         paste0('(', ., ')'),
+                       # cor.test(assort.df$age, assort.df$n_tri1)$conf.int %>% 
+                       #   round(3) %>% 
+                       #   paste(collapse = ', ') %>% 
+                       #   paste0('(', ., ')'),
+                       # cor.test(assort.df$age, assort.df$n_tri2)$conf.int %>% 
+                       #   round(3) %>% 
+                       #   paste(collapse = ', ') %>% 
+                       #   paste0('(', ., ')'),
+                       # cor.test(assort.df$age, assort.df$assortativity)$conf.int %>% 
+                       #   round(3) %>% 
+                       #   paste(collapse = ', ') %>% 
+                       #   paste0('(', ., ')'),
                        # cor.test(assort.df$age, assort.df$transitivity)$conf.int %>% 
                        #   round(3) %>% 
                        #   paste(collapse = ', ') %>% 
@@ -1160,7 +1188,7 @@ dplyr::tibble(
                          round(3) %>% 
                          paste(collapse = ', ') %>% 
                          paste0('(', ., ')'))) %>% 
-  knitr::kable(digits = 3, caption = 'Correlation between age and various graph metrics')
+  knitr::kable(digits = 3, caption = 'Correlation between age and various graph metrics.\\label{tab:cor-comparison}')
 ```
 
 Next, we considered each hemisphere separately and fit a Beta distribution to the embedding of each half-network. 
@@ -1192,6 +1220,8 @@ gridExtra::grid.arrange(plot.l, plot.r, nrow = 1)
 ```
 
 # Discussion
+
+\section*{Appendix A: Proofs of Theorems}
 
 \newpage
 

@@ -189,13 +189,13 @@ graphs) or edge parameter matrix (in the case of weighted graphs),
 denoted as \(P \in \mathbb{R}^{n \times n}\). The network analysis
 problem in this setting is to estimate \(P\) given \(A\).
 
-If we let the parameter matrix \(P\) be unconstrained, the inference
-problem is overparameterized. On the other hand, the classical \(\ER\)
-model is often too restrictive to describe real, observed networks. Much
-work has been done to develop models that are constrained enough for
-robust statistical inference while being generalizable to describe a
-wide range of networks. One such family of random graph models is the
-random dot product graph (RDPG), first proposed by
+If the parameter matrix \(P\) is unconstrained, the inference problem is
+overparameterized. On the other hand, the classical \(\ER\) model is
+often too restrictive to describe real, observed networks. Much work has
+been done to develop models that are constrained enough for robust
+statistical inference while being generalizable to describe a wide range
+of networks. One such family of random graph models is the random dot
+product graph (RDPG), first proposed by
 \citet{10.1007/978-3-540-77004-6_11}, which is a type of latent space
 graph in which each vertex of the graph has a corresponding latent
 vector in a low-dimensional Euclidean space \(\mathbb{R}^d\), and the
@@ -208,22 +208,71 @@ assumptions on the latent vectors or restricting the latent vectors to
 lie on subspaces or manifolds in the latent space
 \citep{athreya2020estimation}.
 
-It has been shown \citep{rubindelanchy2017statistical, Koo_2022} that
-the RDPG (as well as the generalized random dot product graph
+It has been shown \citep{Koo_2022, rubindelanchy2017statistical} that
+the RDPG (as well as the generalized random dot product graph, or GRDPG,
 \citep{rubindelanchy2017statistical}) can describe a wide range of
 popular random graph models, such as the \(\ER\) model, the stochastic
 block model (SBM) \citep{doi:10.1080/0022250X.1971.9989788}, degree
 corrected block model (DCBM) \citep{Karrer_2011}, and popularity
-adjusted block model (PABM) \citep{307cbeb9b1be48299388437423d94bf1},
-and describing these models as RDPGs (or its generalized version) is
-useful for parameter estimation. The RDPG captures a wide range of
-phenomena that can be described as networks, and in fact any network
-that can be thought of as being sampled from a parameter matrix \(P\)
-can be described as a (generalized) RDPG, especially if \(P\) is low
-rank. The RPDG representation of these networks
+adjusted block model (PABM) \citep{307cbeb9b1be48299388437423d94bf1}. In
+these examples, the (G)RPDG representation of these networks allows for
+inference and analysis in more familiar Euclidean space rather than on
+graphs, and the geometry of the configuration of latent vectors
+correspond to the parameters of these graph models. More specifically,
+when these network models are described as (G)RDPGs, each latent vector
+lies on a subspace. \citet{athreya2020estimation} and
+\citet{Passino_2020} extended this to the latent structure model (LSM)
+and latent structure block model (LSBM) to include latent configurations
+that consist of nonlinear manifolds.
+
+In this paper, we apply these highly structured GRDPG models to
+supervised learning problems in which there are multiple graphs,
+\(G_1, ..., G_L\), each with a response \(y^{(1)}, ..., y^{(L)}\). Each
+graph, represented by adjacency matrix \(A^{(l)}\), is presumed to be
+drawn from a GRDPG with parameter set \(\theta_l\), and in turn, the
+response \(y_l\) is drawn from a univariate distribution with parameter
+\(\theta_l\). Since the latent vectors of each \(A^{(l)}\) are presumed
+to be distributed on a structured subset of the latent space, e.g., a
+manifold, we call this the multiple latent structure model (MLSM). Much
+previous work has been done on multilayer networks, such as the
+multilayer degree corrected block model of \citet{agterberg2022joint},
+multiple random eigen graphs of \citet{8889404}, and the multiple common
+subspace independent edge graphs of \citet{arroyo2020inference}. In each
+of these models, the main inference problem is to identify parameters
+that are shared across multiple graphs. Our contribution is in applying
+similar methods to identify parameters specific to each graph, which are
+in turn used as features for supervised learning.
+
+The following sections are organized as follows: Section 2 introduces
+the structured and parameterized
 
 \hypertarget{methods}{%
 \section{Methods}\label{methods}}
+
+\hypertarget{notation-and-scope}{%
+\subsection{Notation and Scope}\label{notation-and-scope}}
+
+Let \(G_1, ..., G_L\) be a collection of undirected graphs where each
+\(G_l = (V_l, E_l)\). In this setup, each graph can have its own vertex
+and edge sets. Each graph is represented by adjacency matrices
+\(A^{(1)}, ..., A^{(L)}\), where each
+\(A^{(l)} \in \mathbb{R}^{n_l \times n_l}\) is a symmetric and hollow
+matrix such that \(A^{(l)}_{ij}\) represents the edge weight between
+vertices \(i\) and \(j\), and \(n_l\) represents the size of the vertex
+set of the \(l\)\textsuperscript{th} graph. Let
+\(P^{(1)}, ..., P^{(L)}\) be the corresponding collection of edge
+parameter matrices such that each
+\(A^{(l)}_{ij} \indep H(P^{(l)}_{ij})\) for each
+\(1 \leq i < j \leq n_l\) and \(H\) is a specified probability
+distribution such that \(E[A^{(l)}_{ij}] = P^{(l)}_{ij}\). For ease of
+notation, we use \(A^{(l)} \sim H(P^{(l)})\) for an adjacency matrix
+\(A^{(l)}\) drawn from edge parameter matrix \(P^{(l)}\) in this way.
+Denote \(X^{(1)}, ..., X^{(L)}\) as the sets of latent vectors
+corresponding to each graph under the GRDPG framework. Each
+\(X^{(l)} \in \mathbb{R}^{n_l \times d}\), i.e., the graphs share the
+same latent dimension, and \(x_i^{(l)} \in \mathbb{R}^d\) is the latent
+vector corresponding to the \(i\)\textsuperscript{th} vertex in the
+\(l\)\textsuperscript{th} graph.
 
 \hypertarget{definitions-and-models}{%
 \subsection{Definitions and Models}\label{definitions-and-models}}
@@ -234,7 +283,7 @@ We begin by defining the RDPG and the LSM.
 \label{def:rdpg}
 Let $\mathcal{X}$ be a subset of $\mathbb{R}^d$ for some latent space dimension $d \geq 1$ such that for any $x_1, x_2 \in \mathcal{X}$, $x_1^\top x_2 \in [0, 1]$. 
 Let $F_\theta$ be a distribution with support $\mathcal{X}$ and parameters $\theta$, and sample $x_1, ..., x_n \iid F_\theta$. 
-A graph $G$ with adjacency matrix $A$ is a random dot product graph with latent vectors $X = \bigl[x_1 \; \cdots \; x_n\bigr]^\top$ drawn from distribution $F_\theta$ if $A \sim X X^\top$. 
+A graph $G$ with adjacency matrix $A$ is a random dot product graph with latent vectors $X = \bigl[x_1 \; \cdots \; x_n\bigr]^\top$ drawn from distribution $F_\theta$ if $A \sim H(X X^\top)$. 
 
 We use the notation $A \sim \RDPG(F_\theta)$ to denote a random adjacency matrix $A$ drawn from latent vectors distributed as $F_\theta$. 
 \end{definition}
@@ -250,10 +299,18 @@ Thus, there are infinitely many latent vector configurations that can result in 
 Similarly, if $A \sim \RDPG(F_{\mu, \Sigma})$ and $F_{\mu, \Sigma}$ is the normal distribution with mean vector $\mu$ and covariance matrix $\Sigma$, then $A \sim \RDPG(F_{W \mu, W \Sigma W^\top})$ is an equivalent RDPG for any orthogonal matrix $W$. 
 \end{remark}
 
+\begin{remark}
+\label{remark:grdpg}
+The RDPG requires that $P = X X^\top$ be a positive semidefinite matrix. 
+To include matrices that are not positive semidefinite, the generalized random dot product graph (GRDPG) was introduced by \citet{rubindelanchy2017statistical}, in which $P = X I_{p,q} X^\top$. 
+Here, $I_{p,q}$ is a diagonal matrix of $p$ $1$'s followed by $q$ $-1$'s. 
+While the focus of this work is on the RDPG, the theoretical results also apply to the GRDPG. 
+\end{remark}
+
 \begin{definition}[Latent structure model (LSM) \citep{athreya2020estimation}]
 \label{def:lsm}
 Let $\mathcal{C} \subset \mathcal{X} \subset \mathbb{R}^d$ be a smooth, nonintersecting one-dimensional manifold on the domain of a RDPG as defined in definition \ref{def:rdpg}, parameterized by function $p(t) : [0, 1] \to \mathcal{C}$. 
-Then if $t_1, ..., t_n \iid F_\theta$ for some distribution $F_\theta$ with support $[0, 1]$ and parameter $\theta$, each $x_i = p(t_i)$, and $ A \sim X X^\top$ for $X = \bigl[x_1 \; \cdots \; x_n\bigr]^\top$, $A$ is the adjacency matrix of a latent structure model on curve $\mathcal{C}$ with parameterization $p$ and underlying distribution $F_\theta$. 
+Then if $t_1, ..., t_n \iid F_\theta$ for some distribution $F_\theta$ with support $[0, 1]$ and parameter $\theta$, each $x_i = p(t_i)$, and $ A \sim H(X X^\top)$ for $X = \bigl[x_1 \; \cdots \; x_n\bigr]^\top$, $A$ is the adjacency matrix of a latent structure model on curve $\mathcal{C}$ with parameterization $p$ and underlying distribution $F_\theta$. 
 
 We use the notation $A \sim \LSM(\mathcal{C}, F_\theta)$ or $A \sim \LSM(p, F_\theta)$ to denote an adjacency matrix $A$ drawn as an LSM on curve $\mathcal{C}$ or its parameterization $p$ with underlying distribution $F_\theta$. 
 \end{definition}
@@ -837,6 +894,10 @@ extracted the two Beta parameter estimates (via likelihood maximization)
 for each curve. If these Beta parameters are informative, we would
 expect the parameters for each hemisphere to match by neuron type, which
 is what we observe in these data (fig \ref{fig:mbconnectome-beta}).
+Using the three subgraphs of the left hemisphere as a training set to
+classify which subgraph of the right hemisphere belongs to which neuron
+type using the extracted Beta distribution parameter estimates as
+predictors results in 100\% accuracy.
 
 \begin{figure}[H]
 
@@ -918,53 +979,22 @@ that aside from the angle between the latent structures under the MLSM
 model, these statistics assume that it is known which vertex belongs to
 which hemisphere.
 
-\begin{center}\includegraphics[width=1\linewidth]{draft_files/figure-latex/cosine-heatmap-1} \end{center}
-
-\begin{center}\includegraphics[width=1\linewidth]{draft_files/figure-latex/cosine-heatmap-2-1} \end{center}
-
-\begin{center}\includegraphics[width=1\linewidth]{draft_files/figure-latex/cosine-heatmap-2-2} \end{center}
-
-\begin{center}\includegraphics[width=1\linewidth]{draft_files/figure-latex/cosine-heatmap-2-3} \end{center}
-
-\begin{center}\includegraphics[width=1\linewidth]{draft_files/figure-latex/cosine-heatmap-2-4} \end{center}
-
-\begin{longtable}[]{@{}
-  >{\raggedright\arraybackslash}p{(\columnwidth - 4\tabcolsep) * \real{0.5915}}
-  >{\raggedleft\arraybackslash}p{(\columnwidth - 4\tabcolsep) * \real{0.1690}}
-  >{\raggedright\arraybackslash}p{(\columnwidth - 4\tabcolsep) * \real{0.2394}}@{}}
+\begin{longtable}[]{@{}lrl@{}}
 \caption{Correlation between age and various graph
-metrics}\tabularnewline
+metrics.\label{tab:cor-comparison}}\tabularnewline
 \toprule\noalign{}
-\begin{minipage}[b]{\linewidth}\raggedright
-Metric
-\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedleft
-Correlation
-\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
-95\% conf. int.
-\end{minipage} \\
+Metric & Correlation & 95\% conf. int. \\
 \midrule\noalign{}
 \endfirsthead
 \toprule\noalign{}
-\begin{minipage}[b]{\linewidth}\raggedright
-Metric
-\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedleft
-Correlation
-\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
-95\% conf. int.
-\end{minipage} \\
+Metric & Correlation & 95\% conf. int. \\
 \midrule\noalign{}
 \endhead
 \bottomrule\noalign{}
 \endlastfoot
 Angle between hemispheres & 0.558 & (0.496, 0.615) \\
-Edge connectivity within left hemisphere & 0.241 & (0.158, 0.321) \\
-Edge connectivity within right hemisphere & 0.243 & (0.16, 0.322) \\
-Edge connectivity between hemispheres & -0.436 & (-0.503, -0.363) \\
 Degree within hemisphere & 0.436 & (0.363, 0.503) \\
 Degree between hemispheres & -0.499 & (-0.561, -0.431) \\
-Number of triangles in left hemisphere & -0.025 & (-0.111, 0.062) \\
-Number of triangles in right hemisphere & 0.002 & (-0.084, 0.088) \\
-Assortativity w.r.t. hemisphere & 0.436 & (0.363, 0.503) \\
 Modularity w.r.t. hemisphere & 0.434 & (0.362, 0.502) \\
 Joint Embedding & 0.556 & (0.493, 0.613) \\
 \end{longtable}
@@ -994,6 +1024,8 @@ hemisphere.
 
 \hypertarget{discussion}{%
 \section{Discussion}\label{discussion}}
+
+\section*{Appendix A: Proofs of Theorems}
 
 \newpage
 
