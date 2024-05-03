@@ -113,10 +113,10 @@ ggplot(out.df) +
 out.df %>% 
   dplyr::group_by(n) %>% 
   dplyr::summarise(mse.theta = mean(mse),
-                   se.theta = sd(mse) / dplyr::n(),
-                   se.m = sd(mse.m) / dplyr::n(),
+                   se.theta = sd(mse) / sqrt(dplyr::n()),
+                   se.m = sd(mse.m) / sqrt(dplyr::n()),
                    mse.m = mean(mse.m),
-                   se.a = sd(mse.a) / dplyr::n(),
+                   se.a = sd(mse.a) / sqrt(dplyr::n()),
                    mse.a = mean(mse.a)) %>% 
   ggplot() + 
   geom_line(aes(x = n, y = mse.theta, colour = 'theta')) + 
