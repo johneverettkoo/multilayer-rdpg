@@ -575,7 +575,8 @@ The scenarios are as follows:
 In this scenario, the responses $y_\ell$ are generated as linear responses of $\theta_\ell$ (in scenario 1) or $a_\ell$ and $b_\ell$ (in scenario 2). 
 More specifically, in scenario 1, each $y_\ell \indep \mathcal{N}(\beta_0 + \beta_1 \theta_\ell, \sigma^2)$, and in scenario 2, each $y_\ell \indep \mathcal{N}(\beta_0 + \beta_1 a_\ell + \beta_2 b_\ell, \sigma^2)$.
 
-```{r angle-regression-sim, fig.width = 6, cache = TRUE, fig.cap = 'The average MSE over 50 simulations in scenario 1. The errorbars are the standard error.'}
+```{r angle-regression-sim, fig.width = 6, cache = FALSE, fig.cap = 'The average MSE over 50 simulations in scenario 1. The errorbars are the standard error.'}
+n.sigma <- 1
 
 angle.reg.df <- readr::read_csv('~/dev/multilayer-rdpg/simulations/angle-regression/angle-regression-sim.csv')
 
@@ -584,10 +585,10 @@ n.vec <- unique(angle.reg.df$n)
 angle.reg.df %>% 
   dplyr::group_by(n) %>% 
   dplyr::summarise(mse.theta = mean(mse),
-                   se.theta = sd(mse) / dplyr::n(),
-                   se.m = sd(mse.m) / dplyr::n(),
+                   se.theta = sd(mse) / sqrt(dplyr::n()) * n.sigma,
+                   se.m = sd(mse.m) / sqrt(dplyr::n()) * n.sigma,
                    mse.m = mean(mse.m),
-                   se.a = sd(mse.a) / dplyr::n(),
+                   se.a = sd(mse.a) / sqrt(dplyr::n()) * n.sigma,
                    mse.a = mean(mse.a)) %>% 
   ggplot() + 
   theme_bw() + 
@@ -615,10 +616,10 @@ angle.reg.df %>%
   scale_x_log10(breaks = sort(n.vec))
 ```
 
-```{r theta-mse, fig.width = 6, cache = TRUE, fig.cap = 'The average MSE of the estimated angles in scenario 1 over 50 simulations. The errorbars are the standard error.'}
+```{r theta-mse, fig.width = 6, cache = FALSE, fig.cap = 'The average MSE of the estimated angles in scenario 1 over 50 simulations. The errorbars are the standard error.'}
 angle.reg.df %>% 
   dplyr::group_by(n) %>% 
-  dplyr::summarise(theta.se = sd(theta.mse) / dplyr::n(),
+  dplyr::summarise(theta.se = sd(theta.mse) / sqrt(dplyr::n()) * n.sigma,
                    theta.mse = mean(theta.mse)) %>% 
   ggplot() + 
   geom_line(aes(x = n, y = theta.mse)) + 
@@ -626,10 +627,11 @@ angle.reg.df %>%
                 width = .1) + 
   labs(x = 'number of vertices', y = expression('MSE('~hat(theta)~')')) + 
   theme_bw() + 
+  scale_y_log10() + 
   scale_x_log10(breaks = sort(n.vec))
 ```
 
-```{r beta-regression-sim, fig.width = 6, cache = TRUE, fig.cap = 'The average MSE over 50 simulations in scenario 2. The errorbars are the standard error.'}
+```{r beta-regression-sim, fig.width = 6, cache = FALSE, fig.cap = 'The average MSE over 50 simulations in scenario 2. The errorbars are the standard error.'}
 
 beta.reg.df <- readr::read_csv('~/dev/multilayer-rdpg/simulations/beta-regression/beta-regression-sim.csv')
 
@@ -638,10 +640,10 @@ n.vec <- unique(beta.reg.df$n)
 beta.reg.df %>% 
   dplyr::group_by(n) %>% 
   dplyr::summarise(mse.beta = mean(mse),
-                   se.beta = sd(mse) / sqrt(dplyr::n()),
-                   se.d = sd(mse.d) / sqrt(dplyr::n()),
+                   se.beta = sd(mse) / sqrt(dplyr::n()) * n.sigma,
+                   se.d = sd(mse.d) / sqrt(dplyr::n()) * n.sigma,
                    mse.d = mean(mse.d),
-                   se.t = sd(mse.t) / sqrt(dplyr::n()),
+                   se.t = sd(mse.t) / sqrt(dplyr::n()) * n.sigma,
                    mse.t = mean(mse.t)) %>% 
   ggplot() + 
   geom_line(aes(x = n, y = mse.beta, colour = 'estimated beta parameters')) + 
@@ -669,11 +671,11 @@ beta.reg.df %>%
   labs(x = 'number of vertices', y = 'MSE', colour = 'predictor')
 ```
 
-```{r beta-mse, fig.width = 6, cache = TRUE, fig.cap = 'The average MSE of the estimated beta parameters, $(a, b)$, in scenario 2 over 50 simulations. The errorbars are the standard error.'}
+```{r beta-mse, fig.width = 6, cache = FALSE, fig.cap = 'The average MSE of the estimated beta parameters, $(a, b)$, in scenario 2 over 50 simulations. The errorbars are the standard error.'}
 beta.reg.df %>% 
   dplyr::group_by(n) %>% 
-  dplyr::summarise(a.se = sd(a.mse) / sqrt(dplyr::n()),
-                   b.se = sd(b.mse) / sqrt(dplyr::n()),
+  dplyr::summarise(a.se = sd(a.mse) / sqrt(dplyr::n()) * n.sigma,
+                   b.se = sd(b.mse) / sqrt(dplyr::n()) * n.sigma,
                    a.mse = mean(a.mse),
                    b.mse = mean(b.mse)) %>% 
   ggplot() + 
@@ -689,6 +691,7 @@ beta.reg.df %>%
   labs(x = 'number of vertices', y = 'MSE of Beta parameter estimates', 
        colour = 'Beta \ndistribution \nparameter') + 
   scale_colour_brewer(palette = 'Set1') +
+  scale_y_log10() + 
   scale_x_log10(breaks = sort(n.vec))
 ```
 
