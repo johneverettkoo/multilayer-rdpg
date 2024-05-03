@@ -555,9 +555,142 @@ Fit a model for predicting $y_1, ..., y_L$ using the estimated parameters $\thet
 \end{algorithm}
 
 \begin{theorem}
+\ref{thm:supervised}
 \end{theorem}
 
 # Simulation Study
+
+In this section, we evaluate algorithm \ref{alg:mlsm-fit} and theorem \ref{thm:supervised} empirically via simulation and compare to existing methods. 
+Two settings are examined. In the first, the data generating model reduces to a simpler model and can be adequately described by the COSIE model or multilayer DCBM. 
+The second setting involves a nonlinear latent structure that can be described as a polynomial curve and thus does not reduce to a simpler model or be analyzed by their corresponding methods. 
+
+The scenarios are as follows:
+
+1. In this setting, there are two latent structures, described by two rays emanating from the origin. 
+
+2. 
+
+## Regression
+
+In this scenario, the responses $y_\ell$ are generated as linear responses of $\theta_\ell$ (in scenario 1) or $a_\ell$ and $b_\ell$ (in scenario 2). 
+More specifically, in scenario 1, each $y_\ell \indep \mathcal{N}(\beta_0 + \beta_1 \theta_\ell, \sigma^2)$, and in scenario 2, each $y_\ell \indep \mathcal{N}(\beta_0 + \beta_1 a_\ell + \beta_2 b_\ell, \sigma^2)$.
+
+```{r angle-regression-sim, fig.width = 6, cache = TRUE, fig.cap = 'The average MSE over 50 simulations in scenario 1. The errorbars are the standard error.'}
+
+angle.reg.df <- readr::read_csv('~/dev/multilayer-rdpg/simulations/angle-regression/angle-regression-sim.csv')
+
+n.vec <- unique(angle.reg.df$n)
+
+angle.reg.df %>% 
+  dplyr::group_by(n) %>% 
+  dplyr::summarise(mse.theta = mean(mse),
+                   se.theta = sd(mse) / dplyr::n(),
+                   se.m = sd(mse.m) / dplyr::n(),
+                   mse.m = mean(mse.m),
+                   se.a = sd(mse.a) / dplyr::n(),
+                   mse.a = mean(mse.a)) %>% 
+  ggplot() + 
+  theme_bw() + 
+  scale_colour_brewer(palette = 'Set1') +
+  labs(x = 'vertices per graph', y = 'MSE', colour = 'predictor') +
+  geom_line(aes(x = n, y = mse.theta, colour = 'estimated angle')) + 
+  geom_errorbar(aes(x = n, 
+                    ymin = mse.theta - se.theta, 
+                    ymax = mse.theta + se.theta,
+                    colour = 'estimated angle'), 
+                width = .1) + 
+  geom_line(aes(x = n, y = mse.m, colour = 'modularity')) + 
+  geom_errorbar(aes(x = n,
+                    ymin = mse.m - se.m,
+                    ymax = mse.m + se.m,
+                    colour = 'modularity'), 
+                width = .1) + 
+  
+  geom_line(aes(x = n, y = mse.a, colour = 'assortativity')) + 
+  geom_errorbar(aes(x = n,
+                    ymin = mse.a - se.a,
+                    ymax = mse.a + se.a,
+                    colour = 'assortativity'), 
+                width = .1) + 
+  scale_x_log10(breaks = sort(n.vec))
+```
+
+```{r theta-mse, fig.width = 6, cache = TRUE, fig.cap = 'The average MSE of the estimated angles in scenario 1 over 50 simulations. The errorbars are the standard error.'}
+angle.reg.df %>% 
+  dplyr::group_by(n) %>% 
+  dplyr::summarise(theta.se = sd(theta.mse) / dplyr::n(),
+                   theta.mse = mean(theta.mse)) %>% 
+  ggplot() + 
+  geom_line(aes(x = n, y = theta.mse)) + 
+  geom_errorbar(aes(x = n, ymin = theta.mse - theta.se, ymax = theta.mse + theta.se),
+                width = .1) + 
+  labs(x = 'number of vertices', y = expression('MSE('~hat(theta)~')')) + 
+  theme_bw() + 
+  scale_x_log10(breaks = sort(n.vec))
+```
+
+```{r beta-regression-sim, fig.width = 6, cache = TRUE, fig.cap = 'The average MSE over 50 simulations in scenario 2. The errorbars are the standard error.'}
+
+beta.reg.df <- readr::read_csv('~/dev/multilayer-rdpg/simulations/beta-regression/beta-regression-sim.csv')
+
+n.vec <- unique(beta.reg.df$n)
+
+beta.reg.df %>% 
+  dplyr::group_by(n) %>% 
+  dplyr::summarise(mse.beta = mean(mse),
+                   se.beta = sd(mse) / sqrt(dplyr::n()),
+                   se.d = sd(mse.d) / sqrt(dplyr::n()),
+                   mse.d = mean(mse.d),
+                   se.t = sd(mse.t) / sqrt(dplyr::n()),
+                   mse.t = mean(mse.t)) %>% 
+  ggplot() + 
+  geom_line(aes(x = n, y = mse.beta, colour = 'estimated beta parameters')) + 
+  geom_errorbar(aes(x = n, 
+                    ymin = mse.beta - se.beta, 
+                    ymax = mse.beta + se.beta,
+                    colour = 'estimated beta parameters'),
+                width = .1) + 
+  geom_line(aes(x = n, y = mse.d, colour = 'average degree')) + 
+  geom_errorbar(aes(x = n,
+                    ymin = mse.d - se.d,
+                    ymax = mse.d + se.d,
+                    colour = 'average degree'),
+                width = .1) + 
+  
+  geom_line(aes(x = n, y = mse.t, colour = 'transitivity')) + 
+  geom_errorbar(aes(x = n,
+                    ymin = mse.t - se.t,
+                    ymax = mse.t + se.t,
+                    colour = 'transitivity'),
+                width = .1) +
+  theme_bw() + 
+  scale_colour_brewer(palette = 'Set1') +
+  scale_x_log10(breaks = sort(n.vec)) + 
+  labs(x = 'number of vertices', y = 'MSE', colour = 'predictor')
+```
+
+```{r beta-mse, fig.width = 6, cache = TRUE, fig.cap = 'The average MSE of the estimated beta parameters, $(a, b)$, in scenario 2 over 50 simulations. The errorbars are the standard error.'}
+beta.reg.df %>% 
+  dplyr::group_by(n) %>% 
+  dplyr::summarise(a.se = sd(a.mse) / sqrt(dplyr::n()),
+                   b.se = sd(b.mse) / sqrt(dplyr::n()),
+                   a.mse = mean(a.mse),
+                   b.mse = mean(b.mse)) %>% 
+  ggplot() + 
+  # scale_y_log10() + 
+  scale_x_log10() + 
+  geom_line(aes(x = n, y = a.mse, colour = 'a')) + 
+  geom_errorbar(aes(x = n, ymin = a.mse - a.se, ymax = a.mse + a.se, colour = 'a'),
+                width = .1) + 
+  geom_line(aes(x = n, y = b.mse, colour = 'b')) + 
+  geom_errorbar(aes(x = n, ymin = b.mse - b.se, ymax = b.mse + b.se, colour = 'b'),
+                width = .1) + 
+  theme_bw() + 
+  labs(x = 'number of vertices', y = 'MSE of Beta parameter estimates', 
+       colour = 'Beta \ndistribution \nparameter') + 
+  scale_colour_brewer(palette = 'Set1') +
+  scale_x_log10(breaks = sort(n.vec))
+```
 
 ## Classification
 

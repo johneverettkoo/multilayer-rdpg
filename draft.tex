@@ -742,10 +742,76 @@ Fit a model for predicting $y_1, ..., y_L$ using the estimated parameters $\thet
 \end{algorithm}
 
 \begin{theorem}
+\ref{thm:supervised}
 \end{theorem}
 
 \hypertarget{simulation-study}{%
 \section{Simulation Study}\label{simulation-study}}
+
+In this section, we evaluate algorithm \ref{alg:mlsm-fit} and theorem
+\ref{thm:supervised} empirically via simulation and compare to existing
+methods. Two settings are examined. In the first, the data generating
+model reduces to a simpler model and can be adequately described by the
+COSIE model or multilayer DCBM. The second setting involves a nonlinear
+latent structure that can be described as a polynomial curve and thus
+does not reduce to a simpler model or be analyzed by their corresponding
+methods.
+
+The scenarios are as follows:
+
+\begin{enumerate}
+\def\labelenumi{\arabic{enumi}.}
+\item
+  In this setting, there are two latent structures, described by two
+  rays emanating from the origin.
+\item
+\end{enumerate}
+
+\hypertarget{regression}{%
+\subsection{Regression}\label{regression}}
+
+In this scenario, the responses \(y_\ell\) are generated as linear
+responses of \(\theta_\ell\) (in scenario 1) or \(a_\ell\) and
+\(b_\ell\) (in scenario 2). More specifically, in scenario 1, each
+\(y_\ell \indep \mathcal{N}(\beta_0 + \beta_1 \theta_\ell, \sigma^2)\),
+and in scenario 2, each
+\(y_\ell \indep \mathcal{N}(\beta_0 + \beta_1 a_\ell + \beta_2 b_\ell, \sigma^2)\).
+
+\begin{figure}[H]
+
+{\centering \includegraphics{draft_files/figure-latex/angle-regression-sim-1} 
+
+}
+
+\caption{The average MSE over 50 simulations in scenario 1. The errorbars are the standard error.}\label{fig:angle-regression-sim}
+\end{figure}
+
+\begin{figure}[H]
+
+{\centering \includegraphics{draft_files/figure-latex/theta-mse-1} 
+
+}
+
+\caption{The average MSE of the estimated angles in scenario 1 over 50 simulations. The errorbars are the standard error.}\label{fig:theta-mse}
+\end{figure}
+
+\begin{figure}[H]
+
+{\centering \includegraphics{draft_files/figure-latex/beta-regression-sim-1} 
+
+}
+
+\caption{The average MSE over 50 simulations in scenario 2. The errorbars are the standard error.}\label{fig:beta-regression-sim}
+\end{figure}
+
+\begin{figure}[H]
+
+{\centering \includegraphics{draft_files/figure-latex/beta-mse-1} 
+
+}
+
+\caption{The average MSE of the estimated beta parameters, $(a, b)$, in scenario 2 over 50 simulations. The errorbars are the standard error.}\label{fig:beta-mse}
+\end{figure}
 
 \hypertarget{classification}{%
 \subsection{Classification}\label{classification}}
@@ -802,8 +868,8 @@ classification error rates.
 \caption{Median classification error rate and its IQR vs. number of vertices in each graph.}\label{fig:classification-sim}
 \end{figure}
 
-\hypertarget{regression}{%
-\subsection{Regression}\label{regression}}
+\hypertarget{regression-1}{%
+\subsection{Regression}\label{regression-1}}
 
 In the first regression simulation,
 
