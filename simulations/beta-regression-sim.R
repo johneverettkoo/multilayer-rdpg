@@ -54,6 +54,7 @@ out.df <- foreach(n = n.vec, .combine = dplyr::bind_rows) %do% {
                                            intercept = FALSE,
                                            # initialization = 'isomap',
                                            init.params = p.init,
+                                           # initialization = 'x',
                                            # min.t = 0, max.t = 1,
                                            normalize = TRUE,
                                            parallel = parallelize.curvefit)
@@ -128,7 +129,7 @@ out.df %>%
                    a.mse = mean(a.mse),
                    b.mse = mean(b.mse)) %>% 
   ggplot() + 
-  # scale_y_log10() + 
+  scale_y_log10() +
   scale_x_log10() + 
   geom_line(aes(x = n, y = a.mse, colour = 'a')) + 
   geom_errorbar(aes(x = n, ymin = a.mse - a.se, ymax = a.mse + a.se, colour = 'a')) + 
@@ -144,7 +145,7 @@ out.df %>%
                    se.t = sd(mse.t) / sqrt(dplyr::n()),
                    mse.t = mean(mse.t)) %>% 
   ggplot() + 
-  # scale_y_log10() + 
+  scale_y_log10() +
   scale_x_log10() + 
   geom_line(aes(x = n, y = mse.beta, colour = 'beta')) + 
   geom_errorbar(aes(x = n, 
