@@ -13,8 +13,13 @@ beta1 <- 2
 beta2 <- -1
 sigma_eps <- .5
 
+a.min <- 0
+a.max <- 2
+b.min <- 0
+b.max <- 2
+
 N <- 2 ^ 6
-n.vec <- 2 ^ c(10, 9, 8, 7, 6)
+n.vec <- 2 ^ c(11, 10, 9, 8, 7)
 
 sim.dir <- '~/dev/multilayer-rdpg/simulations/beta-regression'
 
@@ -34,8 +39,8 @@ out.df <- foreach(n = n.vec, .combine = dplyr::bind_rows) %do% {
     datamat.df <- plyr::ldply(seq(N), function(i) {
       set.seed(i + (rep - 1) * N)
       print(paste(i, '/', N))
-      a <- runif(1, 1, 2)
-      b <- runif(1, 1, 2)
+      a <- runif(1, a.min, a.max)
+      b <- runif(1, a.min, a.max)
       y <- beta0 + beta1 * a + beta2 * b + rnorm(1, 0, sigma_eps)
       t. <- rbeta(n, a, b)
       x1 <- t. ^ 2
@@ -164,4 +169,4 @@ out.df %>%
                     ymax = mse.t + se.t,
                     colour = 'transitivity'))
 
-readr::write_csv(out.df, '~/dev/multilayer-rdpg/simulations/beta-regression/beta-regression-sim.csv')
+# readr::write_csv(out.df, '~/dev/multilayer-rdpg/simulations/beta-regression/beta-regression-sim.csv')
