@@ -28,8 +28,21 @@ A <- dat.NumFibers[[2]] %>%
 A <- (A + t(A)) / 2
 diag(A) <- 0
 
+# A <- log(A)
+# A[is.infinite(A)] <- 0
+# A[A < 0] <- 0
+# 
+# A <- log(A + 1)
+# 
+# A <- sqrt(A)
+
 qgraph::qgraph(A, layout = 'spring', groups = dti.info$hemisphere)
 Xhat <- embedding(A, 2, 0, scale = TRUE)
+plot(Xhat, asp = 1, col = z)
+
+# Xhat <- embedding(A, 6, 3, scale = TRUE)
+# pairs(Xhat, asp = 1, col = z)
+
 clustering <- manifold.clustering(Xhat, 
                                   degree = 1,
                                   initialization = as.numeric(z),

@@ -162,8 +162,7 @@ graph, neuroimaging, brain connectivity networks
 \newtheorem{definition}{Definition}
 \newtheorem{example}{Example}
 
-\hypertarget{introduction}{%
-\section{Introduction}\label{introduction}}
+\section{Introduction}\label{introduction}
 
 Graph and network data are now as ubiquitous as traditional feature data
 in the fields of sociology (e.g., social networks), neuroimaging (e.g.,
@@ -246,11 +245,9 @@ in turn used as features for supervised learning.
 The following sections are organized as follows: Section 2 introduces
 the structured and parameterized
 
-\hypertarget{methods}{%
-\section{Methods}\label{methods}}
+\section{Methods}\label{methods}
 
-\hypertarget{notation-and-scope}{%
-\subsection{Notation and Scope}\label{notation-and-scope}}
+\subsection{Notation and Scope}\label{notation-and-scope}
 
 Let \(G_1, ..., G_L\) be a collection of undirected graphs where each
 \(G_l = (V_l, E_l)\). In this setup, each graph can have its own vertex
@@ -274,8 +271,7 @@ same latent dimension, and \(x_i^{(l)} \in \mathbb{R}^d\) is the latent
 vector corresponding to the \(i\)\textsuperscript{th} vertex in the
 \(l\)\textsuperscript{th} graph.
 
-\hypertarget{definitions-and-models}{%
-\subsection{Definitions and Models}\label{definitions-and-models}}
+\subsection{Definitions and Models}\label{definitions-and-models}
 
 We begin by defining the RDPG and the LSM.
 
@@ -386,9 +382,8 @@ Again as in the case of a single LSM, we also allow for each $A^{(\ell)}$ to be 
 In this case, we use the notation $A^{(1)}, ..., A^{(L)} \sim \MLSM(\{\mathcal{C}_k^{(\ell)}\}_{K, L}, F, \{\theta_\ell\}_L, \{\alpha^{(\ell)}\}_L)$ or $A^{(1)}, ..., A^{(L)} \sim \MLSM(\{p_k^{(\ell)}\}_{K, L}, F, \{\theta_\ell\}_L, \{\alpha^{(\ell)}\}_L)$.
 \end{remark}
 
-\hypertarget{connections-to-related-models}{%
 \subsubsection{Connections to Related
-Models}\label{connections-to-related-models}}
+Models}\label{connections-to-related-models}
 
 In the MLSM defined in definition \ref{def:mlsm}, the only commonality
 that we assume from graph to graph is that they are all LSMs with the
@@ -422,9 +417,8 @@ However, if the community labels are not identical from graph to graph, the sequ
 \begin{example}[Nonlinear MLSM and comparison to MREG and multi-RDPG]
 \end{example}
 
-\hypertarget{classification-and-regression-on-the-mlsm}{%
 \subsubsection{Classification and Regression on the
-MLSM}\label{classification-and-regression-on-the-mlsm}}
+MLSM}\label{classification-and-regression-on-the-mlsm}
 
 To use the MLSM for classification or regression problems, we assign
 response variables \(y_1, ..., y_L\) to each graph. Then if each
@@ -495,8 +489,7 @@ insight into both \(p^{(\ell)}\) and \(\theta_\ell\).
 information, the ASE of \(A^{(\ell)}\) can lead to a consistent
 estimator for \(\theta_\ell\).
 
-\hypertarget{main-results}{%
-\subsection{Main Results}\label{main-results}}
+\subsection{Main Results}\label{main-results}
 
 We propose our methodology for classification and regression in three
 steps:
@@ -514,9 +507,8 @@ steps:
   parameters and the responses.
 \end{enumerate}
 
-\hypertarget{estimation-of-the-lsm-curves}{%
 \subsubsection{Estimation of the LSM
-Curves}\label{estimation-of-the-lsm-curves}}
+Curves}\label{estimation-of-the-lsm-curves}
 
 For curve-fitting, we will restrict the LSM curves to
 non-self-intersecting Bezier polynomials \citep{10.5555/320367}. A
@@ -682,9 +674,8 @@ Then as $n \to \infty$, $\|T - \hat{T}\|_{2, \infty} \stackrel{p}{\to} 0$ where 
 
 \end{proof}
 
-\hypertarget{recovery-of-the-underlying-distributions}{%
 \subsubsection{Recovery of the Underlying
-Distributions}\label{recovery-of-the-underlying-distributions}}
+Distributions}\label{recovery-of-the-underlying-distributions}
 
 \begin{algorithm}[H]
 \label{alg:bezier-param-fit}
@@ -715,9 +706,8 @@ Then $\tilde{\theta} \stackrel{p}{\to} \theta$.
 By theorem \ref{thm:bezier-consistency}, 
 \end{proof}
 
-\hypertarget{classification-and-regression}{%
 \subsubsection{Classification and
-Regression}\label{classification-and-regression}}
+Regression}\label{classification-and-regression}
 
 \begin{algorithm}[H]
 \label{alg:mlsm-fit}
@@ -745,8 +735,7 @@ Fit a model for predicting $y_1, ..., y_L$ using the estimated parameters $\thet
 \ref{thm:supervised}
 \end{theorem}
 
-\hypertarget{simulation-study}{%
-\section{Simulation Study}\label{simulation-study}}
+\section{Simulation Study}\label{simulation-study}
 
 In this section, we evaluate algorithm \ref{alg:mlsm-fit} and theorem
 \ref{thm:supervised} empirically via simulation and compare to existing
@@ -767,8 +756,7 @@ The scenarios are as follows:
 \item
 \end{enumerate}
 
-\hypertarget{regression}{%
-\subsection{Regression}\label{regression}}
+\subsection{Regression}\label{regression}
 
 In this scenario, the responses \(y_\ell\) are generated as linear
 responses of \(\theta_\ell\) (in scenario 1) or \(a_\ell\) and
@@ -813,8 +801,7 @@ and in scenario 2, each
 \caption{The average MSE of the estimated beta parameters, $(a, b)$, in scenario 2 over 50 simulations. The errorbars are the standard error.}\label{fig:beta-mse}
 \end{figure}
 
-\hypertarget{classification}{%
-\subsection{Classification}\label{classification}}
+\subsection{Classification}\label{classification}
 
 In this simulation experiment, the latent vectors were sampled along a
 Bezier curve defined by \(g(t) = \bigl[ t^2 \; 2 t (1-t) \bigr]^\top\).
@@ -868,8 +855,7 @@ classification error rates.
 \caption{Median classification error rate and its IQR vs. number of vertices in each graph.}\label{fig:classification-sim}
 \end{figure}
 
-\hypertarget{regression-1}{%
-\subsection{Regression}\label{regression-1}}
+\subsection{Regression}\label{regression-1}
 
 In the first regression simulation,
 
@@ -911,11 +897,9 @@ replicates.
 
 \begin{center}\includegraphics{draft_files/figure-latex/angle-reg-results-1} \end{center}
 
-\hypertarget{applications}{%
-\section{Applications}\label{applications}}
+\section{Applications}\label{applications}
 
-\hypertarget{drosophila-connectome}{%
-\subsection{Drosophila Connectome}\label{drosophila-connectome}}
+\subsection{Drosophila Connectome}\label{drosophila-connectome}
 
 In the second example, we analyzed the larval \emph{Drosophila} mushroom
 body connectome \citep{Eichler141762}, which has been studied as a GRDPG
@@ -974,9 +958,8 @@ predictors results in 100\% accuracy.
 \caption{Beta parameter estimates for each curve and hemisphere.}\label{fig:mbconnectome-beta}
 \end{figure}
 
-\hypertarget{human-connectome-project-aging-study}{%
 \subsection{Human Connectome Project Aging
-Study}\label{human-connectome-project-aging-study}}
+Study}\label{human-connectome-project-aging-study}
 
 In the second example, we analyzed fiber count data between brain
 regions from the Human Connectome Project (HCP). When analyzing these
@@ -1088,8 +1071,7 @@ hemisphere.
 \caption{Scatterplot of fitted parameters of the Beta distribution. The left image are the parameters fitted on the embedding of the left hemisphere, and the right image are the parameters fitted on the embedding of the right hemisphere.}\label{fig:hcp-clustering}
 \end{figure}
 
-\hypertarget{discussion}{%
-\section{Discussion}\label{discussion}}
+\section{Discussion}\label{discussion}
 
 \section*{Appendix A: Proofs of Theorems}
 

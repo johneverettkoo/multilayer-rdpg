@@ -583,6 +583,7 @@ angle.reg.df <- readr::read_csv('~/dev/multilayer-rdpg/simulations/angle-regress
 n.vec <- unique(angle.reg.df$n)
 
 angle.reg.df %>% 
+  dplyr::filter(n >= 128) %>% 
   dplyr::group_by(n) %>% 
   dplyr::summarise(mse.theta = mean(mse),
                    se.theta = sd(mse) / sqrt(dplyr::n()) * n.sigma,
@@ -600,24 +601,24 @@ angle.reg.df %>%
                     ymax = mse.theta + se.theta,
                     colour = 'estimated angle'), 
                 width = .1) + 
-  geom_line(aes(x = n, y = mse.m, colour = 'modularity')) + 
-  geom_errorbar(aes(x = n,
-                    ymin = mse.m - se.m,
-                    ymax = mse.m + se.m,
-                    colour = 'modularity'), 
-                width = .1) + 
-  
-  geom_line(aes(x = n, y = mse.a, colour = 'assortativity')) + 
+  # geom_line(aes(x = n, y = mse.m, colour = 'modularity')) + 
+  # geom_errorbar(aes(x = n,
+  #                   ymin = mse.m - se.m,
+  #                   ymax = mse.m + se.m,
+  #                   colour = 'modularity'), 
+  #               width = .1) + 
+  geom_line(aes(x = n, y = mse.a, colour = 'graph statistics')) + 
   geom_errorbar(aes(x = n,
                     ymin = mse.a - se.a,
                     ymax = mse.a + se.a,
-                    colour = 'assortativity'), 
+                    colour = 'graph statistics'), 
                 width = .1) + 
   scale_x_log10(breaks = sort(n.vec))
 ```
 
 ```{r theta-mse, fig.width = 6, cache = FALSE, fig.cap = 'The average MSE of the estimated angles in scenario 1 over 50 simulations. The errorbars are the standard error.'}
 angle.reg.df %>% 
+  dplyr::filter(n >= 128) %>% 
   dplyr::group_by(n) %>% 
   dplyr::summarise(theta.se = sd(theta.mse) / sqrt(dplyr::n()) * n.sigma,
                    theta.mse = mean(theta.mse)) %>% 
@@ -652,19 +653,18 @@ beta.reg.df %>%
                     ymax = mse.beta + se.beta,
                     colour = 'estimated beta parameters'),
                 width = .1) + 
-  geom_line(aes(x = n, y = mse.d, colour = 'average degree')) + 
+  geom_line(aes(x = n, y = mse.d, colour = 'graph statistics')) + 
   geom_errorbar(aes(x = n,
                     ymin = mse.d - se.d,
                     ymax = mse.d + se.d,
-                    colour = 'average degree'),
+                    colour = 'graph statistics'),
                 width = .1) + 
-  
-  geom_line(aes(x = n, y = mse.t, colour = 'transitivity')) + 
-  geom_errorbar(aes(x = n,
-                    ymin = mse.t - se.t,
-                    ymax = mse.t + se.t,
-                    colour = 'transitivity'),
-                width = .1) +
+  # geom_line(aes(x = n, y = mse.t, colour = 'transitivity')) + 
+  # geom_errorbar(aes(x = n,
+  #                   ymin = mse.t - se.t,
+  #                   ymax = mse.t + se.t,
+  #                   colour = 'transitivity'),
+  #               width = .1) +
   theme_bw() + 
   scale_colour_brewer(palette = 'Set1') +
   scale_x_log10(breaks = sort(n.vec)) + 
