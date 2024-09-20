@@ -111,4 +111,4 @@ out.df %>%
                     ymax = acc.stats.mean + 2 * acc.stats.se,
                     colour = 'stats'))
 
-readr::write_csv(out.df, file.path(sim.dir, 'beta.classification-sim.csv'))
+readr::write_csv(out.df, file.path(sim.dir, 'beta-classification-sim.csv'))
