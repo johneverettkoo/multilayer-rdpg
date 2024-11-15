@@ -46,7 +46,7 @@ bibliography: bibliography.bib
 biblio-style: apalike
 
 abstract: |
-  The random dot product graph (RDPG) has become a powerful modeling tool in uncovering latent structures within graphs. In particular, it has been shown that the RDPG describes a wide range of popular random graph models with rigid latent structures. More recently, joint modeling of mutliple random graphs that share common properties or structures across graphs have been introduced, such as the multilayer RDPG, multiple RPDG, and multilayer stochastic block model. In this work, we use these joint random graph models in the context of statistical learning, such as classification and regression, by introducing the multiple latent structure model, in which the graphs share a common latent structure with different parameters that correspond to different response variables. Then we propose various estimation techniques involving manifold learning to estimate these parameters and in turn predict the responses, with theorems guaranteeing convergence of the predictions. Simulations, as well as applications on brain connectivity networks, verify the performance of our methods. 
+  The random dot product graph (RDPG) has become a powerful modeling tool in uncovering latent structures within graphs. In particular, it has been shown that the RDPG describes a wide range of popular random graph models with rigid latent structures. More recently, joint modeling of mutliple random graphs that share common properties or structures across graphs have been introduced, such as the multilayer RDPG, multiple RPDG, and common subspace independent edge model. In this work, we use these joint random graph models in the context of graph classification and regression by introducing the multiple latent structure model, in which the graphs share a common latent structure with different parameters that correspond to different response variables. Then we propose various estimation techniques involving manifold learning to estimate these parameters and in turn predict the responses, with theorems guaranteeing convergence of the predictions. Simulations, as well as applications on brain connectivity networks, verify the performance of our methods. 
 ---
 
 ```{r setup, include = FALSE}
@@ -117,7 +117,7 @@ doMC::registerDoMC(parallel::detectCores())
 Graph and network data are now as ubiquitous as traditional feature data in the fields of sociology (e.g., social networks), neuroimaging (e.g., brain connectivity networks), and deep learning (e.g., graph neural networks). 
 As a result, new statistical and machine learning methods have recently been developed to analyze network data. 
 One approach is to treat the network as a random graph that comes from some probability model. 
-In particular, if we sum up the network in an adjacency matrix $A \in \mathbb{R}^{n \times n}$, then one probability model might be to draw each element $A_{ij}$, which represents the existence of an edge or the edge weight from vertex $i$ to $j$, independently from some distribution, perhaps with a unique parameter for the pair $(i,j)$, e.g., $A_{ij} \indep F_{\theta_{ij}}$. 
+One such approach in particular is the independent edge approach. If we sum up the network in an adjacency matrix $A \in \mathbb{R}^{n \times n}$, then this model draws each element $A_{ij}$, which represents the existence of an edge or the edge weight from vertex $i$ to $j$, independently from some distribution, perhaps with a unique parameter for the pair $(i,j)$, e.g., $A_{ij} \indep F_{\theta_{ij}}$. 
 The classical example of this is the $\ER$ model \citep{Gilbert:1959}, in which every edge is drawn from the same distribution, typically a Bernoulli distribution, using the same parameter, i.e., $A_{ij} \iid \Bernoulli (p)$. 
 The inhomogeneous Bernoulli graph extends this by allowing each edge, represented by $A_{ij}$, to have its own parameter, $P_{ij}$, e.g., in the Bernoulli case, $A_{ij} \indep \Bernoulli(P_{ij})$. 
 Typically, the parameters are collected into an edge probability matrix (in the case of unweighted graphs) or edge parameter matrix (in the case of weighted graphs), denoted as $P \in \mathbb{R}^{n \times n}$. 
@@ -125,7 +125,7 @@ The network analysis problem in this setting is to estimate $P$ given $A$.
 
 If the parameter matrix $P$ is unconstrained, the inference problem is overparameterized. 
 On the other hand, the classical $\ER$ model is often too restrictive to describe real, observed networks. 
-Much work has been done to develop models that are constrained enough for robust statistical inference while being generalizable to describe a wide range of networks.
+Various approaches have been taken to restrict $P$, such as by setting the matrix rank of $P$ to a small value. 
 One such family of random graph models is the random dot product graph (RDPG), first proposed by \citet{10.1007/978-3-540-77004-6_11}, which is a type of latent space graph in which each vertex of the graph has a corresponding latent vector in a low-dimensional Euclidean space $\mathbb{R}^d$, and the edge parameter between each pair of vertices is determined by the dot product of the corresponding vectors. 
 In this model, the constraint is the low rank of the parameter matrix $P$, assuming that the latent dimension $d$ is less than the number of vertices $n$. 
 Further constraints can be imposed on the RDPG in the form of distributional assumptions on the latent vectors or restricting the latent vectors to lie on subspaces or manifolds in the latent space \citep{athreya2020estimation}.
@@ -135,29 +135,35 @@ In these examples, the (G)RPDG representation of these networks allows for infer
 More specifically, when these network models are described as (G)RDPGs, each latent vector lies on a subspace. 
 \citet{athreya2020estimation} and \citet{Passino_2020} extended this to the latent structure model (LSM) and latent structure block model (LSBM) to include latent configurations that consist of nonlinear manifolds. 
 
-In this paper, we apply these highly structured GRDPG models to supervised learning problems in which there are multiple graphs, $G_1, ..., G_L$, each with a response $y^{(1)}, ..., y^{(L)}$. 
-Each graph, represented by adjacency matrix $A^{(l)}$, is presumed to be drawn from a GRDPG with parameter set $\theta_l$, and in turn, the response $y_l$ is drawn from a univariate distribution with parameter $\theta_l$.
-Since the latent vectors of each $A^{(l)}$ are presumed to be distributed on a structured subset of the latent space, e.g., a manifold, we call this the multiple latent structure model (MLSM). 
-Much previous work has been done on multilayer networks, such as the multilayer degree corrected block model of \citet{agterberg2022joint}, multiple random eigen graphs of \citet{8889404}, and the multiple common subspace independent edge graphs of \citet{arroyo2020inference}. 
+In this paper, we apply these highly structured random dot product graph models to supervised learning problems in which there are multiple graphs, $G_1, ..., G_L$, each with a response $y^{(1)}, ..., y^{(L)}$. 
+Each graph, represented by adjacency matrix $A^{(\ell)}$, is presumed to be drawn from a RDPG with parameter set $\theta_l$, and in turn, the response $y_l$ is drawn from a univariate distribution with parameter $\theta_l$.
+Since the latent vectors of each $A^{(\ell)}$ are presumed to be distributed on a structured subset of the latent space, e.g., a manifold, we call this the multiple latent structure model (MLSM). 
+Much previous work has been done on multilayer networks, such as the multilayer degree corrected block model of \citet{agterberg2022joint}, multiple random eigen graphs of \citet{8889404}, and the common subspace independent edge graphs of \citet{arroyo2020inference}. 
 In each of these models, the main inference problem is to identify parameters that are shared across multiple graphs. 
 Our contribution is in applying similar methods to identify parameters specific to each graph, which are in turn used as features for supervised learning. 
+This further allows us to model graphs with differing vertex sets. 
 
-The following sections are organized as follows: Section 2 introduces the structured and parameterized 
+The remainder of this paper is organized as follows: 
+Section 2 builds on the latent structure model to introduce the multiple latent structure model and proposes manifold learning algorithms for estimation. 
+Sections 3 and 4 provide simulation studies and real data analyses. 
+Section 5 concludes. 
+Proofs of theorems are provided in the Appendix. 
 
-# Methods
+# Setup and Methodology
 
 ## Notation and Scope
 
-Let $G_1, ..., G_L$ be a collection of undirected graphs where each $G_l = (V_l, E_l)$. 
+Let $G^{(1)}, ..., G^{(L)}$ be a collection of undirected graphs where each $G^{(\ell)} = (V^{(\ell)}, E^{(\ell)})$. 
 In this setup, each graph can have its own vertex and edge sets. 
-Each graph is represented by adjacency matrices $A^{(1)}, ..., A^{(L)}$, where each $A^{(l)} \in \mathbb{R}^{n_l \times n_l}$ is a symmetric and hollow matrix such that $A^{(l)}_{ij}$ represents the edge weight between vertices $i$ and $j$, and $n_l$ represents the size of the vertex set of the $l$^th^ graph. 
-Let $P^{(1)}, ..., P^{(L)}$ be the corresponding collection of edge parameter matrices such that each $A^{(l)}_{ij} \indep H(P^{(l)}_{ij})$ for each $1 \leq i < j \leq n_l$ and $H$ is a specified probability distribution such that $E[A^{(l)}_{ij}] = P^{(l)}_{ij}$. 
-For ease of notation, we use $A^{(l)} \sim H(P^{(l)})$ for an adjacency matrix $A^{(l)}$ drawn from edge parameter matrix $P^{(l)}$ in this way.
-Denote $X^{(1)}, ..., X^{(L)}$ as the sets of latent vectors corresponding to each graph under the GRDPG framework. Each $X^{(l)} \in \mathbb{R}^{n_l \times d}$, i.e., the graphs share the same latent dimension, and $x_i^{(l)} \in \mathbb{R}^d$ is the latent vector corresponding to the $i$^th^ vertex in the $l$^th^ graph.
+These graphs are represented by adjacency matrices $A^{(1)}, ..., A^{(L)}$, where each $A^{(\ell)} \in \mathbb{R}^{n_l \times n_l}$ is a symmetric and hollow matrix such that $A^{(\ell)}_{ij}$ represents the edge weight between vertices $i$ and $j$, and $n_l$ represents the size of the vertex set of the $l$^th^ graph. 
+Let $P^{(1)}, ..., P^{(L)}$ be the corresponding collection of edge parameter matrices such that each $A^{(\ell)}_{ij} \indep H(P^{(\ell)}_{ij})$ for each $1 \leq i < j \leq n_l$ and $H$ is a specified probability distribution such that $E[A^{(\ell)}_{ij}] = P^{(\ell)}_{ij}$. 
+For ease of notation, we use $A^{(\ell)} \sim H(P^{(\ell)})$ for an adjacency matrix $A^{(\ell)}$ drawn from edge parameter matrix $P^{(\ell)}$ in this way.
+Denote $X^{(1)}, ..., X^{(L)}$ as the sets of latent vectors corresponding to each graph under the GRDPG framework. Each $X^{(\ell)} \in \mathbb{R}^{n_\ell \times d}$, i.e., the graphs share the same latent dimension, and $x_i^{(\ell)} \in \mathbb{R}^d$ is the latent vector corresponding to the $i$^th^ vertex in the $\ell$^th^ graph. 
+$\hat{X}^{(\ell)}$ is the adjacency spectral embedding of $A^{(\ell)}$ and is an estimator for $X^{(\ell)}$. 
 
 ## Definitions and Models
 
-We begin by defining the RDPG and the LSM. 
+We begin by defining the random dot product graph and the latent structure model, then building the Multiple Latent Structure Model from there. 
 
 \begin{definition}[Random dot product graph (RDPG) \citep{10.1007/978-3-540-77004-6_11}]
 \label{def:rdpg}
@@ -220,6 +226,7 @@ Finally, we also note that while $\rho_n$ limits the rate of growth of the expec
 For example, if $\rho_n \propto 1 / \sqrt{n}$, then the expected degree for each vertex of the SBM is $O(\sqrt{n})$. 
 In general, for consistency in estimation and inference, most results on Bernoulli random graphs require $n \rho_n = \omega \big( (\log n)^c \big)$ for some $c > 1$. 
 (See \citet{JMLR:v18:16-480}, \citet{https://doi.org/10.48550/arxiv.2106.09840}, and \citet{rubindelanchy2017statistical} for further discussion.)
+For ease of exposition, we set $\rho_n \equiv 1$ for the remainder of this paper. 
 \end{remark}
 
 \begin{definition}[Adjacency spectral embedding (ASE) \citep{doi:10.1080/01621459.2012.699795}]
@@ -261,7 +268,9 @@ In this case, we use the notation $A^{(1)}, ..., A^{(L)} \sim \MLSM(\{\mathcal{C
 ### Connections to Related Models
 
 In the MLSM defined in definition \ref{def:mlsm}, the only commonality that we assume from graph to graph is that they are all LSMs with the same underlying distribution family. 
-If we impose further restrictions, namely that the latent structures are linear, we obtain the multilayer random dot product graph \citep{jones2021multilayer}.
+Unlike multilayer models, such as the multilayer random dot product graph \citep{jones2021multilayer} or COmmon Subspace Independent Edge (COSIE) graph \citep{arroyo2020inference}, there is no assumption that the graphs are connected in some way, such as via a shared vertex set. 
+In the MLSM, each graph is drawn from the same process with different parameters, whereas in multilayer models the graphs share the same vertex set but the edges are drawn from different distributions. 
+The MLSM can describe multilayer graphs if further restrictions are imposed on it. 
 
 \begin{example}[Comparison to the multilayer DCBM \citep{agterberg2022joint}, multi-RDPG \citep{nielsen2018multiple}, and MREG \citep{8889404}]
 In the $K$-community DCBM, the probability of an edge between a pair of vertices is given by
@@ -284,9 +293,6 @@ Thus, the DCBM is a special case of the LSM in which there are $K$ latent ``line
 The multilayer DCBM as described by \citet{agterberg2022joint} extends this to a sequence of DCBMs with the same community structure, allowing the block connectivities and degree correction parameters to change for each layer but keeping the same community structure throughout, i.e., each element of $P^{(\ell)} = \Omega^{(\ell)} B^{(\ell)} (\Omega^{(\ell)})^\top$ can vary with $\ell$ but $\Omega^{(\ell)} = 0 \iff \Omega^{(\ell')} = 0$ and similarly, $\Omega^{(\ell)} > 0 \iff \Omega^{(\ell')} > 0$, for every pair $(\ell, \ell')$. 
 On the other hand, if the further restriction of $\Omega^{(\ell)} = \Omega^{(\ell')}$ for all $(\ell, \ell')$, i.e., $P^{(\ell)} = \Omega B^{(\ell)} \Omega^\top$, we obtain a special case of the multiple RDPG (multi-RDPG) with the identity link function, as described by \citet{nielsen2018multiple}, or equivalently, a special case of the multiple random eigen graphs model (MREG), as described by \citet{8889404}. 
 However, if the community labels are not identical from graph to graph, the sequence of DCBMs cannot be described as a multilayer DCBM, multi-RDPG, or MREG, but it can still be described as an MLSM. 
-\end{example}
-
-\begin{example}[Nonlinear MLSM and comparison to MREG and multi-RDPG]
 \end{example}
 
 ### Classification and Regression on the MLSM
@@ -356,15 +362,15 @@ In all of these settings, the ASE of $A^{(\ell)}$ provides some insight into bot
 ## Main Results
 
 We propose our methodology for classification and regression in three steps:
-
-1. Curve-fitting algorithm to recover the LSM curves from the ASEs.
-2. Quasi-maximum likelihood estimation to recover the parameters of the underlying distributions. 
-3. Classification or regression to determine the relationship between the parameters and the responses. 
+First, we propose a curve-fitting algorithm to recover the LSM curves from the ASEs.
+Second, we the parameters of the underlying distributions from the curve fit via maximum likelihood estimation. 
+Third, we apply classification or regression methods to determine the relationship between the estimated parameters and the responses. 
+Finally, we provide theorems that show the consistency of the curve fits and maximum likelihood estimators.
 
 ### Estimation of the LSM Curves
 
 For curve-fitting, we will restrict the LSM curves to non-self-intersecting Bezier polynomials \citep{10.5555/320367}. 
-A polynomial curve of degree $R$ in $\mathbb{R}^d$ is uniquely defined by a Bezier polynomial within the space of Bezier polynomials of degree at most $R$, up to reverse order, although there are infinitely many Bezier polynomials of degree greater than $R$ that can describe the curve \citep{SANCHEZREYES2022102118}. 
+A polynomial curve of degree $R$ defined by $p : [0, 1] \to \mathbb{R}^d$ is uniquely defined by a Bezier polynomial within the space of Bezier polynomials of degree at most $R$, up to reverse order, although there are infinitely many Bezier polynomials of degree greater than $R$ that can describe the curve \citep{SANCHEZREYES2022102118}. 
 We further restrict the curves to the case $p(0) = 0$, i.e., the curve begins at the origin. 
 This is consistent with well-known models such as the DCBM and PABM when viewed as LSMs or mixtures of LSMs \citep{Koo_2022, rubindelanchy2017statistical}, as well as real networks that can adequately be described as LSMs \citep{athreya2020estimation}. 
 This constraint also removes the reverse order nonidentifiability. 
@@ -408,8 +414,6 @@ To solve, we find the at most $2 R - 1$ roots of its derivative,
 where $c_r = \sum_{s=1}^r (-1)^{r-s} \binom{r}{s} b_s$. 
 Since each $t_i$ can be solved separately, this method is highly parallelizable. 
 
-For initialization, the ordering of $t_1, ..., t_n$ is determined via a one-dimensional Isomap embedding \citep{Tenenbaum2000-ff}. 
-
 Combining equation \ref{eq:bezier-ols} with the solutions to equation \ref{eq:dbezier} for each $i = 1, ..., n$ provides an alternating coordinate descent algorithm, as outlined in algorithm \ref{alg:bezier-fit}.
 
 \begin{algorithm}[h]
@@ -417,10 +421,10 @@ Combining equation \ref{eq:bezier-ols} with the solutions to equation \ref{eq:db
 \DontPrintSemicolon
 \SetAlgoLined
 \setstretch{1.1}
-\KwData{Adjacency matrix $A$, embedding dimension $d$, polynomial degree $R$, Isomap neighborhood parameter $\lambda$, stopping criterion $\epsilon$.}
+\KwData{Adjacency matrix $A$, embedding dimension $d$, polynomial degree $R$, stopping criterion $\epsilon$.}
 \KwResult{Bezier coefficients $\hat{b}$, timepoint values $\hat{t}_1, ..., \hat{t}_n$.}
 Compute $\hat{X} \in \mathbb{R}^{n \times d}$, the ASE of $A$.\;
-Initialize timepoints $\hat{t}_1, ..., \hat{t}_n$, first via a one-dimensional Isomap embedding of $\hat{X}$ using neighborhood parameter $\lambda$, then by normalizing the embedding to $[0, 1]$.\;
+Initialize timepoints $\hat{t}_1, ..., \hat{t}_n$, (e.g., via a one-dimensional Isomap embedding \citep{Tenenbaum2000-ff}).\;
 \Repeat {the change in equation \ref{eq:bezier-ls} is less than $\epsilon$.} {
   Fit $\hat{b}$ by equation \ref{eq:bezier-ols}.\;
   \For {$i = 1, ..., n$} {
@@ -437,13 +441,13 @@ In the case of a mixture of LSMs (as in remark \ref{rem:lsm-mixture}), algorithm
 \DontPrintSemicolon
 \SetAlgoLined
 \setstretch{1.1}
-\KwData{Adjacency matrix $A$, embedding dimension $d$, polynomial degree $R$, number of latent structures $K$, Isomap neighborhood parameter $\lambda$, stopping criterion $\epsilon$.}
+\KwData{Adjacency matrix $A$, embedding dimension $d$, polynomial degree $R$, number of latent structures $K$, stopping criterion $\epsilon$.}
 \KwResult{Bezier coefficients $\hat{b}$, timepoint values $\hat{t}_1, ..., \hat{t}_n$, curve memberships $\hat{z}_1, ..., \hat{z}_n$.}
 Compute $\hat{X} \in \mathbb{R}^{n \times d}$, the ASE of $A$.\;
 Initialize $\hat{z}_1, ..., \hat{z}_n \in \{1, ..., K\}$, the membership of each vertex to each latent curve.\;
 \For {$k = 1, ..., K$} {
   Subset the rows of $\hat{X}$ by $z_i = k$ to obtain $\hat{x}_{k_1}, ..., \hat{x}_{k_{n_k}}$, where $n_k$ is the number of vertices with label $k$.\;
-  Initialize timepoints $\hat{t}_{k_1}, ..., \hat{t}_{k_{n_k}}$, first via a one-dimensional Isomap embedding of $\hat{x}_{k_1}, ..., \hat{x}_{k_{n_k}}$ using neighborhood parameter $\lambda$, then by normalizing the embedding to $[0, 1]$.\;
+  Initialize timepoints $\hat{t}_{k_1}, ..., \hat{t}_{k_{n_k}}$, (e.g., via a one-dimensional Isomap embedding \citep{Tenenbaum2000-ff}).\;
 }
 \Repeat {the change in equation \ref{eq:bezier-ls} is less than $\epsilon$.} {
   \For {$k = 1, ..., K$} {
@@ -459,35 +463,6 @@ Initialize $\hat{z}_1, ..., \hat{z}_n \in \{1, ..., K\}$, the membership of each
 \caption{Procedure for estimating multiple LSM curves as a Bezier polynomial from an adjacency matrix.}
 \end{algorithm}
 
-\begin{lemma}
-\label{lem:bezier-consistency}
-Suppose $A \sim \LSM(p, F_\theta)$ such that $p : [0, 1] \to \mathbb{R}^d$ is a Bezier polynomial of degree $R$ with coefficients $b$, and $F_\theta$ is a probability distribution with probability density function $f_\theta(t)$ that is absolutely continuous on support $[0, 1]$ and $\min_t f_\theta(t) > 0$ $\forall t \in [0, 1]$. 
-Let $\hat{T}$ and $\hat{b}$ be the minimizers of the loss function in equation \ref{eq:bezier-ls} from $A$, and let $\tilde{X} = \hat{T} \hat{b}$, the estimated vectors along the fitted Bezier curve. 
-Then as $n \to \infty$, $\|X - \tilde{X} W\|_{2,\infty} \stackrel{p}{\to} 0$ for some $W \in \mathbb{O}(d)$.
-\end{lemma}
-
-\begin{proof}
-Let $X$ be the true latent positions of the LSM and $\hat{X}$ be the ASE of $A$ drawn from $X$. 
-Then $X = T b$, and $\hat{X} = \hat{T} \hat{b} + \hat{E}$, where $\hat{E}$ is the matrix of distances from the estimated positions along the fitted Bezier curves and the embedding vectors. 
-Then
-$$
-\begin{aligned}
-\|X - \tilde{X} W\| & = \|T b - \hat{T} \hat{b} W\|_{2,\infty} \\
-& = \|T b - (\hat{T} \hat{b} + \hat{E} - \hat{E}) W \|_{2,\infty} \\
-& = \|T b - (\hat{T} \hat{b} + \hat{E}) W + \hat{E} W\|_{2,\infty} \\
-& \leq \|X - \hat{X} W\|_{2,\infty} + \|\hat{E} W\|_{2,\infty}.
-\end{aligned}
-$$
-The first term $\|X - \hat{X} W\|_{2,\infty}$ converges to $0$ in probability \citep{lyzinski2014}. 
-Since the ASE is consistent, the embedding vectors will converge in probability to a Bezier curve, so $\|\hat{E} W\|_{2,\infty} \stackrel{p}{\to} 0$. 
-\end{proof}
-
-\begin{lemma}
-Suppose $A \sim \LSM(p, F_\theta)$ such that $p : [0, 1] \to \mathbb{R}^d$ is a Bezier polynomial of degree $R$ with coefficients $b$, and $F_\theta$ is a probability distribution with probability density function $f_\theta(t)$ that is absolutely continuous on support $[0, 1]$ and $\min_t f_\theta(t) > 0$ $\forall t \in [0, 1]$. 
-Let $\hat{T}$ and $\hat{b}$ be the minimizers of the loss function in equation \ref{eq:bezier-ls} from $A$. 
-Then $\|T - \hat{T}\|_{2, \infty} \stackrel{p}{\to} 0$ as if and only if $\|b - \hat{b} W\|_F \stackrel{p}{\to} 0$. 
-\end{lemma}
-
 \begin{theorem}[Consistency of algorithm \ref{alg:bezier-fit}]
 \label{thm:bezier-consistency}
 Suppose $A \sim \LSM(p, F_\theta)$ such that $p : [0, 1] \to \mathbb{R}^d$ is a Bezier polynomial of degree $R$ with finite coefficients $b$, and $F_\theta$ is a probability distribution with probability density function $f_\theta(t)$ that is absolutely continuous on support $[0, 1]$ and $\min_t f_\theta(t) > 0$ $\forall t \in [0, 1]$. 
@@ -495,21 +470,21 @@ Let $\hat{T}$ and $\hat{b}$ be the minimizers of the loss function in equation \
 Then as $n \to \infty$, $\|T - \hat{T}\|_{2, \infty} \stackrel{p}{\to} 0$ where $T$ is defined as in equation \ref{eq:bezier-loss}, and $\|b - \hat{b} W \|_F \stackrel{p}{\to} 0$ for some $W \in \mathbb{O}(d)$.
 \end{theorem}
 
-\begin{proof}
+### Quasi-Maximum Likelihood Estimation for $\theta$
 
-\end{proof}
-
-### Recovery of the Underlying Distributions
+The estimation of $T$ and the restrictions imposed on the family of Bezier curves allows for the estimation of $\theta$ via maximum likelihood estimation (algorithrm \ref{alg:bezier-param-fit}). 
+Since $\hat{T}$ is a consistent estimator for $T$ by theorem \ref{thm:bezier-consistency}, if $t_1, ..., t_n \sim F_\theta$, a maximum likelihood estimator using $\hat{t}_1, ..., \hat{t}_n$ is a consistent estimator for $\theta$. 
+Algorithm \ref{alg:bezier-param-fit} details the procedure. 
 
 \begin{algorithm}[H]
 \label{alg:bezier-param-fit}
 \DontPrintSemicolon
 \SetAlgoLined
 \setstretch{1.1}
-\KwData{Adjacency matrix $A$, embedding dimension $d$, probability distribution family $F$, polynomial degree $R$, Isomap neighborhood parameter $\lambda$, stopping criterion $\epsilon$.}
+\KwData{Adjacency matrix $A$, embedding dimension $d$, probability distribution family $F$, polynomial degree $R$.}
 \KwResult{Bezier coefficients $\hat{b}$, timepoint values $\hat{t}_1, ..., \hat{t}_n$.}
 Compute $\hat{X} \in \mathbb{R}^{n \times d}$, the $d$-dimensional ASE of $A$.\;
-Initialize timepoints $\hat{t}_1, ..., \hat{t}_n$, first via a one-dimensional Isomap embedding of $\hat{X}$ using neighborhood parameter $\lambda$, then by normalizing the embedding to $[0, 1]$.\;
+Initialize timepoints $\hat{t}_1, ..., \hat{t}_n$.\;
 \Repeat {the change in equation \ref{eq:bezier-ls} is less than $\epsilon$.} {
   Fit $\hat{b}$ by equation \ref{eq:bezier-ols}.\;
   \For {$i = 1, ..., n$} {
@@ -526,54 +501,75 @@ Let $\hat{t}_1, ..., \hat{t}_n$ and $\hat{b}$ be the minimizers of the loss func
 Then $\tilde{\theta} \stackrel{p}{\to} \theta$. 
 \end{theorem}
 
-\begin{proof}
-By theorem \ref{thm:bezier-consistency}, 
-\end{proof}
-
 ### Classification and Regression
+
+Applying algorithm \ref{alg:bezier-param-fit} to supervised learning problems is straightforward. 
+First, we extract each $\hat{\theta}^{(\ell)}$ from each graph, then apply a supervised learning algorithm (e.g., ordinary least squares) for predicting each $y^{(\ell)}$ from each $\hat{\theta}^{(\ell)}$. 
+Since \ref{alg:bezier-param-fit} produces consistent estimators, for large graphs the supervised learning algorithm in this regime will perform just as well as if we already knew each $\theta^{(\ell)}$. 
+Therefore, $\tilde{\beta}$, the estimator based on $\hat{\theta}^{(1)}, ..., \hat{\theta}^{(L)}$, is consistent for $\beta$ (theorem \ref{thm:supervised}).
 
 \begin{algorithm}[H]
 \label{alg:mlsm-fit}
 \DontPrintSemicolon
 \SetAlgoLined
 \setstretch{1.1}
-\KwData{Adjacency matrices $A^{(1)}, ..., A^{(L)}$, response variables $y_1, ..., y_L$, embedding dimension $d$, probability distribution family $F$, polynomial degree $R$, Isomap neighborhood parameters $\lambda_1, ..., \lambda_L$, stopping criterion $\epsilon$.}
+\KwData{Adjacency matrices $A^{(1)}, ..., A^{(L)}$, response variables $y_1, ..., y_L$, embedding dimension $d$, probability distribution family $F$, polynomial degree $R$, stopping criterion $\epsilon$.}
 \KwResult{Bezier coefficients $\hat{b}$, timepoint values $\hat{t}_1, ..., \hat{t}_n$.}
 \For {$\ell = \{1, ..., L\}$} {
   Compute $\hat{X}^{(\ell)} \in \mathbb{R}^{n_\ell \times d}$, the $d$-dimensional ASE of $A^{(\ell)} \in \mathbb{R}^{n_\ell \times n_\ell}$.\;
-  Initialize timepoints $\hat{t}_1, ..., \hat{t}_{n_\ell}$, first via a one-dimensional Isomap embedding of $\hat{X}^{(\ell)}$ using neighborhood parameter $\lambda_\ell$, then by normalizing the embedding to $[0, 1]$.\;
+  Initialize timepoints $\hat{t}_1, ..., \hat{t}_{n_\ell}$;
   \Repeat {the change in equation \ref{eq:bezier-ls} is less than $\epsilon$.} {
     Fit $\hat{b}$ by equation \ref{eq:bezier-ols}.\;
     \For {$i = 1, ..., {n_\ell}$} {
       Fit $\hat{t}_i$ by equation by finding the roots of equation \ref{eq:dbezier} and choosing the roots that minimizes equation \ref{eq:bezier-ls}.\;
     }
   }
-  Estimate $\hat{\theta}_\ell$ from $\hat{t}_1, ..., \hat{t}_{n_\ell}$ via maximum likelihood estimation.\;
+  Estimate $\hat{\theta}^{(\ell)}$ from $\hat{t}_1, ..., \hat{t}_{n_\ell}$ via maximum likelihood estimation.\;
 }
-Fit a model for predicting $y_1, ..., y_L$ using the estimated parameters $\theta_1, ..., \theta_L$ (e.g., via linear regression).\;
+Fit a model for predicting $y^{(\ell)}, ..., y^{(\ell)}$ using the estimated parameters $\theta^{(\ell)}, ..., \theta^{(\ell)}$ (e.g., via linear regression).\;
 \caption{Procedure for fitting a classification or regression model for an MLSM.}
 \end{algorithm}
 
 \begin{theorem}
-\ref{thm:supervised}
+\label{thm:supervised} 
+Suppose $A^{(1)}, ..., A^{(L)} \sim \MLSM(\{p^{(\ell)}\}, F, \{\theta^{(\ell)}\})$ where $p : [0, 1] \to \mathbb{R}^d$ is a Bezier polynomial of degree $R < d$ and $p(0) = 0$. 
+Let each $y^{(\ell)} \indep \mathcal{N}\big( (\theta^{(\ell)})^\top \beta, \sigma^2 \big)$, and let $\tilde{\beta}$ be the ordinary least squares estimate of $\beta$ using $\tilde{\theta}^{(1)}, ..., \tilde{\theta}^{(L)}$, the outputs of \ref{alg:bezier-param-fit} for each graph. 
+Then as each $n_\ell \to \infty$, $\tilde{\beta} \stackrel{p}{\to} \beta$. 
 \end{theorem}
 
 # Simulation Study
 
 In this section, we evaluate algorithm \ref{alg:mlsm-fit} and theorem \ref{thm:supervised} empirically via simulation and compare to existing methods. 
 Two settings are examined. In the first, the data generating model reduces to a simpler model and can be adequately described by the COSIE model or multilayer DCBM. 
-The second setting involves a nonlinear latent structure that can be described as a polynomial curve and thus does not reduce to a simpler model or be analyzed by their corresponding methods. 
+The second setting involves graphs of variable sizes drawn from a nonlinear latent structure that can be described as a polynomial curve and thus does not reduce to a simpler model or be analyzed by their corresponding methods. 
 
-The scenarios are as follows:
+In these simulations, the responses $y^{(\ell)}$ are generated as linear responses of $\theta^{(\ell)}$ (in scenario 1) or $a^{(\ell)}$ and $b^{(\ell)}$ (in scenario 2). 
+More specifically, in scenario 1, each $y_\ell \indep \mathcal{N}(\beta_0 + \beta_1 \theta^{(\ell)}, \sigma^2)$, where $\theta^{(\ell)}$ is the angle between two line segments in the latent space, and in scenario 2, each $y_\ell \indep \mathcal{N}(\beta_0 + \beta_1 a^{(\ell)} + \beta_2 b^{(\ell)}, \sigma^2)$, where $a^{(\ell)}$ and $b^{(\ell)}$ describe the Beta parameters of the distribution of latent vectors along a curve. 
+We set $\sigma^2 = 0.25$ for both scenarios. 
 
-1. In this setting, there are two latent structures, described by two rays emanating from the origin. 
+The simulation setup for the first scenario is as follows: For each $N = 128, 256, 512, 1024$, sample $L = 128$ graphs as:
 
-2. 
+  i. Draw $n_1, ..., n_L$ as $n_\ell \iid \Poisson(N)$.
+  ii. Draw $\theta^{(1)}, ..., \theta^{(L)} \iid \Uniform(\pi / 6, \pi / 3)$.
+  iii. For each $\ell = 1, ..., L$, draw latent vectors either from the line segment described by $p_1(t) = \begin{bmatrix} t & 0 \end{bmatrix}^\top$ or $p_2(t) = \begin{bmatrix} \cos(\theta^{(\ell)}) & \sin(\theta^{(\ell)}) \end{bmatrix}^\top$ with probability $1/2$ for each.
+  iv. Use the $L$ sets of latent vectors to draw $L$ RDPGs with adjacency matrices $A^{(1)}, ..., A^{(L)}$.
+  v. Draw each $y_\ell \indep \mathcal{N}(1 + 2 \theta^{(\ell)}, \sigma^2)$.
+  vi. Apply algorithm \ref{alg:mlsm-fit} to construct a linear model connecting $y_1, ..., y_\ell$ and $A^{(1)}, ..., A^{(L)}$, using the first half as training data and reporting MSE on the last half not used for training.
+  
+For the second the simulation setup is similar. For each $N = 128, 256, 512, 1024$, sample $L = 128$ graphs as:
 
-## Regression
-
-In this scenario, the responses $y_\ell$ are generated as linear responses of $\theta_\ell$ (in scenario 1) or $a_\ell$ and $b_\ell$ (in scenario 2). 
-More specifically, in scenario 1, each $y_\ell \indep \mathcal{N}(\beta_0 + \beta_1 \theta_\ell, \sigma^2)$, and in scenario 2, each $y_\ell \indep \mathcal{N}(\beta_0 + \beta_1 a_\ell + \beta_2 b_\ell, \sigma^2)$.
+  i. Draw $n_1, ..., n_L$ as $n_\ell \iid \Poisson(N)$.
+  ii. Draw each $(a^{(\ell)}, b^{(\ell)}) \iid \Uniform([0.5, 2] \times [0.5, 2])$.
+  iii. For each $\ell = 1, ..., L$, draw latent vectors by first taking $t_1, ..., t_{n_\ell} \sim \Betadist(a^{(\ell)}, b^{(\ell)})$ then taking each latent vector as $x_i = \begin{bmatrix} t^2 & 2 t (1-t) \end{bmatrix}^\top$.
+  iv. Use the $L$ sets of latent vectors to draw $L$ RDPGs with adjacency matrices $A^{(1)}, ..., A^{(L)}$.
+  v. Draw each $y_\ell \indep \mathcal{N}(1 + 2 \alpha^{(\ell)} + b^{(\ell)}, \sigma^2)$.
+  vi. Apply algorithm \ref{alg:mlsm-fit} to construct a linear model connecting $y_1, ..., y_\ell$ and $A^{(1)}, ..., A^{(L)}$, using the first half as training data and reporting MSE on the last half not used for training.
+  
+In figure \ref{fig:angle-regression-sim}, we compare algorithm \ref{alg:mlsm-fit} to fitting a regression model using graph transitivity and average degree of each vertex. 
+Since this scenario is similar to a multilayer DCBM, we expect performance to be very similar, which is what we observe in the results. 
+However, we cannot model this simulation as a multilayer DCBM since although each graph can be described as a DCBM, the graphs do not share the same vertex set. 
+In figure \ref{fig:beta-regression-sim}, we see that linear regression using graph summary statistics performs better for smaller graphs, but as we draw more vertices, the ASE improves and so algorithm \ref{mlsm-fit} performs better, whereas graph summary statistics cannot improve with the number of vertices. 
+Figures \ref{fig:theta-mse} and \ref{fig:beta-mse} show that the quasi-MLE estimators computed via algorithm \ref{alg:bezier-param-fit} are consistent.
 
 ```{r angle-regression-sim, fig.width = 6, cache = FALSE, fig.cap = 'The average MSE over 50 simulations in scenario 1. The errorbars are the standard error.'}
 n.sigma <- 1
@@ -594,7 +590,7 @@ angle.reg.df %>%
   ggplot() + 
   theme_bw() + 
   scale_colour_brewer(palette = 'Set1') +
-  labs(x = 'vertices per graph', y = 'MSE', colour = 'predictor') +
+  labs(x = 'Expected vertices per graph', y = 'MSE', colour = 'Predictor') +
   geom_line(aes(x = n, y = mse.theta, colour = 'estimated angle')) + 
   geom_errorbar(aes(x = n, 
                     ymin = mse.theta - se.theta, 
@@ -626,7 +622,7 @@ angle.reg.df %>%
   geom_line(aes(x = n, y = theta.mse)) + 
   geom_errorbar(aes(x = n, ymin = theta.mse - theta.se, ymax = theta.mse + theta.se),
                 width = .1) + 
-  labs(x = 'number of vertices', y = expression('MSE('~hat(theta)~')')) + 
+  labs(x = 'Expected vertices per graph', y = expression('MSE('~hat(theta)~')')) + 
   theme_bw() + 
   scale_y_log10() + 
   scale_x_log10(breaks = sort(n.vec))
@@ -668,7 +664,7 @@ beta.reg.df %>%
   theme_bw() + 
   scale_colour_brewer(palette = 'Set1') +
   scale_x_log10(breaks = sort(n.vec)) + 
-  labs(x = 'number of vertices', y = 'MSE', colour = 'predictor')
+  labs(x = 'Expected vertices per graph', y = 'MSE', colour = 'Predictor')
 ```
 
 ```{r beta-mse, fig.width = 6, cache = FALSE, fig.cap = 'The average MSE of the estimated beta parameters, $(a, b)$, in scenario 2 over 50 simulations. The errorbars are the standard error.'}
@@ -695,163 +691,6 @@ beta.reg.df %>%
   scale_x_log10(breaks = sort(n.vec))
 ```
 
-## Classification
-
-In this simulation experiment, the latent vectors were sampled along a Bezier curve defined by $g(t) = \bigl[ t^2 \; 2 t (1-t) \bigr]^\top$. 
-The timepoints $t_i$ were sampled as iid Beta random variables with two sets of parameters, $(\alpha_1, \beta_1)$ and $(\alpha_2, \beta_2)$. 
-The setup is as follows:
-
-1. Draw response variables $y_1, ..., y_n \iid \Multinomial(1/2, 1/2)$.
-2. For each $i = 1, ..., n$, draw $t_i \mid y_i \indep \Betadist(\alpha_{y_i}, \beta_{y_i})$, such that $\alpha_1 = 1$, $\beta_1 = 2$, $\alpha_2 = 2$, and $\beta_2 = 1$.
-3. Construct each latent vector as $x_i = g(t_i)$ and compile them in data matrix $X = \bigl[ x_1 \; \cdots \; x_n \bigr]^\top$.
-4. Sample graph and its adjacency matrix as $A \sim \RDPG(X)$. 
-
-For each graph, we constructed the ASE, which was used to estimate the parameters $(\hat{\alpha}, \hat{\beta})$ for the graph, using the maximum likelihood method. 
-The estimated parameters were then used as predictors $y_1, ..., y_n$, setting aside half for training and half for testing. 
-We investigated graphs of size $|V| = 32, 64, 128, 256$. 
-The number of graphs for each experiment was set to $L = 64$.
-For each (number of graphs, size of graph) pair, we performed 32 replicates. 
-Figure \ref{fig:class-sim-ase} shows the ASE of one graph.  
-Figure \ref{fig:classification-sim} shows the boxplots of the classification error rates.
-
-```{r class-sim-ase, cache = TRUE, fig.cap = 'One simulated graph (left) and its ASE (right). The red curve is the fitted quadratic Bezier curve on the ASE.'}
-K <- 2
-n <- 256
-
-z <- 2
-
-t. <- rbeta(n, 1, 1)
-x1 <- t. ^ 2
-x2 <- 2 * t. * (1 - t.)
-X <- cbind(x1, x2)
-P <- X %*% t(X)
-A <- draw.graph(P)
-Xhat <- embedding(A, 2, 0)
-
-A.graph <- tidygraph::as_tbl_graph(unname(A), directed = FALSE)
-graph.plot <- ggraph(A.graph, layout = 'auto') + 
-  geom_edge_link(alpha = n ^ -.6) + 
-  geom_node_point(show.legend = FALSE) + 
-  labs(colour = NULL) + 
-  theme_void() + 
-  scale_colour_brewer(palette = 'Set1')
-
-curve.est <- estimate.bezier.curve.2(Xhat, 
-                                     degree = 2, 
-                                     intercept = FALSE, 
-                                     initialization = 'isomap', 
-                                     normalize = TRUE)
-ase.plot <- ggplot() + 
-  geom_point(aes(x = Xhat[, 1], y = Xhat[, 2])) + 
-  geom_line(aes(x = curve.est$X[, 1], y = curve.est$X[, 2]), 
-             colour = 'red',
-             size = .2) + 
-  coord_fixed() + 
-  labs(x = expression(x[1]), y = expression(x[2])) + 
-  theme_bw()
-
-gridExtra::grid.arrange(graph.plot, ase.plot, nrow = 1)
-```
-
-```{r classification-sim, cache = TRUE, fig.cap = 'Median classification error rate and its IQR vs. number of vertices in each graph.', fig.height = 2, fig.width = 4}
-sim.df <- readr::read_csv('~/Documents/postdoc-first-project/classification-sim.csv')
-
-n.vec <- unique(sim.df$n)
-
-sim.df %>% 
-  dplyr::group_by(n) %>% 
-  dplyr::summarise(acc.med = median(acc),
-                   acc.high = quantile(acc, .75),
-                   acc.low = quantile(acc, .25)) %>% 
-  ggplot() + 
-  geom_line(aes(x = n, y = 1 - acc.med)) + 
-  geom_point(aes(x = n, y = 1 - acc.med)) + 
-  geom_errorbar(aes(x = n, ymin = 1 - acc.high, ymax = 1 - acc.low),
-                width = .1) + 
-  scale_x_log10(breaks = sort(n.vec)) +
-  # scale_y_log10() +
-  theme_bw() + 
-  labs(x = 'number of vertices', y = 'error rate')
-```
-
-## Regression
-
-In the first regression simulation, 
-
-In the next regression simulation, we applied 
-
-1. Draw angles $\theta_1, ..., \theta_N \iid \Uniform(\pi / 6, \pi / 3)$.
-2. For each $k = 1, ..., N$, 
-    i. Draw $t_1, ..., t_n \iid \Uniform(0, 1)$;
-    ii. Draw $z_1, ..., z_n \iid \Multinomial(1/2, 1/2)$;
-    iii. For each $i = 1, ..., n$, set $x_i = \begin{cases} \bigl[ t_i \; 0 \bigr]^\top \; z_i = 1 \\ \bigl[ t_i \cos \theta_\ell \; t_i \sin \theta_\ell \bigr]^\top \; z_i = 2 \end{cases}$;
-    iv. Collect $X = \bigl[ x_1 \; \cdots \; x_n \bigr]^\top$ and draw $A \sim \RDPG(X)$;
-    v. Set the response $y_\ell = \beta_0 + \beta_1 \theta_\ell$
-
-In this simulation, we set $\beta_0 = \beta_1 = 1$. 
-The number of graphs was set to $L = 64$, and the number of vertices per graph was set to $n = 128, 256, 512, 1024$. 
-For each $n$, we simulated 32 replicates. 
-
-```{r angle-reg-example, cache = TRUE}
-n <- 512
-a.vec <- c(1, 1)
-b.vec <- c(1, 1)
-theta.min <- pi / 6
-theta.max <- pi / 3
-beta1 <- 1
-beta0 <- 1
-
-z <- sample(seq(2), n, replace = TRUE)
-t. <- rbeta(n, a.vec[z], b.vec[z])
-theta <- runif(1, theta.min, theta.max)
-y <- beta0 + beta1 * theta
-x1 <- ifelse(z == 1, t., cos(theta) * t.)
-x2 <- ifelse(z == 1, 0, sin(theta) * t.)
-X <- cbind(x1, x2)
-P <- X %*% t(X)
-A <- draw.graph(P)
-Xhat <- embedding(A, 2, 0)
-clustering <- manifold.clustering(Xhat, 
-                                  degree = 1,
-                                  initialization = z,
-                                  intercept = FALSE)
-ase.plot <- plot.estimated.curves(Xhat, clustering) +
-  scale_colour_brewer(palette = 'Set1')
-
-A.graph <- tidygraph::as_tbl_graph(unname(A), directed = FALSE)
-graph.plot <- ggraph(A.graph, layout = 'auto') + 
-  geom_edge_link(alpha = n ^ -.6) + 
-  geom_node_point(colour = 'black',
-                  fill = 'white',
-                  show.legend = FALSE) + 
-  labs(colour = NULL) + 
-  theme_void() + 
-  scale_colour_brewer(palette = 'Set1')
-
-gridExtra::grid.arrange(graph.plot, ase.plot, nrow = 1)
-```
-
-```{r angle-reg-results, cache = TRUE, fig.height = 2, fig.width = 4}
-sim.df <- readr::read_csv('~/dev/multilayer-rdpg/simulations/angle-regression-sim.csv')
-n.vec <- c(128, 256, 512, 1024)
-N <- 64
-
-sim.df %>% 
-  dplyr::group_by(n) %>% 
-  dplyr::summarise(mse.med = median(mse),
-                   mse.high = quantile(mse, .75),
-                   mse.low = quantile(mse, .25)) %>% 
-  ggplot() + 
-  geom_line(aes(x = n, y = mse.med)) + 
-  geom_point(aes(x = n, y = mse.med)) + 
-  geom_errorbar(aes(x = n, ymin = mse.high, ymax = mse.low),
-                width = .1) + 
-  scale_x_log10(breaks = sort(n.vec)) +
-  # scale_y_log10() +
-  theme_bw() + 
-  labs(x = 'number of vertices', y = 'MSE')
-```
-
 # Applications
 
 ## Drosophila Connectome
@@ -862,13 +701,15 @@ In these graphs, each vertex is a neuron, and the labels correspond to one of fo
 The number of neurons in each hemisphere is not equal (209 in the left hemisphere and 213 in the right hemisphere).
 The resulting graphs are illustrated in figure \ref{fig:mbconnectome-graph}. 
 
-```{r mbconnectome-graph, fig.cap = 'Graphs of the Drosophila connectomes. The left and right are of the left and right hemispheres, respectively. Each vertex represents a neuron, which are labeled by neuron type.', fig.height = 2, figh.width = 12, cache = TRUE}
+```{r mbconnectome-graph, fig.cap = 'Graphs of the Drosophila connectomes. The left and right are of the left and right hemispheres, respectively. Each vertex represents a neuron, which are labeled by neuron type. The red vertices are Kenyon Cells, the blue vertices are Input and Output Neurons, and the green vertices are Projection Neurons.', fig.height = 2, figh.width = 12, cache = TRUE}
 library(mbstructure)
 data(MBconnectome)
 
 graph.r <- generate.graph(newrdat, vdf.right)
 A.r <- as.matrix(igraph::as_adjacency_matrix(graph.r$g, type = 'both'))
 z.r <- as.numeric(graph.r$vdf$type)
+z.r[z.r == 3] <- 2
+z.r[z.r == 4] <- 3
 n.r <- length(z.r)
 A.r <- sign(A.r + t(A.r))
 diag(A.r) <- 0
@@ -883,6 +724,8 @@ graph.r <- ggraph(A.r, layout = 'stress') +
 graph.l <- generate.graph(newldat, vdf.left)
 A.l <- as.matrix(igraph::as_adjacency_matrix(graph.l$g, type = 'both'))
 z.l <- as.numeric(graph.l$vdf$type)
+z.l[z.l == 3] <- 2
+z.l[z.l == 4] <- 3
 n.l <- length(z.l)
 A.l <- sign(A.l + t(A.l))
 diag(A.l) <- 0
@@ -897,7 +740,7 @@ graph.l <- ggraph(A.l, layout = 'stress') +
 gridExtra::grid.arrange(graph.l, graph.r, nrow = 1)
 ```
 
-```{r mbconnectome-ase, fig.cap = 'ASEs of the Drosophila connectome graphs. The embedding vectors are labeled by neuron type. ', fig.height = 2, fig.width = 8}
+```{r mbconnectome-ase, fig.cap = 'ASEs of the Drosophila connectome graphs. The embedding vectors are labeled by neuron type, with red being Kenyon Cells, blue being Input and Output Neurons, and green being Projection Neurons.', fig.height = 2, fig.width = 8}
 Xhat.l <- embedding(A.l, 2, 1)
 ase.l <- ggplot() + 
   geom_point(aes(x = Xhat.l[, 1], y = Xhat.l[, 2],
@@ -927,10 +770,11 @@ This matches observations by \citet{athreya2020estimation}.
 We fit three latent structure Bezier curves, one for Kenyon Cells, one for Input and Output Neurons, and one for Projection Neurons, to the embedding for each hemisphere.
 Then we fit a Beta distribution to to the timepoints along each curve and extracted the two Beta parameter estimates (via likelihood maximization) for each curve. 
 If these Beta parameters are informative, we would expect the parameters for each hemisphere to match by neuron type, which is what we observe in these data (fig \ref{fig:mbconnectome-beta}). 
-Using the three subgraphs of the left hemisphere as a training set to classify which subgraph of the right hemisphere belongs to which neuron type using the extracted Beta distribution parameter estimates as predictors results in 100\% accuracy. 
 
 ```{r mbconnectome-beta, fig.cap = 'Beta parameter estimates for each curve and hemisphere.', fig.height = 3, fig.width = 6}
-param.est.df <- readr::read_csv('~/dev/multilayer-rdpg/drosophila.csv')
+param.est.df <- readr::read_csv('~/dev/multilayer-rdpg/drosophila.csv') %>% 
+  dplyr::mutate(region = factor(region, 
+                                levels = c('kenyon', 'in/out', 'projection')))
 
 param.est.df %>% 
 ggplot() + 
@@ -1327,37 +1171,37 @@ dplyr::tibble(
   knitr::kable(digits = 3, caption = 'Correlation between age and various graph metrics.\\label{tab:cor-comparison}')
 ```
 
-Next, we considered each hemisphere separately and fit a Beta distribution to the embedding of each half-network. 
-The scatterplot of the fitted $\alpha$ and $\beta$ parameters suggests that there are two clusters of brain networks (figure \ref{fig:hcp-clustering}). 
-Greater $\alpha$ values correspond to more embedding vectors farther away from the origin, corresponding to more nodes of higher degree, which in turn correspond to more brain regions with a greater number of connections. 
-Conversely, greater $\beta$ values correspond to more embedding vectors closer to the origin, which in turn correspond to more brain regions with fewer connections. 
-This may suggest that there are underlying groups, one of which tends to have higher connectivity in the left hemisphere, and the other having higher connectivity in the right hemisphere. 
-
-```{r hcp-clustering, cache = TRUE, fig.cap = 'Scatterplot of fitted parameters of the Beta distribution. The left image are the parameters fitted on the embedding of the left hemisphere, and the right image are the parameters fitted on the embedding of the right hemisphere.', fig.width = 8, fig.height = 4}
-beta.df <- ase.stats.df[c('a.l', 'a.r', 'b.l', 'b.r')]
-
-zhat.l <- mclust::Mclust(beta.df[, c('a.l', 'b.l')], G = 2)$classification
-plot.l <- ggplot(beta.df) + 
-  geom_point(aes(x = a.l, y = b.l, colour = factor(zhat.l))) + 
-  coord_fixed() + 
-  theme_bw() + 
-  labs(x = expression(hat(alpha)[l]), y = expression(hat(beta)[l]), colour = 'cluster') + 
-  scale_colour_brewer(palette = 'Set1')
-
-zhat.r <- mclust::Mclust(beta.df[, c('a.r', 'b.r')], G = 2)$classification
-plot.r <- ggplot(beta.df) + 
-  geom_point(aes(x = a.r, y = b.r, colour = factor(zhat.r))) + 
-  coord_fixed() +
-  theme_bw() + 
-  labs(x = expression(hat(alpha)[r]), y = expression(hat(beta)[r]), colour = 'cluster') + 
-  scale_colour_brewer(palette = 'Set1')
-
-gridExtra::grid.arrange(plot.l, plot.r, nrow = 1)
-```
-
 # Discussion
 
+Our main contribution is applying the latent structure model, a specific form of the random dot product graph, to multiple graphs for regression and classification problems. 
+We show that if the response variable is connected to the distribution parameter of a LSM, we can construct a consistent estimator for the parameter and then use that estimator to construct consistent supervised learning algorithms to estimate the responses. 
+Since LSMs are not necessarily linear in the latent space, we show that our approach can accommodate nonlinear structures in the latent space, which cannot be adequately captured by other multiple graph models such as the multilayer DCBM or COSIE graph model. 
+Furthermore, we remove the restriction of the graphs sharing the same vertex set, although the MLSM can still apply to such scenarios. 
+
 \section*{Appendix A: Proofs of Theorems}
+
+\begin{lemma}
+\label{lem:bezier-consistency}
+Suppose $A \sim \LSM(p, F_\theta)$ such that $p : [0, 1] \to \mathbb{R}^d$ is a Bezier polynomial of degree $R$ with coefficients $b$, and $F_\theta$ is a probability distribution with probability density function $f_\theta(t)$ that is absolutely continuous on support $[0, 1]$ and $\min_t f_\theta(t) > 0$ $\forall t \in [0, 1]$. 
+Let $\hat{T}$ and $\hat{b}$ be the minimizers of the loss function in equation \ref{eq:bezier-ls} from $A$, and let $\tilde{X} = \hat{T} \hat{b}$, the estimated vectors along the fitted Bezier curve. 
+Then as $n \to \infty$, $\|X - \tilde{X} W\|_{2,\infty} \stackrel{p}{\to} 0$ for some $W \in \mathbb{O}(d)$.
+\end{lemma}
+
+\begin{proof}
+Let $X$ be the true latent positions of the LSM and $\hat{X}$ be the ASE of $A$ drawn from $X$. 
+Then $X = T b$, and $\hat{X} = \hat{T} \hat{b} + \hat{E}$, where $\hat{E}$ is the matrix of distances from the estimated positions along the fitted Bezier curves and the embedding vectors. 
+Then
+$$
+\begin{aligned}
+\|X - \tilde{X} W\| & = \|T b - \hat{T} \hat{b} W\|_{2,\infty} \\
+& = \|T b - (\hat{T} \hat{b} + \hat{E} - \hat{E}) W \|_{2,\infty} \\
+& = \|T b - (\hat{T} \hat{b} + \hat{E}) W + \hat{E} W\|_{2,\infty} \\
+& \leq \|X - \hat{X} W\|_{2,\infty} + \|\hat{E} W\|_{2,\infty}.
+\end{aligned}
+$$
+The first term $\|X - \hat{X} W\|_{2,\infty}$ converges to $0$ in probability \citep{lyzinski2014}. 
+Since the ASE is consistent, the embedding vectors will converge in probability to a Bezier curve, so $\|\hat{E} W\|_{2,\infty} \stackrel{p}{\to} 0$. 
+\end{proof}
 
 \newpage
 

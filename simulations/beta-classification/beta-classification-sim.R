@@ -83,7 +83,7 @@ out.df <- foreach::foreach(n = n.vec, .combine = dplyr::bind_rows) %do% {
       apply(1, which.max)
     acc.mlsm <- mean(z.test == z.hat.mlsm)
     acc.stats <- mean(z.test == z.hat.stats)
-    dplyr::tibble(n = n, acc.mslm = acc.mlsm, acc.stats = acc.stats)
+    dplyr::tibble(n = n, acc.mlsm = acc.mlsm, acc.stats = acc.stats)
   }
 }
 
@@ -94,18 +94,18 @@ ggplot(out.df) +
 
 out.df %>% 
   dplyr::group_by(n) %>% 
-  dplyr::summarise(acc.mslm.mean = mean(acc.mslm),
+  dplyr::summarise(acc.mlsm.mean = mean(acc.mlsm),
                    acc.stats.mean = mean(acc.stats),
-                   acc.mslm.se = sd(acc.mslm) / dplyr::n(),
+                   acc.mlsm.se = sd(acc.mlsm) / dplyr::n(),
                    acc.stats.se = sd(acc.stats) / dplyr::n()) %>% 
   ggplot() + 
   scale_x_log10(breaks = sort(n.vec)) + 
-  geom_line(aes(x = n, y = acc.mslm.mean, colour = 'mslm')) + 
+  geom_line(aes(x = n, y = acc.mlsm.mean, colour = 'mlsm')) + 
   geom_line(aes(x = n, y = acc.stats.mean, colour = 'stats')) + 
   geom_errorbar(aes(x = n, 
-                    ymin = acc.mslm.mean - 2 * acc.mslm.se, 
-                    ymax = acc.mslm.mean + 2 * acc.mslm.se,
-                    colour = 'mslm')) + 
+                    ymin = acc.mlsm.mean - 2 * acc.mlsm.se, 
+                    ymax = acc.mlsm.mean + 2 * acc.mlsm.se,
+                    colour = 'mlsm')) + 
   geom_errorbar(aes(x = n, 
                     ymin = acc.stats.mean - 2 * acc.stats.se, 
                     ymax = acc.stats.mean + 2 * acc.stats.se,

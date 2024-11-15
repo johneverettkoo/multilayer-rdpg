@@ -23,10 +23,17 @@ z <- dti.info$hemisphere %>%
 
 rois <- dti.info$aparc_aseg_region.names.short
 
-A <- dat.NumFibers[[2]] %>% 
+subject <- 2
+
+A <- dat.NumFibers[[subject]] %>% 
   as.matrix()
 A <- (A + t(A)) / 2
 diag(A) <- 0
+
+Sigma <- fmri.mc[[subject]] %>% 
+  as.data.frame() %>% 
+  subset(., select = which(!duplicated(names(.)))) %>%
+  cor()
 
 # A <- log(A)
 # A[is.infinite(A)] <- 0
