@@ -14,11 +14,31 @@ beta2 <- -1
 sigma_eps <- .5
 
 K <- 2
-a.vec <- c(2, 1)
-b.vec <- c(2, .839214517857)
+
+# a.vec <- c(2, 1)
+# b.vec <- c(2, .839214517857)
+
+# a.vec <- c(1, 1.1)
+# b.vec <- c(1, 1.4092)
+
+# a.vec <- c(1, 1.01)
+# b.vec <- c(1, 1.0484)
+
+# a.vec <- c(2, 2.01)
+# b.vec <- c(2, 2.0233)
+
+# a.vec <- c(2, 1.9)
+# b.vec <- c(2, 1.7601)
+
+# a.vec <- c(.5, .51)
+# b.vec <- c(.5, .35024)
+
+a.vec <- c(1, 1.1)
+b.vec <- c(1, 1.1)
 
 N <- 2 ^ 6
 n.vec <- 2 ^ c(11, 10, 9, 8)
+# n.vec <- 2 ^ c(9, 8)
 
 sim.dir <- '~/dev/multilayer-rdpg/simulations/beta-classification'
 
@@ -58,11 +78,12 @@ out.df <- foreach::foreach(n = n.vec, .combine = dplyr::bind_rows) %do% {
       t.hat <- curve.est$t
       param.est <- EnvStats::ebeta(t.hat)
       
-      avg.degree <- mean(colSums(A))
+      avg.degree <- mean(colSums(A)) / n.i
       A.graph <- igraph::graph_from_adjacency_matrix(A)
       transitivity <- igraph::transitivity(A.graph)
       
       dplyr::tibble(z = z, 
+                    n = n.i, 
                     a = a.vec[z],
                     b = b.vec[z],
                     a.hat = param.est$parameters[1], 
@@ -76,12 +97,12 @@ out.df <- foreach::foreach(n = n.vec, .combine = dplyr::bind_rows) %do% {
     test.df <- datamat.df[-train.ind, ]
     z.test <- z.vec[-train.ind]
     lda.mlsm <- MASS::lda(z ~ a.hat + b.hat, data = train.df)
-    lda.stats <- MASS::lda(z ~ avg.degree + transitivity, data = train.df)
+    lda.stats <- MASS::lda(z ~ avg.degree + transitivity + n, data = train.df)
     z.hat.mlsm <- predict(lda.mlsm, test.df)$posterior %>% 
       apply(1, which.max)
     z.hat.stats <- predict(lda.stats, test.df)$posterior %>% 
       apply(1, which.max)
-    acc.mlsm <- mean(z.test == z.hat.mlsm)
+      acc.mlsm <- mean(z.test == z.hat.mlsm)
     acc.stats <- mean(z.test == z.hat.stats)
     dplyr::tibble(n = n, acc.mlsm = acc.mlsm, acc.stats = acc.stats)
   }
@@ -96,10 +117,11 @@ out.df %>%
   dplyr::group_by(n) %>% 
   dplyr::summarise(acc.mlsm.mean = mean(acc.mlsm),
                    acc.stats.mean = mean(acc.stats),
-                   acc.mlsm.se = sd(acc.mlsm) / dplyr::n(),
-                   acc.stats.se = sd(acc.stats) / dplyr::n()) %>% 
+                   acc.mlsm.se = sd(acc.mlsm) / sqrt(dplyr::n()),
+                   acc.stats.se = sd(acc.stats) / sqrt(dplyr::n())) %>% 
   ggplot() + 
   scale_x_log10(breaks = sort(n.vec)) + 
+  scale_y_log10() + 
   geom_line(aes(x = n, y = acc.mlsm.mean, colour = 'mlsm')) + 
   geom_line(aes(x = n, y = acc.stats.mean, colour = 'stats')) + 
   geom_errorbar(aes(x = n, 
@@ -111,4 +133,4 @@ out.df %>%
                     ymax = acc.stats.mean + 2 * acc.stats.se,
                     colour = 'stats'))
 
-readr::write_csv(out.df, file.path(sim.dir, 'beta-classification-sim.csv'))
+# readr::write_csv(out.df, file.path(sim.dir, 'beta-classification-sim.csv'))
