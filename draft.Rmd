@@ -496,6 +496,7 @@ Estimate $\hat{\theta}$ from $\hat{t}_1, ..., \hat{t}_n$ via maximum likelihood 
 \end{algorithm}
 
 \begin{theorem}[Consistency of algorithm \ref{alg:bezier-param-fit}]
+\label{thm:theta-consistency}
 Suppose $A \sim \LSM(p, F_\theta)$ such that $p : [0, 1] \to \mathbb{R}^d$ is a Bezier polynomial of degree $R$ with coefficients $b$, and $F_\theta$ is a probability distribution with probability density function $f_\theta(t)$ that is absolutely continuous on support $[0, 1]$ and $\min_t f_\theta(t) > 0$ $\forall t \in [0, 1]$. 
 Let $\hat{t}_1, ..., \hat{t}_n$ and $\hat{b}$ be the minimizers of the loss function in equation \ref{eq:bezier-ls} from $A$, and let $\tilde{theta}$ be the maximum likelihood estimator for $\theta$ using $\hat{t}_1, ..., \hat{t}_n$. 
 Then $\tilde{\theta} \stackrel{p}{\to} \theta$. 
@@ -1193,7 +1194,7 @@ Then $X = T b$, and $\hat{X} = \hat{T} \hat{b} + \hat{E}$, where $\hat{E}$ is th
 Then
 $$
 \begin{aligned}
-\|X - \tilde{X} W\| & = \|T b - \hat{T} \hat{b} W\|_{2,\infty} \\
+\|X - \tilde{X} W\|_{2, \infty} & = \|T b - \hat{T} \hat{b} W\|_{2,\infty} \\
 & = \|T b - (\hat{T} \hat{b} + \hat{E} - \hat{E}) W \|_{2,\infty} \\
 & = \|T b - (\hat{T} \hat{b} + \hat{E}) W + \hat{E} W\|_{2,\infty} \\
 & \leq \|X - \hat{X} W\|_{2,\infty} + \|\hat{E} W\|_{2,\infty}.
@@ -1201,6 +1202,29 @@ $$
 $$
 The first term $\|X - \hat{X} W\|_{2,\infty}$ converges to $0$ in probability \citep{lyzinski2014}. 
 Since the ASE is consistent, the embedding vectors will converge in probability to a Bezier curve, so $\|\hat{E} W\|_{2,\infty} \stackrel{p}{\to} 0$. 
+\end{proof}
+
+\begin{proof}[Proof of Theorem \ref{thm:bezier-consistency}]
+Recall that for the family of Bezier curves such that $p(t) = 0$ and $p$ cannot be expressed by another Bezier polynomial of lower order, the image of $p$ cannot be expressed by another Bezier curve \citep{SANCHEZREYES2022102118}. 
+Thus, $X = T b$ is unique. 
+Since the ASE is consistent, $\hat{X}$ converges to a Bezier curve, which again is uniquely expressed by $\hat{X} = \hat{T} \hat{b} = \tilde{X}$. 
+By lemma \ref{lem:bezier-consistency}, $\|X - \tilde{X} W\|_{2, \infty} = \|T b - \hat{T} \hat{b} W\|_{2, \infty} \stackrel{p}{\to} 0$.
+Then
+$$
+\begin{aligned}
+\|T b - \hat{T} \hat{b} W\|_{2, \infty} & = \|T b - \hat{T} \hat{b} W + T \hat{b} W - T \hat{b} W\|_{2,\infty} \\
+& \leq \|T (b - \hat{b} W) \|_{2,\infty} + \|(\hat{T} - T) \hat{b} W\|_{2, \infty}\\
+& \leq \|T\|_{2, \infty} \|b - \hat{b} W\|_F + \|\hat{T} - T\|_{2, \infty} \|\hat{b}\|_F.
+\end{aligned}
+$$
+Since this converges to $0$ in probability and all parts are nonnegative, both $\|b - \hat{b} W\|_F$ and $\|\hat{T} - T\|_{2, \infty}$ must converge to 0 as well. 
+\end{proof}
+
+\begin{proof}[Proof of Theorem \ref{thm:theta-consistency}]
+By theorem \ref{thm:bezier-consistency}, $\|T - \hat{T}\|_{2, \infty} \stackrel{p}{\to} 0$. 
+Each element of $T$ is $T_{ir} = \binom{R}{r} t_i^r (1 - t_i)^{R-r}$, and similarly $\hat{T}_{ir} = \binom{R}{r} \hat{t}_i^r (1 - \hat{t}_i)^{R-r}$. 
+This is unique for the class of Bezier polynomials restricted by algorithm 3. 
+Then $\sum_i^n \|t_i - \hat{t}_i\| \stackrel{p}{\to} 0$. 
 \end{proof}
 
 \newpage
