@@ -205,36 +205,26 @@ assumptions on the latent vectors or restricting the latent vectors to
 lie on subspaces or manifolds in the latent space
 \citep{athreya2020estimation}.
 
-It has been shown \citep{Koo_2022, rubindelanchy2017statistical} that
-the RDPG (as well as the generalized random dot product graph, or GRDPG,
-\citep{rubindelanchy2017statistical}) can describe a wide range of
-popular random graph models, such as the \(\ER\) model, the stochastic
-block model (SBM) \citep{doi:10.1080/0022250X.1971.9989788}, degree
-corrected block model (DCBM) \citep{Karrer_2011}, and popularity
-adjusted block model (PABM) \citep{307cbeb9b1be48299388437423d94bf1}. In
-these examples, the (G)RPDG representation of these networks allows for
-inference and analysis in more familiar Euclidean space rather than on
-graphs, and the geometry of the configuration of latent vectors
-correspond to the parameters of these graph models. More specifically,
-when these network models are described as (G)RDPGs, each latent vector
-lies on a subspace. \citet{athreya2020estimation} and
-\citet{Passino_2020} extended this to the latent structure model (LSM)
-and latent structure block model (LSBM) to include latent configurations
-that consist of nonlinear manifolds.
-
-In this paper, we apply these highly structured random dot product graph
-models to supervised learning problems in which there are multiple
-graphs, \(G_1, ..., G_L\), each with a response
-\(y^{(1)}, ..., y^{(L)}\). Each graph, represented by adjacency matrix
-\(A^{(\ell)}\), is presumed to be drawn from a RDPG with parameter set
-\(\theta_l\), and in turn, the response \(y_l\) is drawn from a
-univariate distribution with parameter \(\theta_l\). Since the latent
-vectors of each \(A^{(\ell)}\) are presumed to be distributed on a
-structured subset of the latent space, e.g., a manifold, we call this
-the multiple latent structure model (MLSM). Much previous work has been
-done on multilayer networks, such as the multilayer degree corrected
-block model of \citet{agterberg2022joint}, multiple random eigen graphs
-of \citet{8889404}, and the common subspace independent edge graphs of
+It has been shown that the RDPG (as well as the generalized random dot
+product graph, or GRDPG, \citep{rubindelanchy2017statistical}) can
+describe a wide range of popular random graph models, such as the
+\(\ER\) model, the stochastic block model (SBM)
+\citep{doi:10.1080/0022250X.1971.9989788}, degree corrected block model
+(DCBM) \citep{Karrer_2011}, and popularity adjusted block model (PABM)
+\citep{307cbeb9b1be48299388437423d94bf1}. In this paper, we apply these
+highly structured random dot product graph models to supervised learning
+problems in which there are multiple graphs, \(G_1, ..., G_L\), each
+with a response \(y^{(1)}, ..., y^{(L)}\). Each graph, represented by
+adjacency matrix \(A^{(\ell)}\), is presumed to be drawn from a RDPG
+with parameter set \(\theta_l\), and in turn, the response \(y_l\) is
+drawn from a univariate distribution with parameter \(\theta_l\). Since
+the latent vectors of each \(A^{(\ell)}\) are presumed to be distributed
+on a structured subset of the latent space, e.g., a manifold, we call
+this the multiple latent structure model (MLSM). There exists much
+existing literature on the estimation for multilayer networks, such as
+the multilayer degree corrected block model of
+\citet{agterberg2022joint}, multiple random eigen graphs of
+\citet{8889404}, and the common subspace independent edge graphs of
 \citet{arroyo2020inference}. In each of these models, the main inference
 problem is to identify parameters that are shared across multiple
 graphs. Our contribution is in applying similar methods to identify
@@ -390,9 +380,6 @@ Again as in the case of a single LSM, we also allow for each $A^{(\ell)}$ to be 
 In this case, we use the notation $A^{(1)}, ..., A^{(L)} \sim \MLSM(\{\mathcal{C}_k^{(\ell)}\}_{K, L}, F, \{\theta_\ell\}_L, \{\alpha^{(\ell)}\}_L)$ or $A^{(1)}, ..., A^{(L)} \sim \MLSM(\{p_k^{(\ell)}\}_{K, L}, F, \{\theta_\ell\}_L, \{\alpha^{(\ell)}\}_L)$.
 \end{remark}
 
-\subsubsection{Connections to Related
-Models}\label{connections-to-related-models}
-
 In the MLSM defined in definition \ref{def:mlsm}, the only commonality
 that we assume from graph to graph is that they are all LSMs with the
 same underlying distribution family. Unlike multilayer models, such as
@@ -428,48 +415,13 @@ On the other hand, if the further restriction of $\Omega^{(\ell)} = \Omega^{(\el
 However, if the community labels are not identical from graph to graph, the sequence of DCBMs cannot be described as a multilayer DCBM, multi-RDPG, or MREG, but it can still be described as an MLSM. 
 \end{example}
 
-\subsubsection{Classification and Regression on the
-MLSM}\label{classification-and-regression-on-the-mlsm}
-
-To use the MLSM for classification or regression problems, we assign
-response variables \(y_1, ..., y_L\) to each graph. Then if each
-response \(y_\ell\) depends on \(p^{(\ell)}(t)\) (the parameterization
-of the \(\ell^{th}\) curve) or \(\theta_\ell\) (the parameter of the
-\(\ell^{th}\) distribution), or some combination of the two, there is a
-plausible setup for a predictive modeling task for predicting \(y_\ell\)
-after observing \(A^{(\ell)}\). Four such scenarios are given:
-
-\begin{definition}[MLSM for classification 1]
-\label{def:mlsm-c-1}
-Let $A^{(1)}, ..., A^{(L)} \sim \MLSM(\{p^{(\ell)}\}, F, \{\theta_\ell\}_L)$, $y_1, ..., y_L \in \{1, ..., M\}$ be labels for each of the $L$ graphs of the MLSM, and each $\theta_\ell$ take on one of $M$ values $\{\phi_1, ..., \phi_M\}$ corresponding to its response, $y_\ell$, i.e., $\theta_\ell = \phi_{y_\ell}$. 
-
-We observe the adjacency matrices $A^{(1)}, ..., A^{(L)}$ and the first $r$ labels $y_1, ..., y_r$, and the task is to predict the unknown labels $y_{r+1}, ..., y_L$. 
-
-This can be described by the following generative model:
-
-\begin{enumerate}
-  \item Draw labels $y_1, ..., y_L \iid \Categorical(\{1, ..., M\}, \{\pi_1, ..., \pi_M\})$.
-  \item Set each $\theta_\ell = \phi_{y_\ell}$.
-  \item Draw adjacency matrices as $A^{(1)}, ..., A^{(L)} \sim \MLSM(\{p^{(\ell)}\}, F, \{\theta_\ell\}_L)$.
-\end{enumerate}
-\end{definition}
-
-\begin{definition}[MLSM for classification 2]
-\label{def:mlsm-c-2}
-Let $A^{(1)}, ..., A^{(L)} \sim \MLSM(\{\mathcal{C}^{(\ell)}\}, F, \{\theta_\ell\}_L)$, $y_1, ..., y_L \in \{1, ..., M\}$ be labels for each of the $L$ graphs of the MLSM, and each $\mathcal{C}^{(\ell)}$ take on one of $M$ functional forms $\{p^{(1)}(t), ..., p^{(M)}(t)\}$ corresponding to its response variable, $y_\ell$, i.e., $\mathcal{C}^{(\ell)}$ is parameterized by $p^{(y_\ell)}(t)$. 
-
-We observe the adjacency matrices $A^{(1)}, ..., A^{(L)}$ and the first $r$ labels $y_1, ..., y_r$, and the task is to predict the unknown labels $y_{r+1}, ..., y_L$. 
-
-This can be described by the following generative model:
-
-\begin{enumerate}
-  \item Draw labels $y_1, ..., y_L \iid \Categorical(\{1, ..., M\}, \{\pi_1, ..., \pi_M\})$.
-  \item Set each $p^{(\ell)}(t) = p^{(y_\ell)}(t)$.
-  \item Draw adjacency matrices as $A^{(1)}, ..., A^{(L)} \sim \MLSM(\{p^{(\ell)}\}, F, \{\theta_\ell\}_L)$.
-\end{enumerate}
-
-As in remark \ref{remark:mlsm-mixture}, we also allow for each adjacency matrix $A^{(\ell)}$ to be drawn from a latent structure consisting of multiple curves $\{p^{(\ell)}_k\}_K$. 
-\end{definition}
+To use the MLSM for regression problems, we assign response variables
+\(y_1, ..., y_L\) to each graph. Then if each response \(y_\ell\)
+depends on \(p^{(\ell)}(t)\) (the parameterization of the \(\ell^{th}\)
+curve) or \(\theta_\ell\) (the parameter of the \(\ell^{th}\)
+distribution), or some combination of the two, there is a plausible
+setup for a predictive modeling task for predicting \(y_\ell\) after
+observing \(A^{(\ell)}\).
 
 \begin{definition}[MLSM for regression 1]
 \label{def:mlsm-r-1}
@@ -510,9 +462,6 @@ Third, we apply classification or regression methods to determine the
 relationship between the estimated parameters and the responses.
 Finally, we provide theorems that show the consistency of the curve fits
 and maximum likelihood estimators.
-
-\subsubsection{Estimation of the LSM
-Curves}\label{estimation-of-the-lsm-curves}
 
 For curve-fitting, we will restrict the LSM curves to
 non-self-intersecting Bezier polynomials \citep{10.5555/320367}. A
@@ -609,42 +558,12 @@ for each vertex label (if the labels are known) or by estimating the
 labels via an alternating coordinate descent algorithm outlined in
 algorithm \ref{alg:bezier-fit-mixture}.
 
-\begin{algorithm}[H]
-\label{alg:bezier-fit-mixture}
-\DontPrintSemicolon
-\SetAlgoLined
-\setstretch{1.1}
-\KwData{Adjacency matrix $A$, embedding dimension $d$, polynomial degree $R$, number of latent structures $K$, stopping criterion $\epsilon$.}
-\KwResult{Bezier coefficients $\hat{b}$, timepoint values $\hat{t}_1, ..., \hat{t}_n$, curve memberships $\hat{z}_1, ..., \hat{z}_n$.}
-Compute $\hat{X} \in \mathbb{R}^{n \times d}$, the ASE of $A$.\;
-Initialize $\hat{z}_1, ..., \hat{z}_n \in \{1, ..., K\}$, the membership of each vertex to each latent curve.\;
-\For {$k = 1, ..., K$} {
-  Subset the rows of $\hat{X}$ by $z_i = k$ to obtain $\hat{x}_{k_1}, ..., \hat{x}_{k_{n_k}}$, where $n_k$ is the number of vertices with label $k$.\;
-  Initialize timepoints $\hat{t}_{k_1}, ..., \hat{t}_{k_{n_k}}$, (e.g., via a one-dimensional Isomap embedding \citep{Tenenbaum2000-ff}).\;
-}
-\Repeat {the change in equation \ref{eq:bezier-ls} is less than $\epsilon$.} {
-  \For {$k = 1, ..., K$} {
-    Fit $\hat{b}^{(k)}$ by equation \ref{eq:bezier-ols}, using the row subsets of $T$ and $X$ such that $z_i = k$.\;
-    \For {$i = 1, ..., n_k$} {
-      Fit $\hat{t}_{k_i}$ by equation by finding the roots of equation \ref{eq:dbezier} and choosing the roots that minimizes equation \ref{eq:bezier-ls}.\;
-    }
-  }
-  \For {$k = 1, ..., n$} {
-    Reassign $z_i$ based on the latent curve closest to $\hat{x}_i$. 
-  }
-}
-\caption{Procedure for estimating multiple LSM curves as a Bezier polynomial from an adjacency matrix.}
-\end{algorithm}
-
 \begin{theorem}[Consistency of algorithm \ref{alg:bezier-fit}]
 \label{thm:bezier-consistency}
 Suppose $A \sim \LSM(p, F_\theta)$ such that $p : [0, 1] \to \mathbb{R}^d$ is a Bezier polynomial of degree $R$ with finite coefficients $b$, and $F_\theta$ is a probability distribution with probability density function $f_\theta(t)$ that is absolutely continuous on support $[0, 1]$ and $\min_t f_\theta(t) > 0$ $\forall t \in [0, 1]$. 
 Let $\hat{T}$ and $\hat{b}$ be the minimizers of the loss function in equation \ref{eq:bezier-ls} from $A$. 
 Then as $n \to \infty$, $\|T - \hat{T}\|_{2, \infty} \stackrel{p}{\to} 0$ where $T$ is defined as in equation \ref{eq:bezier-loss}, and $\|b - \hat{b} W \|_F \stackrel{p}{\to} 0$ for some $W \in \mathbb{O}(d)$.
 \end{theorem}
-
-\subsubsection{\texorpdfstring{Quasi-Maximum Likelihood Estimation for
-\(\theta\)}{Quasi-Maximum Likelihood Estimation for \textbackslash theta}}\label{quasi-maximum-likelihood-estimation-for-theta}
 
 The estimation of \(T\) and the restrictions imposed on the family of
 Bezier curves allows for the estimation of \(\theta\) via maximum
@@ -681,9 +600,6 @@ Let $\hat{t}_1, ..., \hat{t}_n$ and $\hat{b}$ be the minimizers of the loss func
 Then $\tilde{\theta} \stackrel{p}{\to} \theta$. 
 \end{theorem}
 
-\subsubsection{Classification and
-Regression}\label{classification-and-regression}
-
 Applying algorithm \ref{alg:bezier-param-fit} to supervised learning
 problems is straightforward. First, we extract each
 \(\hat{\theta}^{(\ell)}\) from each graph, then apply a supervised
@@ -715,7 +631,7 @@ just as well as if we already knew each \(\theta^{(\ell)}\). Therefore,
   Estimate $\hat{\theta}^{(\ell)}$ from $\hat{t}_1, ..., \hat{t}_{n_\ell}$ via maximum likelihood estimation.\;
 }
 Fit a model for predicting $y^{(\ell)}, ..., y^{(\ell)}$ using the estimated parameters $\theta^{(\ell)}, ..., \theta^{(\ell)}$ (e.g., via linear regression).\;
-\caption{Procedure for fitting a classification or regression model for an MLSM.}
+\caption{Procedure for fitting a regression model for an MLSM.}
 \end{algorithm}
 
 \begin{theorem}
@@ -746,77 +662,27 @@ latent space, and in scenario 2, each
 \(y_\ell \indep \mathcal{N}(\beta_0 + \beta_1 a^{(\ell)} + \beta_2 b^{(\ell)}, \sigma^2)\),
 where \(a^{(\ell)}\) and \(b^{(\ell)}\) describe the Beta parameters of
 the distribution of latent vectors along a curve. We set
-\(\sigma^2 = 0.25\) for both scenarios.
-
-The simulation setup for the first scenario is as follows: For each
-\(N = 128, 256, 512, 1024\), sample \(L = 128\) graphs as:
-
-\begin{enumerate}
-\def\labelenumi{\roman{enumi}.}
-\tightlist
-\item
-  Draw \(n_1, ..., n_L\) as \(n_\ell \iid \Poisson(N)\).
-\item
-  Draw
-  \(\theta^{(1)}, ..., \theta^{(L)} \iid \Uniform(\pi / 6, \pi / 3)\).
-\item
-  For each \(\ell = 1, ..., L\), draw latent vectors either from the
-  line segment described by
-  \(p_1(t) = \begin{bmatrix} t & 0 \end{bmatrix}^\top\) or
-  \(p_2(t) = \begin{bmatrix} \cos(\theta^{(\ell)}) & \sin(\theta^{(\ell)}) \end{bmatrix}^\top\)
-  with probability \(1/2\) for each.
-\item
-  Use the \(L\) sets of latent vectors to draw \(L\) RDPGs with
-  adjacency matrices \(A^{(1)}, ..., A^{(L)}\).
-\item
-  Draw each
-  \(y_\ell \indep \mathcal{N}(1 + 2 \theta^{(\ell)}, \sigma^2)\).
-\item
-  Apply algorithm \ref{alg:mlsm-fit} to construct a linear model
-  connecting \(y_1, ..., y_\ell\) and \(A^{(1)}, ..., A^{(L)}\), using
-  the first half as training data and reporting MSE on the last half not
-  used for training.
-\end{enumerate}
-
-For the second the simulation setup is similar. For each
-\(N = 128, 256, 512, 1024\), sample \(L = 128\) graphs as:
-
-\begin{enumerate}
-\def\labelenumi{\roman{enumi}.}
-\tightlist
-\item
-  Draw \(n_1, ..., n_L\) as \(n_\ell \iid \Poisson(N)\).
-\item
-  Draw each
-  \((a^{(\ell)}, b^{(\ell)}) \iid \Uniform([0.5, 2] \times [0.5, 2])\).
-\item
-  For each \(\ell = 1, ..., L\), draw latent vectors by first taking
-  \(t_1, ..., t_{n_\ell} \sim \Betadist(a^{(\ell)}, b^{(\ell)})\) then
-  taking each latent vector as
-  \(x_i = \begin{bmatrix} t^2 & 2 t (1-t) \end{bmatrix}^\top\).
-\item
-  Use the \(L\) sets of latent vectors to draw \(L\) RDPGs with
-  adjacency matrices \(A^{(1)}, ..., A^{(L)}\).
-\item
-  Draw each
-  \(y_\ell \indep \mathcal{N}(1 + 2 \alpha^{(\ell)} + b^{(\ell)}, \sigma^2)\).
-\item
-  Apply algorithm \ref{alg:mlsm-fit} to construct a linear model
-  connecting \(y_1, ..., y_\ell\) and \(A^{(1)}, ..., A^{(L)}\), using
-  the first half as training data and reporting MSE on the last half not
-  used for training.
-\end{enumerate}
+\(\sigma^2 = 0.25\) for both scenarios. We also vary the expected number
+of vertices for each graph: For each \(N = 128, 256, 512\), and
+\(1024\), we sample \(L = 128\) graphs as
+\(n_1, ..., n_L \iid \Poisson(N)\). Algorithm \ref{alg:mlsm-fit} is
+applied to each set of \(128\) graphs, then half of the estimates are
+used for fitting the linear regression model and the mean squared error
+is computed on the remainder. To compare our algorithm against existing
+methods, we extracted graph statistics as covariates for a linear
+regression model. For each \(N\), we ran \(50\) replicates to obtain the
+average and standard error of each method.
 
 In figure \ref{fig:angle-regression-sim}, we compare algorithm
 \ref{alg:mlsm-fit} to fitting a regression model using graph
-transitivity and average degree of each vertex. Since this scenario is
-similar to a multilayer DCBM, we expect performance to be very similar,
-which is what we observe in the results. However, we cannot model this
-simulation as a multilayer DCBM since although each graph can be
-described as a DCBM, the graphs do not share the same vertex set. In
-figure \ref{fig:beta-regression-sim}, we see that linear regression
-using graph summary statistics performs better for smaller graphs, but
-as we draw more vertices, the ASE improves and so algorithm
+transitivity and average degree of each vertex (scenario 1). Since this
+scenario is similar to a multilayer DCBM, we expect performance to be
+very similar, which is what we observe in the results. However, we
+cannot model this simulation as a multilayer DCBM since although each
+graph can be described as a DCBM, the graphs do not share the same
+vertex set. In figure \ref{fig:beta-regression-sim}, we see that linear
+regression using graph summary statistics performs better for smaller
+graphs, but as we draw more vertices, the ASE improves and so algorithm
 \ref{mlsm-fit} performs better, whereas graph summary statistics cannot
 improve with the number of vertices. Figures \ref{fig:theta-mse} and
 \ref{fig:beta-mse} show that the quasi-MLE estimators computed via
