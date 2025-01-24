@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.141592653-2.6-1.40.25 (TeX Live 2023) (preloaded format=pdflatex 2023.5.16)  24 JAN 2025 13:50
+This is pdfTeX, Version 3.141592653-2.6-1.40.25 (TeX Live 2023) (preloaded format=pdflatex 2023.5.16)  24 JAN 2025 13:56
 entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
@@ -558,43 +558,41 @@ LaTeX Warning: Reference `alg:bezier-fit-mixture' on page 13 undefined on input
  line 559.
 
 [13] [14] [15] [16]
-
-LaTeX Warning: Reference `mlsm-fit' on page 17 undefined on input line 686.
-
-<draft_files/figure-latex/angle-regression-sim-1.pdf, id=254, 417.56pt x 206.77
-25pt>
+<draft_files/figure-latex/angle-regression-sim-1.pdf, id=248, 415.5525pt x 134.
+5025pt>
 File: draft_files/figure-latex/angle-regression-sim-1.pdf Graphic file (type pd
 f)
 <use draft_files/figure-latex/angle-regression-sim-1.pdf>
 Package pdftex.def Info: draft_files/figure-latex/angle-regression-sim-1.pdf  u
-sed on input line 693.
-(pdftex.def)             Requested size: 417.55896pt x 206.77199pt.
-[17]
-<draft_files/figure-latex/theta-mse-1.pdf, id=263, 423.5825pt x 206.7725pt>
+sed on input line 678.
+(pdftex.def)             Requested size: 415.55148pt x 134.50215pt.
+<draft_files/figure-latex/theta-mse-1.pdf, id=249, 423.5825pt x 134.5025pt>
 File: draft_files/figure-latex/theta-mse-1.pdf Graphic file (type pdf)
 <use draft_files/figure-latex/theta-mse-1.pdf>
 Package pdftex.def Info: draft_files/figure-latex/theta-mse-1.pdf  used on inpu
-t line 702.
-(pdftex.def)             Requested size: 423.58147pt x 206.77199pt.
-<draft_files/figure-latex/beta-regression-sim-1.pdf, id=264, 417.56pt x 206.772
+t line 687.
+(pdftex.def)             Requested size: 423.58147pt x 134.50215pt.
+[17 <./draft_files/figure-latex/angle-regression-sim-1.pdf>]
+<draft_files/figure-latex/beta-regression-sim-1.pdf, id=262, 417.56pt x 134.502
 5pt>
 File: draft_files/figure-latex/beta-regression-sim-1.pdf Graphic file (type pdf
 )
 <use draft_files/figure-latex/beta-regression-sim-1.pdf>
 Package pdftex.def Info: draft_files/figure-latex/beta-regression-sim-1.pdf  us
-ed on input line 711.
-(pdftex.def)             Requested size: 417.55896pt x 206.77199pt.
-[18 <./draft_files/figure-latex/angle-regression-sim-1.pdf> <./draft_files/figu
-re-latex/theta-mse-1.pdf>]
-<draft_files/figure-latex/beta-mse-1.pdf, id=285, 414.54875pt x 204.765pt>
+ed on input line 696.
+(pdftex.def)             Requested size: 417.55896pt x 134.50215pt.
+<draft_files/figure-latex/beta-mse-1.pdf, id=263, 414.54875pt x 132.495pt>
 File: draft_files/figure-latex/beta-mse-1.pdf Graphic file (type pdf)
 <use draft_files/figure-latex/beta-mse-1.pdf>
 Package pdftex.def Info: draft_files/figure-latex/beta-mse-1.pdf  used on input
- line 720.
-(pdftex.def)             Requested size: 414.54773pt x 204.76448pt.
-[19 <./draft_files/figure-latex/beta-regression-sim-1.pdf> <./draft_files/figur
-e-latex/beta-mse-1.pdf>]
-<draft_files/figure-latex/mbconnectome-graph-1.pdf, id=308, 351.3125pt x 136.51
+ line 705.
+(pdftex.def)             Requested size: 414.54773pt x 132.49466pt.
+
+LaTeX Warning: Reference `mlsm-fit' on page 18 undefined on input line 722.
+
+[18 <./draft_files/figure-latex/theta-mse-1.pdf> <./draft_files/figure-latex/be
+ta-regression-sim-1.pdf> <./draft_files/figure-latex/beta-mse-1.pdf>]
+<draft_files/figure-latex/mbconnectome-graph-1.pdf, id=303, 351.3125pt x 136.51
 pt>
 File: draft_files/figure-latex/mbconnectome-graph-1.pdf Graphic file (type pdf)
 
@@ -602,7 +600,8 @@ File: draft_files/figure-latex/mbconnectome-graph-1.pdf Graphic file (type pdf)
 Package pdftex.def Info: draft_files/figure-latex/mbconnectome-graph-1.pdf  use
 d on input line 744.
 (pdftex.def)             Requested size: 351.31163pt x 136.50966pt.
-<draft_files/figure-latex/mbconnectome-ase-1.pdf, id=309, 483.8075pt x 132.495p
+[19]
+<draft_files/figure-latex/mbconnectome-ase-1.pdf, id=313, 483.8075pt x 132.495p
 t>
 File: draft_files/figure-latex/mbconnectome-ase-1.pdf Graphic file (type pdf)
 <use draft_files/figure-latex/mbconnectome-ase-1.pdf>
@@ -614,23 +613,23 @@ Overfull \hbox (21.53633pt too wide) in paragraph at lines 753--754
  [][] 
  []
 
-[20 <./draft_files/figure-latex/mbconnectome-graph-1.pdf>]
-<draft_files/figure-latex/mbconnectome-beta-1.pdf, id=329, 417.56pt x 149.55875
+[20 <./draft_files/figure-latex/mbconnectome-graph-1.pdf> <./draft_files/figure
+-latex/mbconnectome-ase-1.pdf>]
+<draft_files/figure-latex/mbconnectome-beta-1.pdf, id=337, 417.56pt x 149.55875
 pt>
 File: draft_files/figure-latex/mbconnectome-beta-1.pdf Graphic file (type pdf)
 <use draft_files/figure-latex/mbconnectome-beta-1.pdf>
 Package pdftex.def Info: draft_files/figure-latex/mbconnectome-beta-1.pdf  used
  on input line 777.
 (pdftex.def)             Requested size: 417.55896pt x 149.55838pt.
-[21 <./draft_files/figure-latex/mbconnectome-ase-1.pdf>]
-<draft_files/figure-latex/hcp-ase-1.pdf, id=344, 911.405pt x 352.31625pt>
+<draft_files/figure-latex/hcp-ase-1.pdf, id=339, 911.405pt x 352.31625pt>
 File: draft_files/figure-latex/hcp-ase-1.pdf Graphic file (type pdf)
 <use draft_files/figure-latex/hcp-ase-1.pdf>
 Package pdftex.def Info: draft_files/figure-latex/hcp-ase-1.pdf  used on input 
 line 805.
 (pdftex.def)             Requested size: 462.26999pt x 178.70049pt.
-[22 <./draft_files/figure-latex/mbconnectome-beta-1.pdf>]
-<draft_files/figure-latex/hcp-age-regression-1.pdf, id=359, 351.3125pt x 206.77
+[21 <./draft_files/figure-latex/mbconnectome-beta-1.pdf>]
+<draft_files/figure-latex/hcp-age-regression-1.pdf, id=355, 351.3125pt x 206.77
 25pt>
 File: draft_files/figure-latex/hcp-age-regression-1.pdf Graphic file (type pdf)
 
@@ -638,16 +637,16 @@ File: draft_files/figure-latex/hcp-age-regression-1.pdf Graphic file (type pdf)
 Package pdftex.def Info: draft_files/figure-latex/hcp-age-regression-1.pdf  use
 d on input line 814.
 (pdftex.def)             Requested size: 351.31163pt x 206.77199pt.
-[23 <./draft_files/figure-latex/hcp-ase-1.pdf> <./draft_files/figure-latex/hcp-
-age-regression-1.pdf>] [24] [25] [26] [27] (./draft.bbl [28] [29]) [30] (./draf
+[22 <./draft_files/figure-latex/hcp-ase-1.pdf> <./draft_files/figure-latex/hcp-
+age-regression-1.pdf>] [23] [24] [25] [26] (./draft.bbl [27] [28]) [29] (./draf
 t.aux)
 
 LaTeX Warning: There were undefined references.
 
  ) 
 Here is how much of TeX's memory you used:
- 14178 strings out of 476025
- 230740 string characters out of 5790017
+ 14177 strings out of 476025
+ 230733 string characters out of 5790017
  1865388 words of memory out of 5000000
  34262 multiletter control sequences out of 15000+600000
  522621 words of font info for 71 fonts, out of 8000000 for 9000
@@ -669,10 +668,10 @@ e/2023/texmf-dist/fonts/type1/public/amsfonts/cm/cmsy10.pfb></usr/local/texlive
 023/texmf-dist/fonts/type1/public/amsfonts/cm/cmsy8.pfb></usr/local/texlive/202
 3/texmf-dist/fonts/type1/public/amsfonts/cm/cmti12.pfb></usr/local/texlive/2023
 /texmf-dist/fonts/type1/public/amsfonts/symbols/msbm10.pfb>
-Output written on draft.pdf (30 pages, 12574791 bytes).
+Output written on draft.pdf (29 pages, 12574848 bytes).
 PDF statistics:
- 557 PDF objects out of 1000 (max. 8388607)
- 461 compressed objects within 5 object streams
- 132 named destinations out of 1000 (max. 500000)
+ 553 PDF objects out of 1000 (max. 8388607)
+ 458 compressed objects within 5 object streams
+ 131 named destinations out of 1000 (max. 500000)
  126 words of extra memory for PDF output out of 10000 (max. 10000000)
 

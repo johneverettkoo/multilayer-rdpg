@@ -477,14 +477,8 @@ We also vary the expected number of vertices for each graph: For each $N = 128, 
 Algorithm \ref{alg:mlsm-fit} is applied to each set of $128$ graphs, then half of the estimates are used for fitting the linear regression model and the mean squared error is computed on the remainder. 
 To compare our algorithm against existing methods, we extracted graph statistics as covariates for a linear regression model. 
 For each $N$, we ran $50$ replicates to obtain the average and standard error of each method. 
-  
-In figure \ref{fig:angle-regression-sim}, we compare algorithm \ref{alg:mlsm-fit} to fitting a regression model using graph transitivity and average degree of each vertex (scenario 1). 
-Since this scenario is similar to a multilayer DCBM, we expect performance to be very similar, which is what we observe in the results. 
-However, we cannot model this simulation as a multilayer DCBM since although each graph can be described as a DCBM, the graphs do not share the same vertex set. 
-In figure \ref{fig:beta-regression-sim}, we see that linear regression using graph summary statistics performs better for smaller graphs, but as we draw more vertices, the ASE improves and so algorithm \ref{mlsm-fit} performs better, whereas graph summary statistics cannot improve with the number of vertices. 
-Figures \ref{fig:theta-mse} and \ref{fig:beta-mse} show that the quasi-MLE estimators computed via algorithm \ref{alg:bezier-param-fit} are consistent.
 
-```{r angle-regression-sim, fig.width = 6, cache = FALSE, fig.cap = 'The average MSE over 50 simulations in scenario 1. The errorbars are the standard error.'}
+```{r angle-regression-sim, fig.width = 6, fig.height = 2, cache = FALSE, fig.cap = 'The average MSE over 50 simulations in scenario 1. The errorbars are the standard error.'}
 n.sigma <- 1
 
 angle.reg.df <- readr::read_csv('~/dev/multilayer-rdpg/simulations/angle-regression/angle-regression-sim.csv')
@@ -504,11 +498,11 @@ angle.reg.df %>%
   theme_bw() + 
   scale_colour_brewer(palette = 'Set1') +
   labs(x = 'Expected vertices per graph', y = 'MSE', colour = 'Predictor') +
-  geom_line(aes(x = n, y = mse.theta, colour = 'estimated angle')) + 
+  geom_line(aes(x = n, y = mse.theta, colour = 'estimated \nangle \n')) + 
   geom_errorbar(aes(x = n, 
                     ymin = mse.theta - se.theta, 
                     ymax = mse.theta + se.theta,
-                    colour = 'estimated angle'), 
+                    colour = 'estimated \nangle \n'), 
                 width = .1) + 
   # geom_line(aes(x = n, y = mse.m, colour = 'modularity')) + 
   # geom_errorbar(aes(x = n,
@@ -516,16 +510,16 @@ angle.reg.df %>%
   #                   ymax = mse.m + se.m,
   #                   colour = 'modularity'), 
   #               width = .1) + 
-  geom_line(aes(x = n, y = mse.a, colour = 'graph statistics')) + 
+  geom_line(aes(x = n, y = mse.a, colour = 'graph \nstatistics')) + 
   geom_errorbar(aes(x = n,
                     ymin = mse.a - se.a,
                     ymax = mse.a + se.a,
-                    colour = 'graph statistics'), 
+                    colour = 'graph \nstatistics'), 
                 width = .1) + 
   scale_x_log10(breaks = sort(n.vec))
 ```
 
-```{r theta-mse, fig.width = 6, cache = FALSE, fig.cap = 'The average MSE of the estimated angles in scenario 1 over 50 simulations. The errorbars are the standard error.'}
+```{r theta-mse, fig.width = 6, fig.height = 2, cache = FALSE, fig.cap = 'The average MSE of the estimated angles in scenario 1 over 50 simulations. The errorbars are the standard error.'}
 angle.reg.df %>% 
   dplyr::filter(n >= 128) %>% 
   dplyr::group_by(n) %>% 
@@ -541,7 +535,7 @@ angle.reg.df %>%
   scale_x_log10(breaks = sort(n.vec))
 ```
 
-```{r beta-regression-sim, fig.width = 6, cache = FALSE, fig.cap = 'The average MSE over 50 simulations in scenario 2. The errorbars are the standard error.'}
+```{r beta-regression-sim, fig.width = 6, fig.height = 2, cache = FALSE, fig.cap = 'The average MSE over 50 simulations in scenario 2. The errorbars are the standard error.'}
 
 beta.reg.df <- readr::read_csv('~/dev/multilayer-rdpg/simulations/beta-regression/beta-regression-sim.csv')
 
@@ -556,17 +550,17 @@ beta.reg.df %>%
                    se.t = sd(mse.t) / sqrt(dplyr::n()) * n.sigma,
                    mse.t = mean(mse.t)) %>% 
   ggplot() + 
-  geom_line(aes(x = n, y = mse.beta, colour = 'estimated beta parameters')) + 
+  geom_line(aes(x = n, y = mse.beta, colour = 'estimated \nbeta \nparameters\n')) + 
   geom_errorbar(aes(x = n, 
                     ymin = mse.beta - se.beta, 
                     ymax = mse.beta + se.beta,
-                    colour = 'estimated beta parameters'),
+                    colour = 'estimated \nbeta \nparameters\n'),
                 width = .1) + 
-  geom_line(aes(x = n, y = mse.d, colour = 'graph statistics')) + 
+  geom_line(aes(x = n, y = mse.d, colour = 'graph \nstatistics')) + 
   geom_errorbar(aes(x = n,
                     ymin = mse.d - se.d,
                     ymax = mse.d + se.d,
-                    colour = 'graph statistics'),
+                    colour = 'graph \nstatistics'),
                 width = .1) + 
   # geom_line(aes(x = n, y = mse.t, colour = 'transitivity')) + 
   # geom_errorbar(aes(x = n,
@@ -580,7 +574,7 @@ beta.reg.df %>%
   labs(x = 'Expected vertices per graph', y = 'MSE', colour = 'Predictor')
 ```
 
-```{r beta-mse, fig.width = 6, cache = FALSE, fig.cap = 'The average MSE of the estimated beta parameters, $(a, b)$, in scenario 2 over 50 simulations. The errorbars are the standard error.'}
+```{r beta-mse, fig.width = 6, fig.height = 2, cache = FALSE, fig.cap = 'The average MSE of the estimated beta parameters, $(a, b)$, in scenario 2 over 50 simulations. The errorbars are the standard error.'}
 beta.reg.df %>% 
   dplyr::group_by(n) %>% 
   dplyr::summarise(a.se = sd(a.mse) / sqrt(dplyr::n()) * n.sigma,
@@ -597,12 +591,18 @@ beta.reg.df %>%
   geom_errorbar(aes(x = n, ymin = b.mse - b.se, ymax = b.mse + b.se, colour = 'b'),
                 width = .1) + 
   theme_bw() + 
-  labs(x = 'number of vertices', y = 'MSE of Beta parameter estimates', 
+  labs(x = 'number of vertices', y = 'MSE of Beta \nparameter estimates', 
        colour = 'Beta \ndistribution \nparameter') + 
   scale_colour_brewer(palette = 'Set1') +
   scale_y_log10() + 
   scale_x_log10(breaks = sort(n.vec))
 ```
+  
+In figure \ref{fig:angle-regression-sim}, we compare algorithm \ref{alg:mlsm-fit} to fitting a regression model using graph transitivity and average degree of each vertex (scenario 1). 
+Since this scenario is similar to a multilayer DCBM, we expect performance to be very similar, which is what we observe in the results. 
+However, we cannot model this simulation as a multilayer DCBM since although each graph can be described as a DCBM, the graphs do not share the same vertex set. 
+In figure \ref{fig:beta-regression-sim}, we see that linear regression using graph summary statistics performs better for smaller graphs, but as we draw more vertices, the ASE improves and so algorithm \ref{mlsm-fit} performs better, whereas graph summary statistics cannot improve with the number of vertices. 
+Figures \ref{fig:theta-mse} and \ref{fig:beta-mse} show that the quasi-MLE estimators computed via algorithm \ref{alg:bezier-param-fit} are consistent.
 
 # Applications
 

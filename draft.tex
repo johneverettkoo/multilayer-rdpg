@@ -673,21 +673,6 @@ methods, we extracted graph statistics as covariates for a linear
 regression model. For each \(N\), we ran \(50\) replicates to obtain the
 average and standard error of each method.
 
-In figure \ref{fig:angle-regression-sim}, we compare algorithm
-\ref{alg:mlsm-fit} to fitting a regression model using graph
-transitivity and average degree of each vertex (scenario 1). Since this
-scenario is similar to a multilayer DCBM, we expect performance to be
-very similar, which is what we observe in the results. However, we
-cannot model this simulation as a multilayer DCBM since although each
-graph can be described as a DCBM, the graphs do not share the same
-vertex set. In figure \ref{fig:beta-regression-sim}, we see that linear
-regression using graph summary statistics performs better for smaller
-graphs, but as we draw more vertices, the ASE improves and so algorithm
-\ref{mlsm-fit} performs better, whereas graph summary statistics cannot
-improve with the number of vertices. Figures \ref{fig:theta-mse} and
-\ref{fig:beta-mse} show that the quasi-MLE estimators computed via
-algorithm \ref{alg:bezier-param-fit} are consistent.
-
 \begin{figure}[H]
 
 {\centering \includegraphics{draft_files/figure-latex/angle-regression-sim-1} 
@@ -723,6 +708,21 @@ algorithm \ref{alg:bezier-param-fit} are consistent.
 
 \caption{The average MSE of the estimated beta parameters, $(a, b)$, in scenario 2 over 50 simulations. The errorbars are the standard error.}\label{fig:beta-mse}
 \end{figure}
+
+In figure \ref{fig:angle-regression-sim}, we compare algorithm
+\ref{alg:mlsm-fit} to fitting a regression model using graph
+transitivity and average degree of each vertex (scenario 1). Since this
+scenario is similar to a multilayer DCBM, we expect performance to be
+very similar, which is what we observe in the results. However, we
+cannot model this simulation as a multilayer DCBM since although each
+graph can be described as a DCBM, the graphs do not share the same
+vertex set. In figure \ref{fig:beta-regression-sim}, we see that linear
+regression using graph summary statistics performs better for smaller
+graphs, but as we draw more vertices, the ASE improves and so algorithm
+\ref{mlsm-fit} performs better, whereas graph summary statistics cannot
+improve with the number of vertices. Figures \ref{fig:theta-mse} and
+\ref{fig:beta-mse} show that the quasi-MLE estimators computed via
+algorithm \ref{alg:bezier-param-fit} are consistent.
 
 \section{Applications}\label{applications}
 
