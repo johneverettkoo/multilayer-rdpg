@@ -728,9 +728,9 @@ algorithm \ref{alg:bezier-param-fit} are consistent.
 
 \subsection{Drosophila Connectome}\label{drosophila-connectome}
 
-In this section, we apply \ref{alg:mslm-fit} to real data to see if we
-can extract estimates from the latent space that correspond to response
-variables. In the first example, we analyzed the larval
+In this section, we apply algorithm \ref{alg:mslm-fit} to real data to
+see if we can extract estimates from the latent space that correspond to
+response variables. In the first example, we analyzed the larval
 \emph{Drosophila} mushroom body connectome \citep{Eichler141762}, which
 has been studied as a GRDPG by \citet{athreya2020estimation}. This
 dataset consists of two graphs representing two networks of neurons, one
@@ -933,7 +933,14 @@ Since this converges to $0$ in probability and all parts are nonnegative, both $
 By theorem \ref{thm:bezier-consistency}, $\|T - \hat{T}\|_{2, \infty} \stackrel{p}{\to} 0$. 
 Each element of $T$ is $T_{ir} = \binom{R}{r} t_i^r (1 - t_i)^{R-r}$, and similarly $\hat{T}_{ir} = \binom{R}{r} \hat{t}_i^r (1 - \hat{t}_i)^{R-r}$. 
 This is unique for the class of Bezier polynomials restricted by algorithm 3. 
-Then $\sum_i^n \|t_i - \hat{t}_i\| \stackrel{p}{\to} 0$. 
+Then $\sum_i^n |t_i - \hat{t}_i| \stackrel{p}{\to} 0$, so each $|t_i - \hat{t}_i| \stackrel{p}{\to} 0$. 
+By construction, the MLE $\hat{\theta}$ and the quasi-MLE $\tilde{\theta}$ are computed via the same function, just on different samples, i.e., $\hat{\theta} = h(t_1, ..., t_n)$ and $\tilde{\theta} = h(\hat{t}_1, ..., \hat{t}_n)$. 
+Then since the probability distribution function of each $t_i$ is smooth, $h$ is continuous on the support. 
+Therefore, if each $\hat{t}_i \stackrel{p}{\to} t$, then $h(\hat{t}_1, ..., \hat{t}_n) \stackrel{p}{\to} h(t_1, ..., t_n)$, resulting in $\tilde{\theta} \stackrel{p}{\to} \hat{\theta} \stackrel{p}{\to} \theta$.
+
+\end{proof}
+
+\begin{proof}[Proof of Theorem \ref{thm:supervised}]
 \end{proof}
 
 \newpage
